@@ -1,5 +1,12 @@
 # Forge
 
+[![Release](https://img.shields.io/github/v/release/skizzy203/forge?label=release&color=10B981&style=flat-square)](https://github.com/skizzy203/forge/releases)
+[![License: MIT](https://img.shields.io/github/license/skizzy203/forge?color=22E0FF&style=flat-square)](LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-22E0FF?logo=anthropic&logoColor=white&style=flat-square)](https://claude.com/claude-code)
+[![Claude Cowork](https://img.shields.io/badge/Claude_Cowork-compatible-22E0FF?logo=anthropic&logoColor=white&style=flat-square)](https://claude.ai)
+[![Last commit](https://img.shields.io/github/last-commit/skizzy203/forge?color=A855F7&style=flat-square)](https://github.com/skizzy203/forge/commits/main)
+[![Stars](https://img.shields.io/github/stars/skizzy203/forge?style=flat-square&color=E8B33A)](https://github.com/skizzy203/forge/stargazers)
+
 **Business model optimization. Email-gated HTML intake, adaptive mental-model analysis with live market research, terminal-noir intelligence report.**
 
 Forge is a Claude Code plugin that takes a business owner through a structured questionnaire, runs an adaptive chain of mental-model lenses against the collected context with live web-sourced market research, and produces a brand-consistent HTML intelligence report covering current state, optimization analysis, proposed redesign, and a three-move implementation plan.
