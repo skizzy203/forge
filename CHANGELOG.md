@@ -2,6 +2,22 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.2.2] — 2026-05-11
+
+### Changed (voice)
+- **All public-facing copy now leads with the dream outcome, no contrastive reframes.** Earlier surfaces opened with "isn't / is" inversions that DESIGN.md §01 had always banned in principle but the artifacts kept violating in practice. Replaced across every public surface:
+  - **Intake form Page 1 hero**: `YOUR BUSINESS ISN'T BROKEN. / YOUR ASSUMPTIONS ARE.` → **`WHERE YOUR BUSINESS IS. / WHERE IT COULD GO.`**
+  - **Report Section 1 hero**: `THE FRAMEWORK ISN'T THE WORK. / THE DISTILLATION IS.` → **`THE DIAGNOSIS. / THE PLAN.`**
+  - **Brand tagline** (used in README closing, intake top + bottom, report footer, DESIGN.md canonical brand line): `The work isn't in the framework. It's in the distillation.` → **`A clear plan for your business, backed by market data.`**
+  - **Report footer signature**: `Your business isn't broken. Your assumptions are.` → unified with the brand tagline above; one slogan to maintain instead of two.
+  - **Intake field probe** on Page 4 Q5: `One specific example. Generic answers aren't data.` → **`One specific example. Be concrete.`**
+  - **Sample report (DJ Moran / Mechanical Magic)**: rewrote two diagnostic sentences that used the same contrastive pattern (`The gap is not a marketing problem and not a lead problem. The gap is that…` and `The bottleneck is not demand. The bottleneck is…`) to lead with the affirmative finding instead.
+- **DESIGN.md §01 anti-pattern rule expanded.** The one-line ban on contrastive reframes now spells out the failure modes (`X isn't Y. X is Z.`, `It's not X — it's Y.`, `This isn't about X.`, denial-as-instruction), gives explicit before/after examples, and tells the writer to rewrite the sentence rather than patch punctuation when caught.
+- **`report-structure.md`** updated so the Section 1 brand-line hero spec matches the new `THE DIAGNOSIS. / THE PLAN.` text.
+
+### Rationale
+The old slogans were clever-by-negation and read as AI-slop to anyone who has read more than a few AI-written sales pages. The new line states the deliverable directly: a clear plan, for your business, backed by market data. Coherent across the journey — intake says "here's where we'll take you," report opens with "here's the diagnosis and plan," footer signs off with the brand line.
+
 ## [1.2.1] — 2026-05-11
 
 ### Documentation polish (no functional changes)

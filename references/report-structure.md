@@ -11,7 +11,7 @@ The structure moves the reader from context → evidence → conclusion in the e
 **Purpose:** The decision-maker should be able to read only this section and walk away with the gist. The rest of the report is the proof.
 
 **Contents:**
-- Brand-line hero ("THE FRAMEWORK ISN'T THE WORK / THE DISTILLATION IS") rendered per DESIGN.md §05 section opener block
+- Brand-line hero ("THE DIAGNOSIS. / THE PLAN.") rendered per DESIGN.md §05 section opener block
 - One-paragraph diagnosis (the single most important finding)
 - Three implementation moves (1-line each, full versions appear in Section 6)
 - Light/dark toggle, top-right

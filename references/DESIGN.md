@@ -22,7 +22,7 @@ If a choice isn't covered here, the answer is: **strip it down**. The best part 
 ## 01 / VOICE & POSITIONING
 
 ### Brand line
-**The work isn't in the framework. It's in the distillation.**
+**A clear plan for your business, backed by market data.**
 
 ### One-sentence positioning
 Distill Business Model Workshops are first-principles intensives that strip a business to what's actually load-bearing, then rebuild it lean, leveraged, and ready to scale.
@@ -44,7 +44,7 @@ Forbidden in any Distill copy across any surface:
 - Anaphora (repeated sentence openers used as a device)
 - Sentences starting with "But" or "And"
 - The words *genuinely*, *honestly*, *straightforward*
-- Contrastive reframes: *"It's not X, it's Y"* / *"This isn't about X"*
+- **Contrastive reframes / negation as setup.** Any structure that denies one thing in order to assert another. Examples to avoid: *"X isn't Y. X is Z."*, *"It's not X — it's Y."*, *"This isn't about X."*, *"X aren't data."* (denial-as-instruction). These read as AI-slop sleight-of-hand. State the affirmative directly. **Instead of** *"The work isn't in the framework. It's in the distillation,"* **say** *"A clear plan for your business, backed by market data."* **Instead of** *"Generic answers aren't data,"* **say** *"Be specific."* If you catch yourself writing *"isn't"* or *"is not"* as setup for a contrast, rewrite the sentence — do not patch punctuation.
 - Opening affirmations: *"Great question," "Absolutely," "That's a smart approach"*
 - Throat-clearing intros that restate what was just asked
 - Fake transitions: *"Let's dive in," "Here's the thing," "At the end of the day"*
@@ -428,4 +428,4 @@ The system stays small on purpose. Restraint is the brand.
 
 ---
 
-*Distill — Your business isn't broken. Your assumptions are.*
+*Distill — A clear plan for your business, backed by market data.*

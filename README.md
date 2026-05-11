@@ -104,4 +104,4 @@ MIT. See LICENSE.
 
 ---
 
-*The work isn't in the framework. It's in the distillation.*
+*A clear plan for your business, backed by market data.*
