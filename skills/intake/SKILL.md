@@ -67,7 +67,7 @@ The template conforms to `references/DESIGN.md` (terminal-noir + terminal-blanc)
 The form generates BCD Markdown in-browser, then offers three parallel delivery paths the applicant can pick from:
 
 1. **Email to Facilitator (primary CTA).** Opens the applicant's default mail client with a pre-populated subject and body addressed to `FACILITATOR_EMAIL`. The download is also auto-triggered so the applicant can attach the .bcd.md file. If the BCD is short, the content is also pasted inline as a fallback for clients that strip attachments.
-2. **Download BCD.** Saves the file locally. The applicant can then drop it into `~/forge-intake/` (the SessionStart hook surfaces pending BCDs the next time Claude Code starts) or upload it to Cowork / Claude Code and run `/optimize` themselves.
+2. **Download BCD.** Saves the file locally. The applicant can then drop it into `~/forge-intake/` (the SessionStart hook surfaces pending BCDs the next time Claude Code starts) or paste it into Cowork / Claude Code where `/forge:optimize` Mode A auto-fires on detection.
 3. **Copy to Clipboard.** Lets the applicant paste the full BCD into any channel — Slack DM, Notion, an email body, an issue tracker.
 
-Facilitator-side: after a BCD arrives via any of the three paths, run `/optimize <path-to-bcd>` (or just `/optimize` to pick up the most recent file in `~/forge-intake/`).
+Facilitator-side: once a BCD arrives via any of the three paths, the model auto-invokes `/forge:optimize` Mode A. If invocation does not auto-fire (rare), saying "optimize this" or "/forge:optimize" with the BCD in scope is enough.

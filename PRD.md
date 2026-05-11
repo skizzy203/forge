@@ -34,23 +34,23 @@ The primary delivery context is live workshops with business owners. Every compo
 
 ## 3. User & Use Case
 
-**Primary user:** workshop facilitator distributing Forge to applicants. The facilitator runs `/intake` to generate the questionnaire artifact, distributes it to a workshop applicant, and runs `/optimize` (or lets the auto-detect hook fire) when the BCD comes back.
+**Primary user:** workshop facilitator running Forge against BCDs that applicants have submitted. The facilitator's interaction is a single command — `/forge:optimize` — which routes by intent depending on what's in scope (BCD present, no BCD, or facilitator customization).
 
-**Secondary user:** solo operator running `/optimize <bcd-path>` directly on a BCD they already have. Same pipeline, same report.
+**Secondary user:** solo operator who already has a BCD. Same single command, same routing logic. Mode A fires automatically when the BCD is pasted or attached.
 
-**Workshop applicant:** the business owner filling the questionnaire. They are the deliverable recipient — the HTML report is for them.
+**Workshop applicant:** the business owner filling the hosted questionnaire at `https://skizzy203.github.io/forge/`. They are the deliverable recipient — the HTML report is for them.
 
 ---
 
 ## 4. End-to-End Flow
 
-1. Facilitator runs `/intake`. A standalone HTML questionnaire artifact is written to the working directory.
-2. Facilitator distributes the form to the applicant (host it, email it, hand over a USB).
-3. Applicant fills the form. Pages auto-save to localStorage. Conditional pages reveal based on prior answers (retention questions surface if churn is mentioned; alignment questions surface if team friction is mentioned).
-4. Applicant submits. The form generates a BCD as Markdown in-browser, shows a Download button, and instructs the applicant to save the file to `~/forge-intake/`.
-5. Claude Code hook detects the new BCD file. Triggers `/optimize <path>` automatically.
-6. `/optimize` runs four phases: market research → adaptive mental-model chain → Mermaid diagram synthesis → report render.
-7. The report HTML is written to the working directory. Facilitator delivers it to the applicant.
+1. Facilitator points applicants to the hosted intake form at `https://skizzy203.github.io/forge/`. (Or, if customization is needed — per-workshop email, branding, offline distribution — facilitator asks `/forge:optimize` for a custom form via Mode C and emits a tailored HTML file.)
+2. Applicant fills the form. Pages auto-save to localStorage. Conditional pages reveal based on prior answers (retention questions surface if churn is mentioned; alignment questions surface if team friction is mentioned).
+3. Applicant submits. The form generates a BCD as Markdown in-browser and offers three delivery paths: email to facilitator (mailto with file attached), download locally, or copy to clipboard.
+4. BCD lands in the facilitator's Claude Code session — pasted into chat, dropped into `~/forge-intake/` for the SessionStart hook to surface, or attached as a file.
+5. `/forge:optimize` Mode A auto-fires when the BCD is detected in conversation context.
+6. The pipeline runs four phases: web supplement + market research → adaptive mental-model chain → Mermaid diagram synthesis (six diagrams) → 8-section HTML report render.
+7. The report HTML lands in the working directory. Facilitator delivers it to the applicant.
 
 ---
 
@@ -110,9 +110,11 @@ The questionnaire is the only review gate. After CONFIRM is implicit at form sub
 
 Minimal, valid against the [Claude Code plugin manifest schema](https://json.schemastore.org/claude-code-plugin-manifest.json). No `commands`/`skills`/`references` arrays — those are auto-discovered from their directories.
 
-### 6.2 — Intake skill
+### 6.2 — Intake skill (internal, invoked by `/forge:optimize` Mode C)
 
-Generates a self-contained HTML questionnaire artifact (`skills/intake/templates/questionnaire.html`). Seven pages:
+Generates a self-contained HTML questionnaire artifact (`skills/intake/templates/questionnaire.html`). Not a default operator surface — invoked internally by `/forge:optimize` when facilitator customization intent is detected. The default operator path is the hosted form at `https://skizzy203.github.io/forge/`; this skill exists for per-workshop customization, offline distribution, and self-hosted variants.
+
+Seven pages:
 
 1. Welcome + email gate (email is used once, for report delivery — no marketing)
 2. Business basics (Q1–Q4: what it does, revenue model, customer, biggest problem)
@@ -142,14 +144,14 @@ Four phases, autonomous:
 
 ### 6.4 — Hook (`hooks/auto-detect-bcd.json`)
 
-Watches `~/forge-intake/*.bcd.md`. On new file, fires `/optimize <path>` automatically. Optional — the plugin works without it; manual invocation also supported.
+SessionStart hook that scans `~/forge-intake/` for pending `*.bcd.md` files and surfaces a notice on session open ("[Forge] N pending BCD(s) in ~/forge-intake/..."). Claude Code does not currently support filesystem-watch events, so SessionStart is the closest supported pattern. Implemented as a cross-platform `node -e` one-liner. Optional — the plugin works without it; `/forge:optimize` Mode A also auto-fires on BCDs pasted directly into chat.
 
 ### 6.5 — References
 
 - **`DESIGN.md`** — terminal-noir / terminal-blanc brand spec. Authoritative for all visual surfaces.
 - **`catalog.md`** — 38 mental models with prompt kernels, scoring data, causal dependencies.
 - **`visual-primitives.md`** — Mermaid templates for AS-IS / PROPOSED business model diagrams, theme derivation, animation rules.
-- **`report-structure.md`** — 6-section MBB-derived report structure with html-effectiveness component patterns mapped per section.
+- **`report-structure.md`** — authoritative spec for the 8-section intelligence report (extends the McKinsey/BCG/Bain six-section market-entry framework with Amplified Moves and Pressure Test as Sections 7 and 8). Documents per-section components, source-chain mappings, and the v1.1 visual enhancements layer.
 
 ---
 
@@ -192,7 +194,7 @@ If a design need arises that DESIGN.md doesn't cover, follow the §12 governance
 
 2. **Market research query templates.** Generic templates ship in `skills/optimize/SKILL.md`. Once Phase 1 has been observed across distinct industries, sharpen query templates per industry vertical.
 
-3. **Hook reliability across operating systems.** The `auto-detect-bcd.json` hook format works on Claude Code's supported hook system. Fallback to manual `/optimize <path>` invocation is always available; document this clearly for users on platforms where the hook doesn't fire.
+3. **Hook reliability across operating systems.** The `auto-detect-bcd.json` hook uses cross-platform `node -e` so the SessionStart notice works identically on Windows, macOS, and Linux. Fallback is always `/forge:optimize` invoked manually after pasting the BCD into chat — document clearly for users on platforms where the hook doesn't fire.
 
 4. **BCD trigger detection sensitivity.** The intake form uses keyword-matching to surface conditional Page 5 questions. If too many or too few conditional questions appear in practice, adjust the regex patterns in the form's `detectTriggers()` function.
 
@@ -206,38 +208,38 @@ If a design need arises that DESIGN.md doesn't cover, follow the §12 governance
 1. `.claude-plugin/plugin.json` — manifest, validation foundation
 2. `references/DESIGN.md` — brand spec, loaded by all surface generators
 3. `references/catalog.md` — 38 models with kernels and scoring
-4. `references/visual-primitives.md` — Mermaid templates
-5. `references/report-structure.md` — gold-standard report outline
-6. `skills/intake/SKILL.md` + `templates/questionnaire.html` — intake artifact generator
-7. `skills/optimize/SKILL.md` + `templates/report.html` — optimization pipeline
-8. `hooks/auto-detect-bcd.json` — auto-trigger
-9. `PRD.md`, `README.md`, `LICENSE`, `CHANGELOG.md` — plugin metadata
+4. `references/visual-primitives.md` — Mermaid templates (six diagram types)
+5. `references/report-structure.md` — 8-section report spec
+6. `skills/intake/SKILL.md` + `templates/questionnaire.html` — internal customization helper (invoked by /forge:optimize Mode C)
+7. `skills/optimize/SKILL.md` + `templates/report.html` — single entry point, three routing modes
+8. `hooks/auto-detect-bcd.json` — SessionStart pending-BCD notice
+9. `index.html` — root redirect to the hosted questionnaire (for GitHub Pages)
+10. `examples/sample-report.html` — rendered sample output for the README
+11. `PRD.md`, `README.md`, `LICENSE`, `CHANGELOG.md`, `.gitignore` — plugin metadata
 
 ### Verification
 
-**1. Plugin install validation.** Run `/plugin install ./forge-v1`. Confirm zero validation errors.
+**1. Plugin install validation.** Run `/plugin install https://github.com/skizzy203/forge`. Confirm zero validation errors and that the manifest reports v1.2.0.
 
-**2. Intake artifact smoke test.** Run `/intake`. Open the resulting HTML. Verify:
-- Light/dark toggle works and persists
-- All 7 pages render
-- Progress indicator advances correctly
-- Email gate enforces valid email
-- Conditional questions on Page 5 surface when keywords match
-- Auto-save survives a page reload
-- Submit generates the BCD Markdown in-browser
-- Download button works
-- BCD file format matches what `optimize` expects
+**2. Mode B (no BCD) test.** Open a fresh Claude Code session. Type `/forge:optimize` with no BCD in scope. Verify the model responds with the hosted-URL pointer (`https://skizzy203.github.io/forge/`) and explains the three submission paths. The pipeline must not run; no business context must be invented.
 
-**3. Synthetic BCD optimize test.** Construct three BCDs of distinct problem profiles (pricing-led SaaS, positioning-stuck consultancy, scaling marketplace with retention concerns). Run `/optimize <path>` against each. Verify:
-- Phase 1 fires WebSearch queries and surfaces real signals
+**3. Mode A (BCD pipeline) test.** Construct three BCDs of distinct problem profiles (pricing-led SaaS, positioning-stuck consultancy, scaling marketplace with retention concerns). For each: paste the BCD into chat. Verify:
+- `/forge:optimize` auto-fires without explicit invocation
+- Phase 1A fires (if `Business website:` in the BCD) and produces the Web Supplement
+- Phase 1B WebSearch queries surface real signals with citations
 - Each BCD produces a different chain (subtractive bias visible: Pareto / Via Negativa appear early)
 - Operator Edge section appears with proper Layer 3 data
-- Report HTML renders with both Mermaid diagrams
-- Light/dark toggle re-renders Mermaid correctly
-- All six sections populated; no placeholder tokens visible
-- Implementation Plan has three concrete moves
+- Report HTML renders with all six Mermaid diagrams (AS-IS flowchart, PROPOSED flowchart, Revenue Diff Sankey, Implementation Gantt, Pre-Mortem Quadrant, Revenue Trajectory)
+- Light/dark toggle re-renders Mermaid correctly (snapshot-before-init pattern holds)
+- All eight sections populated; no placeholder tokens visible
+- Implementation Plan has three concrete moves; Amplified Moves carries up to three accretive additions; Pressure Test surfaces Steelman, Strawman, ranked failures, and second-order chain
 
-**4. Auto-trigger hook test.** Drop a BCD into `~/forge-intake/`. Confirm `/optimize` fires.
+**4. Mode C (facilitator customization) test.** Type `/forge:optimize` and say "I need a custom intake form for my workshop, my facilitator email is `me@example.com`." Verify:
+- The model invokes the internal intake skill
+- A customized HTML file is written to the working directory with `FACILITATOR_EMAIL` set to the requested address
+- The form is otherwise identical to the hosted version
+
+**5. Auto-trigger hook test.** Drop a BCD into `~/forge-intake/`. Open a new Claude Code session. Verify the SessionStart hook surfaces the "[Forge] N pending BCD(s)" notice with the latest filename. Then ask Forge to process it — verify the pipeline runs.
 
 **5. Design compliance audit.** Spot-check both artifacts against DESIGN.md §01 (voice — no em-dashes, no tricolons, no "Let's dive in"), §02 (colors), §03 (typography), §05 (components). Mermaid themes match active palette.
 
