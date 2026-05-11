@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge Intelligence Report — {{business_name}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800;900&family=Inter:wght@400;500;600&family=Source+Serif+4:ital,wght@1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0A0E11;
+  --bg-elevated: #11161A;
+  --accent: #22E0FF;
+  --accent-deep: #0FB8D6;
+  --accent-soft: rgba(34, 224, 255, 0.12);
+  --text-primary: #E8ECEE;
+  --text-muted: #8A949A;
+  --text-faint: #4A535A;
+  --rule: #1F2629;
+  --warn: #E8B33A;
+  --danger: #EF4444;
+  --success: #10B981;
+  --info: #A855F7;
+  --font-display: "Inter Tight", "Helvetica Now Display", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, Helvetica, sans-serif;
+  --font-italic: "Source Serif 4", Georgia, serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+[data-theme="light"] {
+  --bg-primary: #FFFFFF;
+  --bg-elevated: #F4F6F7;
+  --accent: #0FB8D6;
+  --accent-deep: #0A8EA8;
+  --accent-soft: rgba(15, 184, 214, 0.10);
+  --text-primary: #0A0E11;
+  --text-muted: #5A646A;
+  --text-faint: #B8C0C5;
+  --rule: #D8DEE2;
+  --warn: #B8841F;
+  --danger: #DC2626;
+  --success: #059669;
+  --info: #7E22CE;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);line-height:1.6;transition:background 0.2s,color 0.2s}
+.frame{max-width:1100px;margin:0 auto;padding:32px 48px 96px;position:relative}
+@media(max-width:768px){.frame{padding:24px 24px 64px}}
+
+/* Tickmarks */
+.tick{position:fixed;width:12px;height:12px;color:var(--text-muted);font-family:var(--font-mono);font-size:12px;line-height:1;z-index:5}
+.tick.tl{top:16px;left:16px}.tick.tr{top:16px;right:16px}
+.tick.bl{bottom:16px;left:16px}.tick.br{bottom:16px;right:16px}
+
+/* Header / footer marks */
+.header-mark,.footer-mark{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase}
+.header-mark{position:sticky;top:0;z-index:40;background:var(--bg-primary);padding:12px 0;border-bottom:1px solid var(--rule);margin-bottom:64px}
+.footer-mark{padding-top:12px;border-top:1px solid var(--rule);margin-top:96px}
+.header-mark .sec{color:var(--accent);font-weight:500}
+.footer-mark .descriptor{font-family:var(--font-italic);font-style:italic;text-transform:none;color:var(--text-muted)}
+
+/* Theme toggle */
+.theme-toggle{background:transparent;border:1px solid var(--rule);color:var(--text-muted);font-family:var(--font-mono);font-size:12px;padding:6px 12px;cursor:pointer;letter-spacing:0.1em;transition:all 0.15s}
+.theme-toggle:hover{color:var(--accent);border-color:var(--accent)}
+
+/* Section opener */
+.section{margin-bottom:96px;position:relative}
+.sec-num{font-family:var(--font-mono);font-size:13px;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.prepared-for{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin:-16px 0 24px;padding-bottom:16px;border-bottom:1px solid var(--rule);max-width:65ch}
+.prepared-for .prep-label{color:var(--accent);font-weight:600;margin-right:10px}
+.prepared-for .prep-sep{color:var(--text-faint);margin:0 8px}
+.prepared-for .prep-name{color:var(--text-primary);font-weight:500}
+.display{font-family:var(--font-display);font-weight:800;letter-spacing:-0.02em;line-height:0.98;margin-bottom:32px}
+.display .line1{color:var(--text-primary);display:block;font-size:clamp(36px,5.5vw,56px)}
+.display .line2{color:var(--accent);display:block;font-size:clamp(36px,5.5vw,56px)}
+.body-lg{font-size:18px;line-height:1.55;margin-bottom:24px;color:var(--text-primary);max-width:65ch}
+.body-md{font-size:16px;line-height:1.6;color:var(--text-primary);max-width:65ch;margin-bottom:16px}
+.body-sm{font-size:14px;line-height:1.55;color:var(--text-muted)}
+
+/* Background numeral */
+.bg-num{position:absolute;right:-20px;top:60px;font-family:var(--font-display);font-weight:800;font-size:clamp(180px,32vw,360px);color:var(--text-faint);opacity:0.5;pointer-events:none;line-height:1;z-index:0}
+.section > *:not(.bg-num){position:relative;z-index:1}
+
+/* Pull quote */
+.pq{padding:24px 0;margin:32px 0;position:relative}
+.pq::before,.pq::after{content:"";display:block;height:1px;background:var(--rule)}
+.pq::before{margin-bottom:20px}.pq::after{margin-top:20px}
+.pq p{font-family:var(--font-italic);font-style:italic;color:var(--accent);font-size:26px;line-height:1.3;margin-bottom:8px;max-width:60ch}
+.pq cite{display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;color:var(--text-muted);text-transform:uppercase;font-style:normal;margin-top:12px}
+
+/* Callout box */
+.callout{background:var(--accent-soft);border:1px solid var(--accent);padding:24px 28px;margin:24px 0}
+.callout .label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;font-weight:600}
+.callout .headline{font-family:var(--font-display);font-weight:700;font-size:22px;line-height:1.2;color:var(--text-primary);margin-bottom:8px}
+.callout p{font-size:15px;line-height:1.55;color:var(--text-primary)}
+
+/* Component grid (signals etc.) */
+.grid{display:grid;gap:16px;margin:24px 0}
+.grid.cols-2{grid-template-columns:1fr 1fr}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:768px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}}
+.cell{background:var(--bg-elevated);border:1px solid var(--rule);padding:20px 22px;position:relative}
+.cell .cell-glyph{font-family:var(--font-mono);font-size:13px;color:var(--accent);margin-bottom:10px;letter-spacing:0.08em}
+.cell .cell-idx{position:absolute;top:16px;right:18px;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.14em}
+.cell .cell-head{font-family:var(--font-display);font-weight:700;font-size:18px;line-height:1.25;color:var(--text-primary);margin-bottom:8px}
+.cell .cell-body{font-size:14px;line-height:1.55;color:var(--text-muted);margin-bottom:12px}
+.cell .cell-aside{font-family:var(--font-italic);font-style:italic;color:var(--accent);font-size:13px;line-height:1.4}
+
+/* Severity tags */
+.tag{display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;padding:3px 10px;text-transform:uppercase;border:1px solid;font-weight:500;margin-right:6px}
+.tag.hi{color:var(--warn);border-color:var(--warn);background:rgba(232,179,58,0.08)}
+.tag.med{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.tag.low{color:var(--text-muted);border-color:var(--text-muted)}
+.tag.danger{color:var(--danger);border-color:var(--danger);background:rgba(239,68,68,0.08)}
+.tag.success{color:var(--success);border-color:var(--success);background:rgba(16,185,129,0.08)}
+
+/* Two-column contrast (AS-IS / PROPOSED) */
+.contrast{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:32px 0}
+@media(max-width:768px){.contrast{grid-template-columns:1fr}}
+.contrast-col{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px 28px}
+.contrast-col .label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+.contrast-col.as-is .label{color:var(--text-muted)}
+.contrast-col.proposed .label{color:var(--accent)}
+.contrast-col .as-is-title,.contrast-col .proposed-title{font-family:var(--font-italic);font-style:italic;font-size:16px;margin-bottom:14px;line-height:1.4}
+.contrast-col.as-is .as-is-title{color:var(--text-muted)}
+.contrast-col.proposed .proposed-title{color:var(--accent)}
+.contrast-col .hard-headline{font-family:var(--font-display);font-weight:800;font-size:24px;line-height:1.15;letter-spacing:-0.01em;margin-bottom:16px}
+.contrast-col.as-is .hard-headline{color:var(--text-primary)}
+.contrast-col.proposed .hard-headline{color:var(--accent)}
+.contrast-col ul{list-style:none;padding:0;margin-bottom:16px}
+.contrast-col ul li{font-size:14px;line-height:1.55;padding:6px 0;color:var(--text-primary)}
+.contrast-col ul li::before{content:"◆ ";color:var(--accent);margin-right:6px}
+.contrast-col .closing{font-family:var(--font-italic);font-style:italic;color:var(--text-muted);font-size:14px;line-height:1.4}
+
+/* Diagrams */
+.diagram{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px;margin:24px 0;overflow-x:auto}
+.diagram.as-is{border-color:rgba(239,68,68,0.3)}
+.diagram.proposed{border-color:rgba(16,185,129,0.3)}
+.diagram-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
+.diagram.as-is .diagram-label{color:var(--danger)}
+.diagram.proposed .diagram-label{color:var(--success)}
+
+/* Insight layer */
+.insight{background:var(--bg-elevated);border:1px solid var(--accent);padding:20px 24px;margin:16px 0 32px}
+.insight-row{display:flex;gap:16px;padding:8px 0;align-items:baseline}
+.insight-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);min-width:180px;font-weight:600;flex-shrink:0}
+.insight-value{font-size:14px;line-height:1.5;color:var(--text-primary)}
+@media(max-width:640px){.insight-row{flex-direction:column;gap:4px}.insight-label{min-width:auto}}
+
+/* Collapsible */
+details{background:var(--bg-elevated);border:1px solid var(--rule);margin:12px 0}
+details summary{padding:16px 20px;cursor:pointer;font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:500;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"[ + ]";color:var(--accent);font-size:11px}
+details[open] summary::after{content:"[ − ]"}
+details summary:hover{color:var(--accent)}
+details .details-body{padding:0 20px 20px;color:var(--text-primary);font-size:15px;line-height:1.6}
+
+/* Move cards */
+.moves{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:32px 0}
+@media(max-width:768px){.moves{grid-template-columns:1fr}}
+.move{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px 26px;border-top-width:3px}
+.move.m1{border-top-color:var(--accent)}
+.move.m2{border-top-color:var(--success)}
+.move.m3{border-top-color:var(--info)}
+.move .timing{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:10px;font-weight:600}
+.move.m1 .timing{color:var(--accent)}
+.move.m2 .timing{color:var(--success)}
+.move.m3 .timing{color:var(--info)}
+.move .headline{font-family:var(--font-display);font-weight:800;font-size:22px;line-height:1.15;margin-bottom:12px;color:var(--text-primary)}
+.move p{font-size:15px;line-height:1.55;color:var(--text-primary)}
+
+/* Hairline */
+.hr{height:1px;background:var(--rule);margin:48px 0;border:0}
+
+/* Source list */
+.sources{margin-top:16px;font-family:var(--font-mono);font-size:12px;line-height:1.8;color:var(--text-muted)}
+.sources a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.15s}
+.sources a:hover{border-color:var(--accent)}
+
+/* Appendix — hover-expand lens cards */
+.appendix-list{margin-top:16px;list-style:none;padding:0}
+.appendix-list li{padding:12px 18px;border-bottom:1px solid var(--rule);cursor:default;transition:background 0.15s;outline:none}
+.appendix-list li:last-child{border-bottom:none}
+.appendix-list li:hover,.appendix-list li:focus-within{background:var(--accent-soft)}
+.appendix-list .lens-name{font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;color:var(--accent);font-weight:600;text-transform:uppercase;display:block}
+.appendix-list .lens-def{color:var(--text-muted);margin-left:0;display:block;font-size:13px;line-height:1.5;max-height:0;overflow:hidden;opacity:0;transition:max-height 0.35s ease,opacity 0.25s ease,margin-top 0.25s ease;margin-top:0}
+.appendix-list li:hover .lens-def,.appendix-list li:focus-within .lens-def{max-height:140px;opacity:1;margin-top:6px}
+
+/* Reading progress bar */
+.reading-progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);z-index:50;transition:width 0.08s linear;pointer-events:none}
+
+/* Scroll-triggered section fade-in (JS adds .fade-init on load; sections start hidden only when JS is active) */
+.fade-init .section{opacity:0;transform:translateY(12px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-init .section.in-view{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.fade-init .section{opacity:1;transform:none;transition:none}}
+
+/* Tabular numerals on countup spans so width doesn't jump while animating */
+[data-countup]{font-variant-numeric:tabular-nums}
+
+/* Anchor-styled move teasers in Section 1 — inherit color, no underline */
+a.move{text-decoration:none;color:inherit;display:block;cursor:pointer}
+a.move:hover{border-color:var(--accent)}
+a.move:hover .headline{color:var(--accent)}
+
+/* Mobile responsive — wide diagrams scroll horizontally, narrow ones fit naturally */
+@media (max-width: 640px){
+  .diagram{padding:16px 12px;-webkit-overflow-scrolling:touch}
+  .diagram .mermaid{min-width:560px}
+  .diagram .mermaid svg{max-width:none;width:auto;height:auto}
+  .frame{padding:20px 16px 48px}
+  .moves{gap:14px}
+  .grid{gap:12px}
+}
+
+/* Print stylesheet — disable animations, hide chrome, force light theme, avoid page breaks inside diagrams */
+@media print{
+  .reading-progress,.theme-toggle,.tick,.bg-num{display:none !important}
+  .header-mark{position:static !important;padding-top:0 !important;background:transparent !important}
+  html,body{background:#fff !important;color:#111 !important}
+  :root{--bg-primary:#fff;--bg-elevated:#f7f7f7;--text-primary:#111;--text-muted:#555;--text-faint:#999;--accent:#0a8ea8;--accent-deep:#077590;--accent-soft:rgba(10,142,168,0.10);--rule:#d6d6d6;--danger:#b22020;--success:#0a7a4a;--warn:#9a6a10;--info:#5a1aa0}
+  .section{page-break-inside:avoid;opacity:1 !important;transform:none !important;margin-bottom:48px;break-inside:avoid}
+  .diagram,.moves,.callout,.contrast,.grid{page-break-inside:avoid;break-inside:avoid}
+  details{break-inside:avoid}
+  details:not([open]) summary::after{content:""}
+  details summary{cursor:default}
+  .appendix-list .lens-def{max-height:none !important;opacity:1 !important;margin-top:6px !important}
+  .display{page-break-after:avoid}
+  .frame{max-width:100%;padding:0 12mm}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+<div class="tick tl">+</div><div class="tick tr">+</div><div class="tick bl">+</div><div class="tick br">+</div>
+
+<div class="frame">
+
+<div class="header-mark">
+  <div class="left">─ <span class="sec">FORGE INTELLIGENCE REPORT</span></div>
+  <div class="middle">{{business_name_short}}</div>
+  <div class="right">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">[ ◑ ] MODE</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 1 — EXECUTIVE SUMMARY            -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec1">
+  <div class="bg-num">01</div>
+  <div class="sec-num">01 / EXECUTIVE SUMMARY</div>
+  <h1 class="display">
+    <span class="line1">THE FRAMEWORK ISN'T THE WORK.</span>
+    <span class="line2">THE DISTILLATION IS.</span>
+  </h1>
+  <p class="prepared-for"><span class="prep-label">─ PREPARED FOR</span><span class="prep-name">{{applicant_name}}</span><span class="prep-sep">/</span>{{business_name}}</p>
+  <p class="body-lg">{{executive_paragraph}}</p>
+
+  <div class="pq">
+    <p>{{executive_pull_quote}}</p>
+    <cite>— FORGE DIAGNOSIS / {{business_name_short}}</cite>
+  </div>
+
+  <div class="moves">
+    <a class="move m1" href="#sec6" aria-label="Jump to Move 1 detail">
+      <div class="timing">[ → ] THIS WEEK</div>
+      <div class="headline">{{move_1_headline}}</div>
+    </a>
+    <a class="move m2" href="#sec6" aria-label="Jump to Move 2 detail">
+      <div class="timing">[ → ] THIS MONTH</div>
+      <div class="headline">{{move_2_headline}}</div>
+    </a>
+    <a class="move m3" href="#sec6" aria-label="Jump to Move 3 detail">
+      <div class="timing">[ → ] THIS QUARTER</div>
+      <div class="headline">{{move_3_headline}}</div>
+    </a>
+  </div>
+  <p class="body-sm">Full move detail in <a href="#sec6" style="color:var(--accent);text-decoration:none">Section 6</a>.</p>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 2 — MARKET INTELLIGENCE BRIEF    -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec2">
+  <div class="bg-num">02</div>
+  <div class="sec-num">02 / MARKET INTELLIGENCE BRIEF</div>
+  <h2 class="display">
+    <span class="line1">WHERE THE MARKET IS.</span>
+    <span class="line2">WHAT IT'S TELLING YOU.</span>
+  </h2>
+
+  <div class="callout">
+    <div class="label">[ ≈ ] TOTAL ADDRESSABLE MARKET</div>
+    <div class="headline">{{tam_headline}}</div>
+    <p>{{tam_context}}</p>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Three macro signals</h3>
+
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">01</span></div>
+      <div class="cell-head">{{signal_1_head}}</div>
+      <div class="cell-body">{{signal_1_body}}</div>
+      <div><span class="tag {{signal_1_severity}}">{{signal_1_severity_label}}</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">02</span></div>
+      <div class="cell-head">{{signal_2_head}}</div>
+      <div class="cell-body">{{signal_2_body}}</div>
+      <div><span class="tag {{signal_2_severity}}">{{signal_2_severity_label}}</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">03</span></div>
+      <div class="cell-head">{{signal_3_head}}</div>
+      <div class="cell-body">{{signal_3_body}}</div>
+      <div><span class="tag {{signal_3_severity}}">{{signal_3_severity_label}}</span></div>
+    </div>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Competitive density</h3>
+  <p class="body-md">{{competitive_density}}</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Opportunity windows</h3>
+  <p class="body-md">{{opportunity_windows}}</p>
+
+  <details>
+    <summary>[ // ] SOURCES CITED</summary>
+    <div class="details-body">
+      <div class="sources">{{market_sources_html}}</div>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 3 — AS-IS                        -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec3">
+  <div class="bg-num">03</div>
+  <div class="sec-num">03 / WHERE THE BUSINESS IS TODAY</div>
+  <h2 class="display">
+    <span class="line1">WHAT'S BINDING.</span>
+    <span class="line2">WHAT'S LEAKING.</span>
+  </h2>
+  <p class="body-lg">{{as_is_paragraph}}</p>
+
+  <div class="pq">
+    <p>{{as_is_diagnosis}}</p>
+    <cite>— SINGLE-SENTENCE DIAGNOSIS</cite>
+  </div>
+
+  <div class="diagram as-is">
+    <div class="diagram-label">[ ▼ ] AS-IS — CURRENT BUSINESS MODEL</div>
+    <div class="mermaid">
+{{as_is_mermaid}}
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-row"><span class="insight-label">Revenue leak</span><span class="insight-value">{{insight_revenue_leak}}</span></div>
+    <div class="insight-row"><span class="insight-label">Leverage point</span><span class="insight-value">{{insight_leverage_point}}</span></div>
+    <div class="insight-row"><span class="insight-label">Removed constraint</span><span class="insight-value">{{insight_removed_constraint}}</span></div>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Component breakdown</h3>
+
+  <details><summary>OFFER &mdash; what's actually being sold</summary><div class="details-body">{{component_offer}}</div></details>
+  <details><summary>CUSTOMER &mdash; who pays and why</summary><div class="details-body">{{component_customer}}</div></details>
+  <details><summary>CHANNEL &mdash; how customers find the offer</summary><div class="details-body">{{component_channel}}</div></details>
+  <details><summary>DELIVERY &mdash; how value reaches the customer</summary><div class="details-body">{{component_delivery}}</div></details>
+  <details><summary>REVENUE &mdash; how the money flows</summary><div class="details-body">{{component_revenue}}</div></details>
+  <details><summary>FRICTION &mdash; where the leak is</summary><div class="details-body">{{component_friction}}</div></details>
+
+  <div class="callout">
+    <div class="label">[ × ] THE MOST EXPENSIVE ASSUMPTION</div>
+    <div class="headline">{{expensive_assumption_head}}</div>
+    <p>{{expensive_assumption_body}}</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 4 — OPTIMIZATION ANALYSIS        -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec4">
+  <div class="bg-num">04</div>
+  <div class="sec-num">04 / OPTIMIZATION ANALYSIS</div>
+  <h2 class="display">
+    <span class="line1">THE LENSES APPLIED.</span>
+    <span class="line2">WHAT EACH SURFACED.</span>
+  </h2>
+
+  <!-- 4.1 -->
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:32px 0 16px;color:var(--text-primary)">4.1 &mdash; Diagnose findings</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ ◆ ] <span class="cell-idx">ROOT</span></div>
+      <div class="cell-head">Root cause</div>
+      <div class="cell-body">{{diagnose_root_cause}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ ◆ ] <span class="cell-idx">BIND</span></div>
+      <div class="cell-head">Binding constraint</div>
+      <div class="cell-body">{{diagnose_binding_constraint}}</div>
+    </div>
+  </div>
+  <details><summary>ELIMINATION CANDIDATES &mdash; top items to strip</summary><div class="details-body">{{diagnose_elimination_candidates}}</div></details>
+  <details><summary>STRIPPED ASSUMPTIONS &mdash; conventions we removed</summary><div class="details-body">{{diagnose_stripped_assumptions}}</div></details>
+
+  <!-- 4.2 Operator Edge -->
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">4.2 &mdash; Operator Edge</h3>
+  <p class="body-md">{{operator_edge_intro}}</p>
+  <div class="callout">
+    <div class="label">[ → ] THE FLAGGED INTERSECTION</div>
+    <div class="headline">{{operator_edge_flagged_head}}</div>
+    <p>{{operator_edge_flagged_body}}</p>
+  </div>
+  <details><summary>OTHER POSITIONS CONSIDERED</summary><div class="details-body">{{operator_edge_alternatives}}</div></details>
+
+  <!-- 4.3 Design Candidates -->
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">4.3 &mdash; Design candidates</h3>
+  <div class="body-md">{{design_summary}}</div>
+  <details><summary>REDESIGNED OFFER &mdash; from the Value Equation pass</summary><div class="details-body">{{design_offer_detail}}</div></details>
+  <details><summary>HIGHEST-LEVERAGE INTERVENTION</summary><div class="details-body">{{design_leverage_detail}}</div></details>
+  <details><summary>PRICING RECALIBRATION</summary><div class="details-body">{{design_pricing_detail}}</div></details>
+
+  <!-- 4.4 Stress-Test -->
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">4.4 &mdash; Stress-test results</h3>
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F1</span></div>
+      <div class="cell-head">{{failure_1_head}}</div>
+      <div class="cell-body">{{failure_1_body}}</div>
+      <div><span class="tag {{failure_1_severity}}">{{failure_1_severity_label}}</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F2</span></div>
+      <div class="cell-head">{{failure_2_head}}</div>
+      <div class="cell-body">{{failure_2_body}}</div>
+      <div><span class="tag {{failure_2_severity}}">{{failure_2_severity_label}}</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F3</span></div>
+      <div class="cell-head">{{failure_3_head}}</div>
+      <div class="cell-body">{{failure_3_body}}</div>
+      <div><span class="tag {{failure_3_severity}}">{{failure_3_severity_label}}</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 5 — THE PROPOSED MODEL           -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec5">
+  <div class="bg-num">05</div>
+  <div class="sec-num">05 / THE PROPOSED MODEL</div>
+  <h2 class="display">
+    <span class="line1">REBUILT FROM</span>
+    <span class="line2">WHAT SURVIVES.</span>
+  </h2>
+
+  <div class="contrast">
+    <div class="contrast-col as-is">
+      <div class="label">─ AS-IS</div>
+      <div class="as-is-title">{{as_is_short_title}}</div>
+      <div class="hard-headline">{{as_is_hard_headline}}</div>
+      <ul>{{as_is_bullets}}</ul>
+      <div class="closing">{{as_is_closing}}</div>
+    </div>
+    <div class="contrast-col proposed">
+      <div class="label">─ PROPOSED</div>
+      <div class="proposed-title">{{proposed_short_title}}</div>
+      <div class="hard-headline">{{proposed_hard_headline}}</div>
+      <ul>{{proposed_bullets}}</ul>
+      <div class="closing">{{proposed_closing}}</div>
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">[ ▲ ] PROPOSED &mdash; THE OPTIMIZED MODEL</div>
+    <div class="mermaid">
+{{proposed_mermaid}}
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">[ ≋ ] REVENUE REWIRING &mdash; AS-IS &rarr; PROPOSED</div>
+    <div class="mermaid">
+{{proposed_sankey}}
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-12px;margin-bottom:24px;text-align:center">Width of each stream is proportional to revenue share. AS-IS streams (left) flow through the current revenue total (center) and rewire into PROPOSED streams (right). The "Eliminated" outflow shows what Via Negativa removes.</p>
+
+  <div class="insight">
+    <div class="insight-row"><span class="insight-label">What got removed</span><span class="insight-value">{{insight_what_removed}}</span></div>
+    <div class="insight-row"><span class="insight-label">What got sharpened</span><span class="insight-value">{{insight_what_sharpened}}</span></div>
+    <div class="insight-row"><span class="insight-label">How it resists failure</span><span class="insight-value">{{insight_resist_failure}}</span></div>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Stripped elements &mdash; in plain language</h3>
+  <div class="body-md">{{stripped_elements_prose}}</div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 6 — IMPLEMENTATION PLAN          -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec6">
+  <div class="bg-num">06</div>
+  <div class="sec-num">06 / THE IMPLEMENTATION PLAN</div>
+  <h2 class="display">
+    <span class="line1">THREE MOVES.</span>
+    <span class="line2">IN ORDER.</span>
+  </h2>
+  <p class="body-lg">What to do on Monday.</p>
+
+  <div class="moves">
+    <div class="move m1">
+      <div class="timing">[ → ] MOVE 1 / THIS WEEK</div>
+      <div class="headline">{{move_1_headline}}</div>
+      <p>{{move_1_paragraph}}</p>
+    </div>
+    <div class="move m2">
+      <div class="timing">[ → ] MOVE 2 / THIS MONTH</div>
+      <div class="headline">{{move_2_headline}}</div>
+      <p>{{move_2_paragraph}}</p>
+    </div>
+    <div class="move m3">
+      <div class="timing">[ → ] MOVE 3 / THIS QUARTER</div>
+      <div class="headline">{{move_3_headline}}</div>
+      <p>{{move_3_paragraph}}</p>
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">[ ◷ ] IMPLEMENTATION TIMELINE</div>
+    <div class="mermaid">
+{{implementation_gantt}}
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-12px;margin-bottom:24px;text-align:center">Each bar is one sub-task inside one move. Bars in the same section share a starting dependency; tasks linked with "after" cannot start until the prior task finishes.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:48px 0 12px;color:var(--text-primary)">What to watch</h3>
+  <p class="body-md">{{what_to_watch}}</p>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 7 — AMPLIFIED MOVES              -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec7">
+  <div class="bg-num">07</div>
+  <div class="sec-num">07 / AMPLIFIED MOVES</div>
+  <h2 class="display">
+    <span class="line1">WHAT MAKES THE PLAN</span>
+    <span class="line2">COMPOUND.</span>
+  </h2>
+  <p class="body-lg">{{amp_intro_paragraph}}</p>
+
+  <div class="callout">
+    <div class="label">[ ! ] READ BEFORE ACTING</div>
+    <div class="headline">{{amp_goal_caveat_head}}</div>
+    <p>{{amp_goal_caveat_body}}</p>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">7.1 &mdash; {{amp_addition_1_title}}</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ + ] <span class="cell-idx">A1</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">{{amp_addition_1_move}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">{{amp_addition_1_projection}}</div>
+    </div>
+  </div>
+  <p class="body-md">{{amp_addition_1_rationale}}</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">7.2 &mdash; {{amp_addition_2_title}}</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ + ] <span class="cell-idx">A2</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">{{amp_addition_2_move}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">{{amp_addition_2_projection}}</div>
+    </div>
+  </div>
+  <p class="body-md">{{amp_addition_2_rationale}}</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">7.3 &mdash; {{amp_addition_3_title}}</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ + ] <span class="cell-idx">A3</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">{{amp_addition_3_move}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">{{amp_addition_3_projection}}</div>
+    </div>
+  </div>
+  <p class="body-md">{{amp_addition_3_rationale}}</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">Combined revenue projection</h3>
+  <p class="body-md">{{amp_projection_intro}}</p>
+
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ Y1 ] <span class="cell-idx">YEAR 1</span></div>
+      <div class="cell-head"><span data-countup="{{amp_year_1_low_int}}" data-countup-prefix="$" data-countup-suffix="K">{{amp_year_1_low_int}}</span> &ndash; <span data-countup="{{amp_year_1_high_int}}" data-countup-prefix="$" data-countup-suffix="K">{{amp_year_1_high_int}}</span></div>
+      <div class="cell-body">{{amp_year_1_body}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ Y2 ] <span class="cell-idx">YEAR 2</span></div>
+      <div class="cell-head"><span data-countup="{{amp_year_2_low_int}}" data-countup-prefix="$" data-countup-suffix="K">{{amp_year_2_low_int}}</span> &ndash; <span data-countup="{{amp_year_2_high_int}}" data-countup-prefix="$" data-countup-suffix="K">{{amp_year_2_high_int}}</span></div>
+      <div class="cell-body">{{amp_year_2_body}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ Y3 ] <span class="cell-idx">YEAR 3</span></div>
+      <div class="cell-head"><span data-countup="{{amp_year_3_low_int}}" data-countup-prefix="$" data-countup-suffix="K">{{amp_year_3_low_int}}</span> &ndash; <span data-countup="{{amp_year_3_high_int}}" data-countup-prefix="$" data-countup-suffix="K">{{amp_year_3_high_int}}</span></div>
+      <div class="cell-body">{{amp_year_3_body}}</div>
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">[ ⟋ ] REVENUE TRAJECTORY &mdash; THREE SCENARIOS</div>
+    <div class="mermaid">
+{{revenue_trajectory_chart}}
+    </div>
+  </div>
+
+  {{amp_death_zone_callout}}
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Sequence reminder</h3>
+  <p class="body-md">{{amp_sequence_note}}</p>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 8 — PRESSURE TEST                -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec8">
+  <div class="bg-num">08</div>
+  <div class="sec-num">08 / PRESSURE TEST</div>
+  <h2 class="display">
+    <span class="line1">THREE ATTACKS.</span>
+    <span class="line2">WHAT SURVIVES.</span>
+  </h2>
+  <p class="body-lg">{{pt_intro_paragraph}}</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:32px 0 16px;color:var(--text-primary)">8.1 &mdash; Dialectical test</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ ⊕ ] <span class="cell-idx">FOR</span></div>
+      <div class="cell-head">Steelman</div>
+      <div class="cell-body">{{pt_steelman}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ ⊖ ] <span class="cell-idx">AGAINST</span></div>
+      <div class="cell-head">Strawman</div>
+      <div class="cell-body">{{pt_strawman}}</div>
+    </div>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">8.2 &mdash; Pre-mortem</h3>
+  <p class="body-md">{{pt_premortem_intro}}</p>
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F1</span></div>
+      <div class="cell-head">{{pt_failure_1_head}}</div>
+      <div class="cell-body">{{pt_failure_1_body}}</div>
+      <div><span class="tag {{pt_failure_1_severity}}">{{pt_failure_1_severity_label}}</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F2</span></div>
+      <div class="cell-head">{{pt_failure_2_head}}</div>
+      <div class="cell-body">{{pt_failure_2_body}}</div>
+      <div><span class="tag {{pt_failure_2_severity}}">{{pt_failure_2_severity_label}}</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F3</span></div>
+      <div class="cell-head">{{pt_failure_3_head}}</div>
+      <div class="cell-body">{{pt_failure_3_body}}</div>
+      <div><span class="tag {{pt_failure_3_severity}}">{{pt_failure_3_severity_label}}</span></div>
+    </div>
+  </div>
+
+  <div class="diagram as-is">
+    <div class="diagram-label">[ ⊞ ] FAILURE MODES &mdash; LIKELIHOOD &times; IMPACT</div>
+    <div class="mermaid">
+{{premortem_quadrant}}
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-12px;margin-bottom:24px;text-align:center">Each dot is one failure mode from the Pre-Mortem. Top-right quadrant ("Fix immediately") is where likelihood and impact both score high — these are the failures the plan must design against.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">8.3 &mdash; Second-order consequences</h3>
+  <p class="body-md">{{pt_second_order_intro}}</p>
+  <p class="body-md">{{pt_second_order_chain}}</p>
+
+  <div class="callout">
+    <div class="label">[ ✓ ] WHAT SURVIVES</div>
+    <div class="headline">{{pt_survives_headline}}</div>
+    <p><strong style="color:var(--accent)">Held across all attacks.</strong> {{pt_survived}}</p>
+    <p style="margin-top:12px"><strong style="color:var(--warn)">Crumbled — fixable.</strong> {{pt_crumbled_fixable}}</p>
+    <p style="margin-top:12px"><strong style="color:var(--danger)">Crumbled — fatal as designed.</strong> {{pt_crumbled_fatal}}</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- APPENDIX                                  -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="appendix">
+  <div class="sec-num">APPENDIX / METHODOLOGY</div>
+  <details>
+    <summary>LENSES APPLIED IN THIS ANALYSIS</summary>
+    <div class="details-body">
+      <ul class="appendix-list">
+        {{lenses_applied_list}}
+      </ul>
+    </div>
+  </details>
+  <details>
+    <summary>RUN METADATA</summary>
+    <div class="details-body">
+      <p>Prepared for: {{applicant_name}} &lt;{{operator_email}}&gt;</p>
+      <p>Business: {{business_name}}</p>
+      <p>Generated: {{run_timestamp}}</p>
+      <p>BCD file: <code>{{bcd_filename}}</code></p>
+      <p>Plugin version: forge v1.0.0</p>
+    </div>
+  </details>
+</section>
+
+<div class="footer-mark">
+  <div>DISTILL</div>
+  <div class="descriptor">Your business isn't broken. Your assumptions are.</div>
+  <div>FORGE v1.0</div>
+</div>
+
+</div>
+
+<!-- Theme toggle -->
+<script>
+const THEME_KEY = 'forge-report-theme';
+function applyStoredTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  if (stored === 'light') document.documentElement.setAttribute('data-theme', 'light');
+}
+applyStoredTheme();
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  if (current === 'light') {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem(THEME_KEY, 'dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem(THEME_KEY, 'light');
+  }
+  setTimeout(() => { if (window.mermaid) reRenderMermaid(); }, 50);
+});
+</script>
+
+<!-- Mermaid -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+
+  function themeVars() {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    return {
+      primaryColor: isDark ? '#11161A' : '#F4F6F7',
+      primaryTextColor: isDark ? '#E8ECEE' : '#0A0E11',
+      primaryBorderColor: isDark ? '#22E0FF' : '#0FB8D6',
+      lineColor: isDark ? '#22E0FF' : '#0FB8D6',
+      secondaryColor: isDark ? 'rgba(34,224,255,0.12)' : 'rgba(15,184,214,0.10)',
+      tertiaryColor: isDark ? '#0A0E11' : '#FFFFFF',
+      background: isDark ? '#0A0E11' : '#FFFFFF',
+      fontFamily: '"Inter", system-ui, sans-serif',
+      fontSize: '14px'
+    };
+  }
+  function init() {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: themeVars(),
+      look: 'classic',
+      layout: 'elk'
+    });
+  }
+  // Snapshot original Mermaid source BEFORE init() processes any diagram.
+  // Module scripts run after HTML parse but before DOMContentLoaded, so
+  // .mermaid blocks still contain their authored syntax at this point.
+  document.querySelectorAll('.mermaid').forEach((el) => {
+    el.dataset.original = el.textContent.trim();
+  });
+
+  window.reRenderMermaid = () => {
+    document.querySelectorAll('.mermaid').forEach((el) => {
+      if (el.dataset.original) {
+        el.textContent = el.dataset.original;
+        el.removeAttribute('data-processed');
+      }
+    });
+    init();
+    mermaid.run();
+  };
+  init();
+</script>
+
+<!-- Offline graceful fallback: detect Mermaid load failure and surface a notice -->
+<script>
+setTimeout(() => {
+  if (!window.mermaid) {
+    document.querySelectorAll('.mermaid').forEach(el => {
+      const fallback = document.createElement('div');
+      fallback.style.cssText = 'padding:24px;color:var(--text-muted);font-family:var(--font-mono);font-size:13px;text-align:center';
+      fallback.textContent = '[ ⚠ ] Diagrams require internet connection to load Mermaid library. Reconnect and refresh to view.';
+      el.replaceWith(fallback);
+    });
+  }
+}, 3000);
+</script>
+
+<!-- Effectiveness layer: reading progress + section fade-in + number count-up -->
+<script>
+(function(){
+  // 1. Reading progress bar
+  const bar = document.getElementById('reading-progress');
+  if (bar) {
+    const updateBar = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+      bar.style.width = pct + '%';
+    };
+    window.addEventListener('scroll', updateBar, { passive: true });
+    window.addEventListener('resize', updateBar);
+    updateBar();
+  }
+
+  // 2. Section fade-in on scroll (JS-gated so sections render normally if JS fails)
+  document.documentElement.classList.add('fade-init');
+  if ('IntersectionObserver' in window) {
+    const sectionObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          sectionObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('.section').forEach(s => sectionObs.observe(s));
+  } else {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('in-view'));
+  }
+
+  // 3. Number count-up animation
+  // Usage: <span data-countup="220" data-countup-prefix="$" data-countup-suffix="K">220</span>
+  // The element's text content holds the final value as a fallback for no-JS.
+  if ('IntersectionObserver' in window) {
+    const numFormat = (n) => Math.round(n).toLocaleString('en-US');
+    const animateCountup = (el) => {
+      const target = parseFloat(el.dataset.countup);
+      if (isNaN(target)) return;
+      const prefix = el.dataset.countupPrefix || '';
+      const suffix = el.dataset.countupSuffix || '';
+      const duration = parseInt(el.dataset.countupDuration || '800', 10);
+      const start = performance.now();
+      const tick = (now) => {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const value = target * eased;
+        el.textContent = prefix + numFormat(value) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+        else el.textContent = prefix + numFormat(target) + suffix;
+      };
+      requestAnimationFrame(tick);
+    };
+    const countObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCountup(e.target);
+          countObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-countup]').forEach(el => countObs.observe(el));
+  }
+
+  // 4. Keyboard-focusable appendix lens cards (hover-expand parity for touch/keyboard)
+  document.querySelectorAll('.appendix-list li').forEach(li => {
+    if (!li.hasAttribute('tabindex')) li.setAttribute('tabindex', '0');
+  });
+})();
+</script>
+
+</body>
+</html>

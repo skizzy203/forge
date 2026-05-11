@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-hooks.json",
+  "description": "On every session start, checks ~/forge-intake/ for unprocessed BCD files and surfaces a notice so the facilitator can run /optimize on them. Claude Code hooks do not support filesystem-watch events, so this SessionStart check is the closest supported pattern. Implemented as a node -e one-liner so it runs identically on Windows, macOS, and Linux.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const fs=require('fs'),path=require('path'),os=require('os');const dir=path.join(os.homedir(),'forge-intake');try{if(!fs.existsSync(dir))process.exit(0);const files=fs.readdirSync(dir).filter(f=>f.endsWith('.bcd.md'));if(files.length===0)process.exit(0);const latest=files.map(f=>({f,t:fs.statSync(path.join(dir,f)).mtimeMs})).sort((a,b)=>b.t-a.t)[0].f;console.log('[Forge] '+files.length+' pending BCD(s) in ~/forge-intake/. Latest: '+latest+'. Run /optimize to process (the hook fires at SessionStart, not in real time, so newly-arrived BCDs are surfaced next time you open Claude Code).');}catch(e){}\""
+          }
+        ]
+      }
+    ]
+  }
+}

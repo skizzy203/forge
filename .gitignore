@@ -1,0 +1,19 @@
+# Mermaid UMD bundle — 3MB, regeneratable via the curl command in CHANGELOG v1.2 deferred section.
+# Kept locally for the v1.2 inline-bundling retry; not tracked to keep the repo slim.
+skills/optimize/templates/mermaid-bundle.js
+
+# OS / editor artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*~
+
+# Generated reports (operators run /forge:optimize and emit reports into their working directory;
+# those should not pollute the plugin repo if generated nearby).
+forge-report-*.html
+
+# BCD intake files (workshop-private; should never be in the plugin repo).
+*.bcd.md

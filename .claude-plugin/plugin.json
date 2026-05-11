@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "forge",
+  "version": "1.1.0",
+  "description": "Business model optimization. Email-gated HTML intake, adaptive mental-model analysis with live market research, and terminal-noir intelligence report.",
+  "author": {
+    "name": "Scott Wise"
+  },
+  "license": "MIT",
+  "keywords": [
+    "business-model",
+    "strategy",
+    "first-principles",
+    "optimization",
+    "market-intelligence",
+    "workshop"
+  ]
+}

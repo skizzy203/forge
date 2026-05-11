@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge Intelligence Report — Mechanical Magic LLC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800;900&family=Inter:wght@400;500;600&family=Source+Serif+4:ital,wght@1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0A0E11;
+  --bg-elevated: #11161A;
+  --accent: #22E0FF;
+  --accent-deep: #0FB8D6;
+  --accent-soft: rgba(34, 224, 255, 0.12);
+  --text-primary: #E8ECEE;
+  --text-muted: #8A949A;
+  --text-faint: #4A535A;
+  --rule: #1F2629;
+  --warn: #E8B33A;
+  --danger: #EF4444;
+  --success: #10B981;
+  --info: #A855F7;
+  --font-display: "Inter Tight", "Helvetica Now Display", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, Helvetica, sans-serif;
+  --font-italic: "Source Serif 4", Georgia, serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+[data-theme="light"] {
+  --bg-primary: #FFFFFF;
+  --bg-elevated: #F4F6F7;
+  --accent: #0FB8D6;
+  --accent-deep: #0A8EA8;
+  --accent-soft: rgba(15, 184, 214, 0.10);
+  --text-primary: #0A0E11;
+  --text-muted: #5A646A;
+  --text-faint: #B8C0C5;
+  --rule: #D8DEE2;
+  --warn: #B8841F;
+  --danger: #DC2626;
+  --success: #059669;
+  --info: #7E22CE;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);line-height:1.6;transition:background 0.2s,color 0.2s}
+.frame{max-width:1100px;margin:0 auto;padding:32px 48px 96px;position:relative}
+@media(max-width:768px){.frame{padding:24px 24px 64px}}
+.tick{position:fixed;width:12px;height:12px;color:var(--text-muted);font-family:var(--font-mono);font-size:12px;line-height:1;z-index:5}
+.tick.tl{top:16px;left:16px}.tick.tr{top:16px;right:16px}
+.tick.bl{bottom:16px;left:16px}.tick.br{bottom:16px;right:16px}
+.header-mark,.footer-mark{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase}
+.header-mark{position:sticky;top:0;z-index:40;background:var(--bg-primary);padding:12px 0;border-bottom:1px solid var(--rule);margin-bottom:64px}
+.footer-mark{padding-top:12px;border-top:1px solid var(--rule);margin-top:96px}
+.header-mark .sec{color:var(--accent);font-weight:500}
+.footer-mark .descriptor{font-family:var(--font-italic);font-style:italic;text-transform:none;color:var(--text-muted)}
+.theme-toggle{background:transparent;border:1px solid var(--rule);color:var(--text-muted);font-family:var(--font-mono);font-size:12px;padding:6px 12px;cursor:pointer;letter-spacing:0.1em;transition:all 0.15s}
+.theme-toggle:hover{color:var(--accent);border-color:var(--accent)}
+.section{margin-bottom:96px;position:relative}
+.sec-num{font-family:var(--font-mono);font-size:13px;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.prepared-for{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin:-16px 0 24px;padding-bottom:16px;border-bottom:1px solid var(--rule);max-width:65ch}
+.prepared-for .prep-label{color:var(--accent);font-weight:600;margin-right:10px}
+.prepared-for .prep-sep{color:var(--text-faint);margin:0 8px}
+.prepared-for .prep-name{color:var(--text-primary);font-weight:500}
+.display{font-family:var(--font-display);font-weight:800;letter-spacing:-0.02em;line-height:0.98;margin-bottom:32px}
+.display .line1{color:var(--text-primary);display:block;font-size:clamp(36px,5.5vw,56px)}
+.display .line2{color:var(--accent);display:block;font-size:clamp(36px,5.5vw,56px)}
+.body-lg{font-size:18px;line-height:1.55;margin-bottom:24px;color:var(--text-primary);max-width:65ch}
+.body-md{font-size:16px;line-height:1.6;color:var(--text-primary);max-width:65ch;margin-bottom:16px}
+.body-sm{font-size:14px;line-height:1.55;color:var(--text-muted)}
+.bg-num{position:absolute;right:-20px;top:60px;font-family:var(--font-display);font-weight:800;font-size:clamp(180px,32vw,360px);color:var(--text-faint);opacity:0.5;pointer-events:none;line-height:1;z-index:0}
+.section > *:not(.bg-num){position:relative;z-index:1}
+.pq{padding:24px 0;margin:32px 0;position:relative}
+.pq::before,.pq::after{content:"";display:block;height:1px;background:var(--rule)}
+.pq::before{margin-bottom:20px}.pq::after{margin-top:20px}
+.pq p{font-family:var(--font-italic);font-style:italic;color:var(--accent);font-size:26px;line-height:1.3;margin-bottom:8px;max-width:60ch}
+.pq cite{display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;color:var(--text-muted);text-transform:uppercase;font-style:normal;margin-top:12px}
+.callout{background:var(--accent-soft);border:1px solid var(--accent);padding:24px 28px;margin:24px 0}
+.callout .label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;font-weight:600}
+.callout .headline{font-family:var(--font-display);font-weight:700;font-size:22px;line-height:1.2;color:var(--text-primary);margin-bottom:8px}
+.callout p{font-size:15px;line-height:1.55;color:var(--text-primary)}
+.grid{display:grid;gap:16px;margin:24px 0}
+.grid.cols-2{grid-template-columns:1fr 1fr}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:768px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}}
+.cell{background:var(--bg-elevated);border:1px solid var(--rule);padding:20px 22px;position:relative}
+.cell .cell-glyph{font-family:var(--font-mono);font-size:13px;color:var(--accent);margin-bottom:10px;letter-spacing:0.08em}
+.cell .cell-idx{position:absolute;top:16px;right:18px;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.14em}
+.cell .cell-head{font-family:var(--font-display);font-weight:700;font-size:18px;line-height:1.25;color:var(--text-primary);margin-bottom:8px}
+.cell .cell-body{font-size:14px;line-height:1.55;color:var(--text-muted);margin-bottom:12px}
+.cell .cell-aside{font-family:var(--font-italic);font-style:italic;color:var(--accent);font-size:13px;line-height:1.4}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;padding:3px 10px;text-transform:uppercase;border:1px solid;font-weight:500;margin-right:6px}
+.tag.hi{color:var(--warn);border-color:var(--warn);background:rgba(232,179,58,0.08)}
+.tag.med{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.tag.low{color:var(--text-muted);border-color:var(--text-muted)}
+.tag.danger{color:var(--danger);border-color:var(--danger);background:rgba(239,68,68,0.08)}
+.tag.success{color:var(--success);border-color:var(--success);background:rgba(16,185,129,0.08)}
+.contrast{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:32px 0}
+@media(max-width:768px){.contrast{grid-template-columns:1fr}}
+.contrast-col{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px 28px}
+.contrast-col .label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+.contrast-col.as-is .label{color:var(--text-muted)}
+.contrast-col.proposed .label{color:var(--accent)}
+.contrast-col .as-is-title,.contrast-col .proposed-title{font-family:var(--font-italic);font-style:italic;font-size:16px;margin-bottom:14px;line-height:1.4}
+.contrast-col.as-is .as-is-title{color:var(--text-muted)}
+.contrast-col.proposed .proposed-title{color:var(--accent)}
+.contrast-col .hard-headline{font-family:var(--font-display);font-weight:800;font-size:24px;line-height:1.15;letter-spacing:-0.01em;margin-bottom:16px}
+.contrast-col.as-is .hard-headline{color:var(--text-primary)}
+.contrast-col.proposed .hard-headline{color:var(--accent)}
+.contrast-col ul{list-style:none;padding:0;margin-bottom:16px}
+.contrast-col ul li{font-size:14px;line-height:1.55;padding:6px 0;color:var(--text-primary)}
+.contrast-col ul li::before{content:"◆ ";color:var(--accent);margin-right:6px}
+.contrast-col .closing{font-family:var(--font-italic);font-style:italic;color:var(--text-muted);font-size:14px;line-height:1.4}
+.diagram{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px;margin:24px 0;overflow-x:auto}
+.diagram.as-is{border-color:rgba(239,68,68,0.3)}
+.diagram.proposed{border-color:rgba(16,185,129,0.3)}
+.diagram-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
+.diagram.as-is .diagram-label{color:var(--danger)}
+.diagram.proposed .diagram-label{color:var(--success)}
+.insight{background:var(--bg-elevated);border:1px solid var(--accent);padding:20px 24px;margin:16px 0 32px}
+.insight-row{display:flex;gap:16px;padding:8px 0;align-items:baseline}
+.insight-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);min-width:180px;font-weight:600;flex-shrink:0}
+.insight-value{font-size:14px;line-height:1.5;color:var(--text-primary)}
+@media(max-width:640px){.insight-row{flex-direction:column;gap:4px}.insight-label{min-width:auto}}
+details{background:var(--bg-elevated);border:1px solid var(--rule);margin:12px 0}
+details summary{padding:16px 20px;cursor:pointer;font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-weight:500;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"[ + ]";color:var(--accent);font-size:11px}
+details[open] summary::after{content:"[ − ]"}
+details summary:hover{color:var(--accent)}
+details .details-body{padding:0 20px 20px;color:var(--text-primary);font-size:15px;line-height:1.6}
+.moves{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:32px 0}
+@media(max-width:768px){.moves{grid-template-columns:1fr}}
+.move{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px 26px;border-top-width:3px}
+.move.m1{border-top-color:var(--accent)}
+.move.m2{border-top-color:var(--success)}
+.move.m3{border-top-color:var(--info)}
+.move .timing{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:10px;font-weight:600}
+.move.m1 .timing{color:var(--accent)}
+.move.m2 .timing{color:var(--success)}
+.move.m3 .timing{color:var(--info)}
+.move .headline{font-family:var(--font-display);font-weight:800;font-size:22px;line-height:1.15;margin-bottom:12px;color:var(--text-primary)}
+.move p{font-size:15px;line-height:1.55;color:var(--text-primary)}
+.hr{height:1px;background:var(--rule);margin:48px 0;border:0}
+.sources{margin-top:16px;font-family:var(--font-mono);font-size:12px;line-height:1.8;color:var(--text-muted)}
+.sources a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.15s}
+.sources a:hover{border-color:var(--accent)}
+/* Appendix — hover-expand lens cards */
+.appendix-list{margin-top:16px;list-style:none;padding:0}
+.appendix-list li{padding:12px 18px;border-bottom:1px solid var(--rule);cursor:default;transition:background 0.15s;outline:none}
+.appendix-list li:last-child{border-bottom:none}
+.appendix-list li:hover,.appendix-list li:focus-within{background:var(--accent-soft)}
+.appendix-list .lens-name{font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;color:var(--accent);font-weight:600;text-transform:uppercase;display:block}
+.appendix-list .lens-def{color:var(--text-muted);margin-left:0;display:block;font-size:13px;line-height:1.5;max-height:0;overflow:hidden;opacity:0;transition:max-height 0.35s ease,opacity 0.25s ease,margin-top 0.25s ease;margin-top:0}
+.appendix-list li:hover .lens-def,.appendix-list li:focus-within .lens-def{max-height:140px;opacity:1;margin-top:6px}
+
+/* Reading progress bar */
+.reading-progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);z-index:50;transition:width 0.08s linear;pointer-events:none}
+
+/* Scroll-triggered section fade-in (JS adds .fade-init on load) */
+.fade-init .section{opacity:0;transform:translateY(12px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-init .section.in-view{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.fade-init .section{opacity:1;transform:none;transition:none}}
+
+/* Tabular numerals on countup spans */
+[data-countup]{font-variant-numeric:tabular-nums}
+
+/* Anchor-styled move teasers in Section 1 */
+a.move{text-decoration:none;color:inherit;display:block;cursor:pointer}
+a.move:hover{border-color:var(--accent)}
+a.move:hover .headline{color:var(--accent)}
+
+/* Mobile responsive */
+@media (max-width: 640px){
+  /* Let wide diagrams (gantt, sankey) keep their natural width and scroll inside .diagram.
+     Container already has overflow-x:auto; we just disable the shrink-to-fit override. */
+  .diagram{padding:16px 12px;-webkit-overflow-scrolling:touch}
+  .diagram .mermaid{min-width:560px}
+  .diagram .mermaid svg{max-width:none;width:auto;height:auto}
+  /* Flowcharts and quadrants that fit naturally still center; wide ones become pannable. */
+  .frame{padding:20px 16px 48px}
+  .moves{gap:14px}
+  .grid{gap:12px}
+}
+
+/* Print stylesheet */
+@media print{
+  .reading-progress,.theme-toggle,.tick,.bg-num{display:none !important}
+  .header-mark{position:static !important;padding-top:0 !important;background:transparent !important}
+  html,body{background:#fff !important;color:#111 !important}
+  :root{--bg-primary:#fff;--bg-elevated:#f7f7f7;--text-primary:#111;--text-muted:#555;--text-faint:#999;--accent:#0a8ea8;--accent-deep:#077590;--accent-soft:rgba(10,142,168,0.10);--rule:#d6d6d6;--danger:#b22020;--success:#0a7a4a;--warn:#9a6a10;--info:#5a1aa0}
+  .section{page-break-inside:avoid;opacity:1 !important;transform:none !important;margin-bottom:48px;break-inside:avoid}
+  .diagram,.moves,.callout,.contrast,.grid{page-break-inside:avoid;break-inside:avoid}
+  details{break-inside:avoid}
+  details:not([open]) summary::after{content:""}
+  details summary{cursor:default}
+  .appendix-list .lens-def{max-height:none !important;opacity:1 !important;margin-top:6px !important}
+  .display{page-break-after:avoid}
+  .frame{max-width:100%;padding:0 12mm}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+<div class="tick tl">+</div><div class="tick tr">+</div><div class="tick bl">+</div><div class="tick br">+</div>
+
+<div class="frame">
+
+<div class="header-mark">
+  <div class="left">─ <span class="sec">FORGE INTELLIGENCE REPORT</span></div>
+  <div class="middle">Mechanical Magic LLC</div>
+  <div class="right">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">[ ◑ ] MODE</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 1 — EXECUTIVE SUMMARY            -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec1">
+  <div class="bg-num">01</div>
+  <div class="sec-num">01 / EXECUTIVE SUMMARY</div>
+  <h1 class="display">
+    <span class="line1">THE FRAMEWORK ISN'T THE WORK.</span>
+    <span class="line2">THE DISTILLATION IS.</span>
+  </h1>
+  <p class="prepared-for"><span class="prep-label">─ PREPARED FOR</span><span class="prep-name">DJ Moran</span><span class="prep-sep">/</span>Mechanical Magic LLC</p>
+  <p class="body-lg">You are the most-reviewed pressure washer in Cherokee County, with twenty years on the wand, four straight Angi Super Service awards, and a hundred five-star reviews. You are also under $100K a year. The gap is not a marketing problem and not a lead problem. The gap is that one DJ can only sell one DJ-day per day, and your calendar is full of $300 driveways instead of $1,500 restoration days.</p>
+
+  <div class="pq">
+    <p>You don't need a partner who is a clone of you. You need a calendar that respects what you are worth.</p>
+    <cite>— FORGE DIAGNOSIS / Mechanical Magic LLC</cite>
+  </div>
+
+  <div class="moves">
+    <a class="move m1" href="#sec6" aria-label="Jump to Move 1 detail">
+      <div class="timing">[ → ] THIS WEEK</div>
+      <div class="headline">Pull the side businesses. Productize the day.</div>
+    </a>
+    <a class="move m2" href="#sec6" aria-label="Jump to Move 2 detail">
+      <div class="timing">[ → ] THIS MONTH</div>
+      <div class="headline">Sign one subcontractor for the small jobs.</div>
+    </a>
+    <a class="move m3" href="#sec6" aria-label="Jump to Move 3 detail">
+      <div class="timing">[ → ] THIS QUARTER</div>
+      <div class="headline">Hire a closer, not a clone.</div>
+    </a>
+  </div>
+  <p class="body-sm">Full move detail in <a href="#sec6" style="color:var(--accent);text-decoration:none">Section 6</a>.</p>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 2 — MARKET INTELLIGENCE BRIEF    -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec2">
+  <div class="bg-num">02</div>
+  <div class="sec-num">02 / MARKET INTELLIGENCE BRIEF</div>
+  <h2 class="display">
+    <span class="line1">WHERE THE MARKET IS.</span>
+    <span class="line2">WHAT IT'S TELLING YOU.</span>
+  </h2>
+
+  <div class="callout">
+    <div class="label">[ ≈ ] TOTAL ADDRESSABLE MARKET</div>
+    <div class="headline">U.S. pressure washing services: $1.2B and compounding 5.7% a year.</div>
+    <p>Residential is 56% of demand. Driveway and siding alone account for 63% of residential bookings. Solo operators with a single helper routinely produce $250K to $300K. You are operating in a growth market while running at a third of the proven solo ceiling.</p>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Three macro signals</h3>
+
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">01</span></div>
+      <div class="cell-head">Suburban curb-appeal spend is up</div>
+      <div class="cell-body">Homeowners in suburban corridors are pouring discretionary income into property value and exterior maintenance. Older affluent owners — your stated dream customer — are the segment most willing to pay premium for damage prevention rather than basic cleaning.</div>
+      <div><span class="tag hi">HIGH</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">02</span></div>
+      <div class="cell-head">Cherokee County is moderately competitive, not saturated</div>
+      <div class="cell-body">Skilled Pugs, ClearView, Swan's, Carter's, Alpha, Hydro Pro, Pillar — at least seven named operators chase the same ZIPs. None match your review depth or your award streak. You are competing on price against shops with weaker proof.</div>
+      <div><span class="tag med">WATCH</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">03</span></div>
+      <div class="cell-head">There is a death zone above $500K</div>
+      <div class="cell-body">Industry data shows a profitability collapse between $500K and $1.2M, when payroll, comp insurance, and overhead arrive before scale catches up. Hiring "an employee" without a structural plan is the failure mode most solo operators hit. The exit is to stay solo at premium prices or to add labor against a written process, not personality.</div>
+      <div><span class="tag hi">HIGH</span></div>
+    </div>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Competitive density</h3>
+  <p class="body-md">A web sweep of Canton and Cherokee County surfaces seven named pressure washing operators serving the same 25-mile radius you cover. Average time in business is shorter than yours. None visibly advertise plant-protection chemistry, drone documentation, or a master-restoration tier. Your moat exists. It is just unpriced.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Opportunity windows</h3>
+  <p class="body-md">Spring and early summer are peak demand windows where homeowners accept higher rates to skip multi-week wait lists. The window to install a premium tier on your calendar before summer 2026 is now. Your existing review base and Angi awards do the trust work for you the day the new pricing goes live.</p>
+
+  <details>
+    <summary>[ // ] SOURCES CITED</summary>
+    <div class="details-body">
+      <div class="sources">
+        <p>• <a href="https://www.housecallpro.com/resources/pressure-washing-industry-statistics/" target="_blank">HouseCall Pro — Pressure Washing Industry Statistics (27,000+ U.S. operators, $27/hr avg wage)</a></p>
+        <p>• <a href="https://www.fortunebusinessinsights.com/pressure-washer-market-104607" target="_blank">Fortune Business Insights — Pressure Washer Market 2026–2034</a></p>
+        <p>• <a href="https://www.mordorintelligence.com/industry-reports/pressure-washer-market" target="_blank">Mordor Intelligence — Pressure Washer Market 2026–2031 (5.12% CAGR)</a></p>
+        <p>• <a href="https://spraywell.com/blog/how-to-scale-a-pressure-washing-business-from-solo-operator-to-a-5person-crew/" target="_blank">Spraywell — Scaling Solo to 5-Person Crew (death zone $500K–$1.2M)</a></p>
+        <p>• <a href="https://www.kingofpressurewash.com/blog/pressure-washing-2026-start-grow-and-scale-your-business" target="_blank">King of Pressure Wash — 2026 Scaling Playbook ($250K–$300K solo ceiling)</a></p>
+        <p>• <a href="https://homeguide.com/costs/pressure-washing-prices" target="_blank">HomeGuide — 2026 Pressure Washing Prices ($130–$160/hr avg, $50–$200 range)</a></p>
+        <p>• <a href="https://www.angi.com/companylist/us/ga/canton/pressure-washing.htm" target="_blank">Angi — Top 10 Pressure Washers in Canton, GA (competitive landscape)</a></p>
+        <p>• <a href="https://skilledpugs.com/canton-georgia/" target="_blank">Skilled Pugs Canton — local competitor, HOA-compliance positioning</a></p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 3 — AS-IS                        -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec3">
+  <div class="bg-num">03</div>
+  <div class="sec-num">03 / WHERE THE BUSINESS IS TODAY</div>
+  <h2 class="display">
+    <span class="line1">WHAT'S BINDING.</span>
+    <span class="line2">WHAT'S LEAKING.</span>
+  </h2>
+  <p class="body-lg">Mechanical Magic is a solo operation built on twenty years of pressure washing craft, a master mechanic's eye for technique, and a hundred five-star reviews from Cherokee County homeowners who know the difference between a real wash and a quick rinse. The site Jonah built is pulling leads. The phone is ringing. The bottleneck is not demand. The bottleneck is that there is exactly one pair of hands that can deliver MM-grade work, and that pair of hands is currently spending half its time on $250 driveways and quoting small engine repairs and drone shoots that compete with the wash calendar.</p>
+
+  <div class="pq">
+    <p>Your throughput is one DJ-day per day. Until you change what gets booked into a DJ-day, more leads cannot help you.</p>
+    <cite>— SINGLE-SENTENCE DIAGNOSIS</cite>
+  </div>
+
+  <div class="diagram as-is">
+    <div class="diagram-label">[ ▼ ] AS-IS — CURRENT BUSINESS MODEL</div>
+    <div class="mermaid">
+flowchart TD
+  A["OFFER: 6 wash services + small engine + drone"] ==> B(["AVATAR: any homeowner with a check"])
+  B --> C[/"CHANNEL: Angi Leads + Jonah's site + word of mouth"/]
+  C --> D(("CONV: free estimate, today-vs-later discount"))
+  D ==> E[["DELIVERY: DJ does every job himself"]]
+  E --> F[("REVENUE: under $100K, mixed ticket sizes")]
+  G{"FRICTION: only one DJ, calendar capped"} -.->|"hard ceiling"| E
+  H{"FRICTION: 3 unrelated services compete for the same hours"} -.->|"dilution"| E
+  I{"FRICTION: priced at the floor of the Cherokee market"} -.->|"value leak"| F
+  J{{"SYSTEM: no documented process, quality lives in DJ's head"}} --> E
+  classDef friction fill:#ef4444,stroke:#dc2626,color:#fff
+  class G,H,I friction
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-row"><span class="insight-label">Revenue leak</span><span class="insight-value">$300 driveway-only jobs consuming the same calendar slot as a $1,500 whole-property day.</span></div>
+    <div class="insight-row"><span class="insight-label">Leverage point</span><span class="insight-value">The booking calendar — the single decision that determines what one DJ-day produces.</span></div>
+    <div class="insight-row"><span class="insight-label">Removed constraint</span><span class="insight-value">The belief that quality means DJ's hands on every wand. Quality is the SOP plus the brand on the truck.</span></div>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Component breakdown</h3>
+
+  <details><summary>OFFER &mdash; what's actually being sold</summary><div class="details-body">Three businesses crammed into one truck. Pressure washing in seven flavors (house, roof, gutter, window, patio, driveway, deck), small engine repair, and drone photography. Only the wash work is visible on the website Jonah built — the other two live only in DJ's head and in conversation. The customer cannot tell what they are hiring. Neither can DJ's calendar.</div></details>
+    <details><summary>CUSTOMER &mdash; who pays and why</summary><div class="details-body">Stated dream customer is the older affluent homeowner who wants a craftsman, not a discounter. Stated proven customer is the same person — the older generation who appreciates attention to detail. The current operation accepts everyone, which means the dream customer pays the same per-day rate as the someone-with-a-driveway customer.</div></details>
+    <details><summary>CHANNEL &mdash; how customers find the offer</summary><div class="details-body">Three channels: Angi Leads (paid), Jonah's website (organic, performing), word of mouth (compounding). The website is the asset doing the most work right now and it is doing it well. The risk is that the channel mix funnels the same lead types into the same calendar.</div></details>
+    <details><summary>DELIVERY &mdash; how value reaches the customer</summary><div class="details-body">DJ shows up. DJ does the work. DJ leaves. There is no second pair of hands and no documented sequence anyone else could execute. Quality is a relationship between DJ's twenty years of experience and the surface in front of him.</div></details>
+    <details><summary>REVENUE &mdash; how the money flows</summary><div class="details-body">Under $100K annually. Cash, check, card, Venmo on completion. No deposits. No financing. The "you don't pay until satisfied" guarantee protects the brand and is rarely invoked because the work is good. The pricing range published — $150 to $500 per job — sits at the bottom of the regional market for the same scope.</div></details>
+    <details><summary>FRICTION &mdash; where the leak is</summary><div class="details-body">Three frictions stacked. First, hard capacity ceiling at one DJ-day per day. Second, three competing service lines split DJ's calendar across unrelated work. Third, prices set against the lowest-trust competitors instead of against the proof DJ has actually accumulated. Each friction multiplies the others.</div></details>
+
+  <div class="callout">
+    <div class="label">[ × ] THE MOST EXPENSIVE ASSUMPTION</div>
+    <div class="headline">"I cannot find a loyal partner who treats this like a career, so I cannot grow."</div>
+    <p>That assumption assumes growth requires a clone of DJ — same skills, same passion, same attention. It does not. Growth requires either (a) a documented process anyone competent can run with supervision, or (b) a subcontractor relationship for the work DJ should not be doing. Both routes are open. Neither requires finding a second DJ.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 4 — OPTIMIZATION ANALYSIS        -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec4">
+  <div class="bg-num">04</div>
+  <div class="sec-num">04 / OPTIMIZATION ANALYSIS</div>
+  <h2 class="display">
+    <span class="line1">THE LENSES APPLIED.</span>
+    <span class="line2">WHAT EACH SURFACED.</span>
+  </h2>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:32px 0 16px;color:var(--text-primary)">4.1 &mdash; Diagnose findings</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ ◆ ] <span class="cell-idx">ROOT</span></div>
+      <div class="cell-head">Root cause</div>
+      <div class="cell-body">There is no documented MM Wash Day process. The quality standard exists only inside DJ's twenty years of experience. So every hire fails the same way: the new person is being measured against an invisible bar they cannot see.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ ◆ ] <span class="cell-idx">BIND</span></div>
+      <div class="cell-head">Binding constraint</div>
+      <div class="cell-body">Throughput is capped at one DJ-day per day. Marketing more, raising more leads, or reading more business books does not relieve this. The only relievers are: replace DJ-hours with cheaper labor against a written process, or raise the dollar value of one DJ-day.</div>
+    </div>
+  </div>
+  <details><summary>ELIMINATION CANDIDATES &mdash; top items to strip</summary><div class="details-body">Small engine repair — competes with mechanic shops on their turf, dilutes positioning, eats calendar slots. Drone photography as a standalone service — competes against hobbyist freelancers at $50/hr, dilutes positioning. Driveway-only and small-ticket jobs on DJ's calendar — same time cost as a full-property day, fraction of the revenue. The "today-vs-later discount" close — appropriate for low-tier work, harmful at premium pricing.</div></details>
+  <details><summary>STRIPPED ASSUMPTIONS &mdash; conventions we removed</summary><div class="details-body">First convention removed: "more services equals more revenue." Each unrelated service competes for the same finite hours, so adding services without adding capacity is mathematically a price cut on the highest-value service. Second convention removed: "I am the brand, so I must do the work." The brand is the SOP and the truck. The hands can change if the process does not. Third convention removed: "premium clients want a discount when you ask for the job today." Premium clients want exclusivity and certainty. Discount tactics signal commodity work.</div></details>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">4.2 &mdash; Operator Edge</h3>
+  <p class="body-md">DJ has three rare adjacent expertises that no Cherokee County competitor visibly combines: master-mechanic-trained equipment intuition (his father's garage, twenty years self-taught), chemistry depth across both soft wash and high-pressure technique with a documented plant-protection process, and aerial photography skill from the drone side business. None of his seven named local competitors lead with even one of these. He leads with all three accidentally and prices like none of them exist.</p>
+  <div class="callout">
+    <div class="label">[ → ] THE FLAGGED INTERSECTION</div>
+    <div class="headline">The Master Restoration Day for older Cherokee County homes.</div>
+    <p>One whole-property restoration per day. House, driveway, patio, gutters, plant protection. Drone before-and-after included. Booked by appointment, one slot per day, $1,200 to $1,800 fixed. Targets the customer DJ already attracts and converts, at the price the work is actually worth, in a format that turns one DJ-day into the highest-margin product in the Cherokee County market. Only an operator with all three of DJ's adjacent expertises can credibly offer it.</p>
+  </div>
+  <details><summary>OTHER POSITIONS CONSIDERED</summary><div class="details-body">Heritage Home Specialist — older homes, period-appropriate technique. Defensible but smaller TAM. Held in reserve as a future positioning sharpen, not the lead play. Equipment Maintenance for other contractors — leverages the mechanic background but pulls DJ off the wash calendar he is trying to monetize. Apprenticeship Track — turns "teach boys to become men" into a brand asset and a recruiting funnel for the second crew. Kept as a Move 3 compounding play, not a Week 1 launch.</div></details>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">4.3 &mdash; Design candidates</h3>
+  <div class="body-md">Three design moves came out of the chain. The Master Restoration Day productizes one DJ-day at a price that matches the proof. A subcontractor channel handles small-ticket overflow on referral fee, removing low-margin work from the personal calendar without losing the revenue or the customer relationship. Pricing repositions from "below the floor" to "above the median" using the existing Angi awards and review base as justification. Together, the three moves take the same operator and lift annual revenue ceiling from under $100K to a defensible $200K to $250K solo.</div>
+  <details><summary>REDESIGNED OFFER &mdash; from the Value Equation pass</summary><div class="details-body">Dream outcome — "My home looks the way it did the day I bought it. My neighbors stop me on the walk." Likelihood — already maximized by 100+ five-star reviews, four Angi awards, plant-safe guarantee, and the pay-when-satisfied policy. Time delay — same-day delivery, before-and-after drone footage by sundown. Effort — zero customer effort, including patio furniture moved and porch swept on completion. Packaged as the Master Restoration Day, fixed price, calendar scarcity, one home per day. The Value Equation maxes on all four variables simultaneously.</div></details>
+  <details><summary>HIGHEST-LEVERAGE INTERVENTION</summary><div class="details-body">The booking calendar. It is the single point in the business where every hour of DJ-time is allocated. Changing what is allowed onto the calendar — full-property restoration days only, with overflow referred out — changes everything downstream without requiring more hands, more marketing, or more hours.</div></details>
+  <details><summary>PRICING RECALIBRATION</summary><div class="details-body">Current published range $150 to $500 sits at the floor of the Cherokee County market. Regional premium operator math: $130 to $160 per hour average, $200 per hour at the top, eight-hour day equals $1,000 to $1,600. The Master Restoration Day at $1,200 to $1,800 fixed captures the upper end without inventing new economic logic. Small-ticket work continues to exist in the market — it just runs through the subcontractor channel at standard rates with a 15% referral fee back to MM.</div></details>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">4.4 &mdash; Stress-test results</h3>
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F1</span></div>
+      <div class="cell-head">Subcontractor poaches the brand</div>
+      <div class="cell-body">The referral partner takes the customer relationship and starts quoting them direct under their own name. Mitigation: written referral agreement, MM-branded invoice on the overflow work, customer pays MM and MM pays subcontractor net of fee.</div>
+      <div><span class="tag hi">HIGH</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F2</span></div>
+      <div class="cell-head">Pricing change loses muscle memory</div>
+      <div class="cell-body">DJ feels guilty, slips back into discount-on-the-spot habits, the calendar refills with $300 jobs by month two. Mitigation: take the discount tools out of the script, publish the fixed package on the website, route every inquiry through the productized intake form Jonah builds.</div>
+      <div><span class="tag hi">HIGH</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ × ] <span class="cell-idx">F3</span></div>
+      <div class="cell-head">Side businesses creep back in slow months</div>
+      <div class="cell-body">A January with thin bookings tempts DJ to take a small engine job to fill the day. The dilution starts again. Mitigation: thin months are the apprenticeship months. Use them to document the SOP and train the second crew, not to take side work.</div>
+      <div><span class="tag med">MEDIUM</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 5 — THE PROPOSED MODEL           -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec5">
+  <div class="bg-num">05</div>
+  <div class="sec-num">05 / THE PROPOSED MODEL</div>
+  <h2 class="display">
+    <span class="line1">REBUILT FROM</span>
+    <span class="line2">WHAT SURVIVES.</span>
+  </h2>
+
+  <div class="contrast">
+    <div class="contrast-col as-is">
+      <div class="label">─ AS-IS</div>
+      <div class="as-is-title">Three businesses, one truck, one DJ.</div>
+      <div class="hard-headline">Sub-$100K solo with a maxed calendar.</div>
+      <ul>
+        <li>Seven wash services plus engine repair plus drone</li>
+        <li>Anyone with a check, $150 to $500 per job</li>
+        <li>DJ does every job, no second pair of hands</li>
+        <li>Quality lives in twenty years of intuition</li>
+        <li>Hiring filter: clone of DJ, looking for "career"</li>
+      </ul>
+      <div class="closing">A craftsman business priced like a commodity service.</div>
+    </div>
+    <div class="contrast-col proposed">
+      <div class="label">─ PROPOSED</div>
+      <div class="proposed-title">One product, one calendar, one referral channel.</div>
+      <div class="hard-headline">$200K–$250K solo, defensible, with room to scale.</div>
+      <ul>
+        <li>One offer: Master Restoration Day, $1,200–$1,800 fixed</li>
+        <li>One avatar: older Cherokee County homeowner, whole property</li>
+        <li>Subcontractor handles overflow, MM keeps 15% referral</li>
+        <li>SOP documented so the wand can change hands without quality loss</li>
+        <li>Hire a closer who runs sales and ops, not a clone of DJ</li>
+      </ul>
+      <div class="closing">A craftsman business priced for the proof you have already accumulated.</div>
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">[ ▲ ] PROPOSED &mdash; THE OPTIMIZED MODEL</div>
+    <div class="mermaid">
+flowchart TD
+  A["OFFER: Master Restoration Day [~]"] ==> B(["AVATAR: older Cherokee County homeowner [~]"])
+  B --> C[/"CHANNEL: Jonah's site + referral flywheel [~]"/]
+  C --> D(("CONV: calendar scarcity + drone before/after [+]"))
+  D ==> E[["DELIVERY: DJ runs one premium home per day [~]"]]
+  E --> F[("REVENUE: $1,200-1,800 per slot, one slot per day [~]")]
+  K[/"CHANNEL: subcontractor takes small jobs [+]"/] --> L[("REVENUE: 15% referral fee on overflow [+]")]
+  M{{"SYSTEM: documented MM Wash Day SOP [+]"}} --> E
+  N["OFFER: Apprenticeship Track [+]"] -.->|"long-term moat"| M
+  classDef added fill:#10b981,stroke:#059669,color:#fff
+  classDef changed fill:#f59e0b,stroke:#d97706,color:#fff
+  class K,L,M,N added
+  class A,B,C,D,E,F changed
+    </div>
+  </div>
+
+  <div class="diagram proposed" style="margin-bottom:8px">
+    <div class="diagram-label">[ ≋ ] REVENUE REWIRING &mdash; AS-IS &rarr; PROPOSED</div>
+    <div class="mermaid">
+sankey-beta
+Driveway-only jobs,AS-IS Revenue,28
+Mixed house wash,AS-IS Revenue,38
+Roof and gutter,AS-IS Revenue,14
+Small engine repair,AS-IS Revenue,12
+Drone photography,AS-IS Revenue,8
+AS-IS Revenue,Master Restoration Day,55
+AS-IS Revenue,Subscription book,18
+AS-IS Revenue,Subcontractor referral fees,12
+AS-IS Revenue,Eliminated lines,15
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-8px;margin-bottom:24px;text-align:center">Width of each stream is proportional to revenue share. AS-IS streams (left) flow through the current revenue total (center) and rewire into PROPOSED streams (right). The "Eliminated" outflow shows what Via Negativa removes.</p>
+
+  <div class="insight">
+    <div class="insight-row"><span class="insight-label">What got removed</span><span class="insight-value">Small engine repair, standalone drone photography, $150–$500 jobs on DJ's personal calendar, the today-vs-later discount close at premium tier.</span></div>
+    <div class="insight-row"><span class="insight-label">What got sharpened</span><span class="insight-value">One product, one customer, one calendar, one price. The website Jonah built becomes a single funnel toward one bookable thing.</span></div>
+    <div class="insight-row"><span class="insight-label">How it resists failure</span><span class="insight-value">The bottleneck moves from DJ-hours to calendar discipline. Calendar discipline is a system, not a person, so it survives bad weeks and bad hires.</span></div>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Stripped elements &mdash; in plain language</h3>
+  <div class="body-md">Small engine repair comes off the truck and the conversation. The wash brand cannot be a mechanic brand at the same time. Drone photography stops being sold as a standalone service and becomes the included before-and-after asset on the Master Restoration Day. The published "$150 to $500" range disappears from the website. Driveway-only inquiries get routed to the subcontractor. The "if you start today $$ versus $$$" close gets retired at the premium tier; calendar scarcity replaces it. The hiring search for a loyal apprentice gets paused; the search for a closer-and-operator who runs jobs and sales while DJ delivers gets opened.</div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 6 — IMPLEMENTATION PLAN          -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec6">
+  <div class="bg-num">06</div>
+  <div class="sec-num">06 / THE IMPLEMENTATION PLAN</div>
+  <h2 class="display">
+    <span class="line1">THREE MOVES.</span>
+    <span class="line2">IN ORDER.</span>
+  </h2>
+  <p class="body-lg">What to do on Monday.</p>
+
+  <div class="moves">
+    <div class="move m1">
+      <div class="timing">[ → ] MOVE 1 / THIS WEEK</div>
+      <div class="headline">Pull the side businesses. Productize the day.</div>
+      <p>Ask Jonah to remove every reference to small engine repair and standalone drone photography from the website, the Angi profile, and any printed materials. In their place, publish a single new landing page: the Master Restoration Day. Whole property, one home per day, fixed price between $1,200 and $1,800 depending on square footage and surface count, plant protection guaranteed, drone before-and-after included. The page replaces the "$150 to $500" range with one number and one calendar. This single change converts you from "another pressure washer" to "the one premium tier in the county."</p>
+    </div>
+    <div class="move m2">
+      <div class="timing">[ → ] MOVE 2 / THIS MONTH</div>
+      <div class="headline">Sign one subcontractor for the small jobs.</div>
+      <p>Find one bonded and insured pressure washer in Cherokee County who does basic driveway and small-ticket work competently. Sign a written referral agreement: MM keeps the customer relationship and the brand, MM invoices, MM pays the subcontractor net of a 15% fee. Inquiries that don't fit the Master Restoration Day get routed to them through your site form. This relieves the calendar without firing the customer, gives you a revenue line that doesn't consume your hours, and tests whether your process can survive on someone else's hands before you ever hire W-2.</p>
+    </div>
+    <div class="move m3">
+      <div class="timing">[ → ] MOVE 3 / THIS QUARTER</div>
+      <div class="headline">Hire a closer, not a clone.</div>
+      <p>Document the MM Wash Day in writing — chemistry sequence, plant protection steps, customer touchpoints, drone shot list, post-job walkthrough. Then hire one person, but not the kid you have been looking for. Hire a project manager who can quote, schedule, and run a second crew while you deliver. Pay them on a percentage of revenue booked so loyalty follows results. The apprenticeship dream — teaching boys to become men — is real and it stays. It just becomes the recruiting funnel underneath the closer, not the first hire itself.</p>
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">[ ◷ ] IMPLEMENTATION TIMELINE</div>
+    <div class="mermaid">
+gantt
+  title Mechanical Magic — 90-Day Rebuild
+  dateFormat YYYY-MM-DD
+  axisFormat %b %d
+  tickInterval 2week
+  section Move 1
+  Pull side businesses from site  :m1a, 2026-05-11, 3d
+  Launch Restoration Day page     :m1b, after m1a, 4d
+  section Move 2
+  Source subcontractor candidates :m2a, after m1b, 10d
+  Sign agreement, first referrals :m2b, after m2a, 14d
+  section Move 3
+  Document MM Wash Day SOP        :m3a, 2026-06-15, 30d
+  Hire closer on commission       :m3b, after m3a, 30d
+  Plan apprentice partner program :m3c, after m3b, 30d
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-8px;margin-bottom:24px;text-align:center">Each bar is one sub-task inside one move. Bars in the same section share a starting dependency; tasks linked with "after" cannot start until the prior task finishes.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:48px 0 12px;color:var(--text-primary)">What to watch</h3>
+  <p class="body-md">One number tells you the moves are working: average revenue per day DJ is on a job. Today it is somewhere around $300 to $500 because the calendar is mixed. Within sixty days of Move 1 it should sit at $1,200 or higher because only Restoration Days land on DJ's calendar. If it does not, the calendar discipline broke and the side businesses or small jobs crept back in. That is the only metric to track during the transition. Everything else is downstream of it.</p>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 7 — AMPLIFIED MOVES              -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec7">
+  <div class="bg-num">07</div>
+  <div class="sec-num">07 / AMPLIFIED MOVES</div>
+  <h2 class="display">
+    <span class="line1">WHAT MAKES THE PLAN</span>
+    <span class="line2">COMPOUND.</span>
+  </h2>
+  <p class="body-lg">The base plan in Section 6 puts a ceiling around $200K to $250K solo. Three additions take that ceiling higher without requiring a different operator. Each one bolts onto the base plan rather than replacing it. Each is sequenced by execution load, not by ambition. Run them in order. Do not run them in parallel.</p>
+
+  <div class="callout">
+    <div class="label">[ ! ] READ BEFORE ACTING</div>
+    <div class="headline">Define the goal before chasing the revenue.</div>
+    <p>Pressure-testing surfaced one structural risk none of these additions fixes on their own. The plan succeeds at "money-making machine" and may fail at "be present for Elijah." Before launching anything in this section, write down the number of hours per week with your son the plan needs to produce. Every projection below is sized against the revenue ceiling, not against that number. If the two conflict, the hours win.</p>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">7.1 &mdash; Restoration Day Subscription</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ + ] <span class="cell-idx">A1</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">At the close of every Master Restoration Day, offer one checkbox: MM Membership at $1,800 annual. Priority booking next year, locked-in price, mid-year gutter and quick-rinse touch-up included. Frame as benefits and priority access, not pre-pay.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">Conservative at 25% conversion: 40 members times $1,800 equals $72K recurring by end of Year 1. Optimistic at 40% conversion: 65 members times $1,800 equals $117K recurring. Year 2 compounds because re-booking removes acquisition cost on every renewed member.</div>
+    </div>
+  </div>
+  <p class="body-md">Why this goes first: zero new operational load. One landing page change Jonah can ship in a weekend, one line in the post-job email, one renewal workflow inside the booking system. The risk is conversion drag, not execution failure. Test the pitch with the first ten Restoration Day customers and read the signal before scaling.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">7.2 &mdash; Mechanical Magic Apprenticeship</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ + ] <span class="cell-idx">A2</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">Productize the "teach boys to be men" mission into a structured 90-day cohort. Two slots per year. Partner with a Cherokee County trade school or church youth program for screening and legal cover. Graduates feed the second crew or run franchise-style territory in an adjacent county under royalty.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">Year 1: zero direct revenue. The investment is SOP build and recruiting partnership. Year 2: first graduate running a second MM crew adds roughly $150K of new capacity. Year 3: two graduates operating territory under 20% royalty contributes $60K to $80K of royalty stream and lifts the one-DJ-day ceiling permanently.</div>
+    </div>
+  </div>
+  <p class="body-md">Why this is the moat play: turns DJ's stated mission into a recruiting funnel competitors cannot copy without 20 years of credibility. The pressure-test flagged that open public applications attract romantics rather than workers. Partnering with an institution that already screens for work ethic is the fix. Do not launch until the closer hire from Section 6 has stabilized.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">7.3 &mdash; Insurance Carrier Partnership</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ + ] <span class="cell-idx">A3</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">Partner with one regional home insurance carrier or independent agent network so maintained homes receive a 3 to 5 percent premium discount. MM becomes the certified provider for Cherokee County. The "$20K problem" hook from the existing website copy becomes the structural argument the carrier already wants to make to their book of business.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ § ] <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">Year 1: zero. Outreach and courting take 6 to 12 months. Year 2: 25 to 35 net new customers from carrier referrals times $1,500 average equals $37K to $52K incremental. Year 3: 50 to 70 customers plus repeat through the Subscription equals $90K to $130K. Cap at 20 percent of new lead flow to avoid concentration risk.</div>
+    </div>
+  </div>
+  <p class="body-md">Why this is the asymmetric bet: could fail completely, could become the highest-leverage distribution channel any Cherokee County pressure washer has ever had. Gated on the closer being in place. DJ should not chase this himself. Treat it as opportunistic. If an insurance agent surfaces inside the existing customer base, take the meeting. Do not run a campaign.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">Combined revenue projection</h3>
+  <p class="body-md">Conservative figures assume 25 percent Subscription conversion, one apprentice graduate by Year 2, and a single agent-level carrier pilot landing in Year 2. Optimistic figures assume 40 percent Subscription conversion, two apprentice graduates running territory by Year 3, and a regional carrier deal landing in Year 2. Base plan execution is assumed in both scenarios.</p>
+
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ Y1 ] <span class="cell-idx">YEAR 1</span></div>
+      <div class="cell-head"><span data-countup="220" data-countup-prefix="$" data-countup-suffix="K">$220K</span> &ndash; <span data-countup="290" data-countup-prefix="$" data-countup-suffix="K">$290K</span></div>
+      <div class="cell-body">Base plan in motion. Master Restoration Day at premium pricing. Subscription begins converting on the back of the first 50 jobs. Apprenticeship and Insurance are pre-revenue. Most of the lift is repricing existing work.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ Y2 ] <span class="cell-idx">YEAR 2</span></div>
+      <div class="cell-head"><span data-countup="360" data-countup-prefix="$" data-countup-suffix="K">$360K</span> &ndash; <span data-countup="480" data-countup-prefix="$" data-countup-suffix="K">$480K</span></div>
+      <div class="cell-body">Subscription book compounds with renewals plus new conversions. First apprentice graduate adds second-crew capacity. Carrier pilot lands or does not — both scenarios shown. Closer is fully integrated and running quoting and scheduling.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ Y3 ] <span class="cell-idx">YEAR 3</span></div>
+      <div class="cell-head"><span data-countup="520" data-countup-prefix="$" data-countup-suffix="K">$520K</span> &ndash; <span data-countup="720" data-countup-prefix="$" data-countup-suffix="K">$720K</span></div>
+      <div class="cell-body">All three additions live. Royalty stream from apprentice-led territory begins. Insurance referrals at steady state. This is also the death-zone window the Forge report flagged in Section 2 — payroll discipline matters more here than top-line growth.</div>
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">[ &#10239; ] REVENUE TRAJECTORY &mdash; THREE SCENARIOS</div>
+    <div class="mermaid">
+%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#8A949A, #10B981, #0FB8D6", "backgroundColor": "transparent"}}}}%%
+xychart-beta
+  title "Revenue trajectory — three scenarios"
+  x-axis [Today, "Year 1", "Year 2", "Year 3"]
+  y-axis "Revenue (USD thousands)" 0 --> 800
+  line "No changes" [85, 92, 98, 102]
+  line "Base plan only" [85, 150, 210, 240]
+  line "Base + amplifications" [85, 255, 420, 620]
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-12px;margin-bottom:24px;text-align:center">Gray = no changes &middot; Green = base plan only &middot; Cyan = base plan with amplifications. Lines start at today's $85K baseline and diverge from Year 1 onward.</p>
+
+  <div class="callout">
+    <div class="label">[ ⚠ ] DEATH ZONE WARNING</div>
+    <div class="headline">Year 3 puts MM into the $500K to $1.2M margin compression band.</div>
+    <p>Industry data shows margins compress sharply in this revenue band because labor, comp insurance, and management overhead arrive before scale catches up. If MM crosses $500K, either commit to crossing $1.2M within 18 months with a written staffing plan, or stop adding labor and let revenue plateau at $400K to $450K with maximum margin. The middle is the trap.</p>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">Sequence reminder</h3>
+  <p class="body-md">Subscription ships with Move 1. Apprentice cohort begins planning during Move 3 and launches the quarter after the closer is hired and producing. Insurance partnership is opportunistic — pursue only if a relationship surfaces through the existing customer base after the closer is in place. Three additions, never running concurrently with the base plan move that immediately precedes them.</p>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECTION 8 — PRESSURE TEST                -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="sec8">
+  <div class="bg-num">08</div>
+  <div class="sec-num">08 / PRESSURE TEST</div>
+  <h2 class="display">
+    <span class="line1">THREE ATTACKS.</span>
+    <span class="line2">WHAT SURVIVES.</span>
+  </h2>
+  <p class="body-lg">Before any move ships, the base plan plus the amplifications gets attacked from three angles. The strongest defense, the weakest load-bearing point, the failure modes 18 months out, and the consequences if it works exactly as designed. Only what holds across all three angles is worth acting on.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:32px 0 16px;color:var(--text-primary)">8.1 &mdash; Dialectical test</h3>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-glyph">[ &oplus; ] <span class="cell-idx">FOR</span></div>
+      <div class="cell-head">Steelman</div>
+      <div class="cell-body">The plan changes the math without requiring DJ to become a different person on the parts that matter most. Move 1 only changes what goes on the calendar. Move 2 outsources what DJ should not be doing anyway. Move 3 is gated last so the productized day has six months of proof first. One hundred-plus five-star reviews, four consecutive Angi awards, twenty years of practice in a market growing 5.7 percent annually. DJ is operating at a third of the demonstrated ceiling. The gap is real and the unit economics work.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ &ominus; ] <span class="cell-idx">AGAINST</span></div>
+      <div class="cell-head">Strawman</div>
+      <div class="cell-body">The plan is operationally correct and behaviorally incompatible with the operator. Every load-bearing element assumes DJ will change a behavior he has not changed once in twenty years on his own. The thinnest point: there is no external accountability on the calendar. A rule DJ enforces on himself is one sympathetic phone call from breaking. The whole plan inherits that single point of failure.</div>
+    </div>
+  </div>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">8.2 &mdash; Pre-mortem</h3>
+  <p class="body-md">Eighteen months out, the plan failed. Five failure modes surfaced, ranked here by likelihood times impact. The top three carry the most weight; the last two are watchlist items.</p>
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ &times; ] <span class="cell-idx">F1</span></div>
+      <div class="cell-head">Calendar discipline collapsed within 90 days</div>
+      <div class="cell-body">DJ took a $275 driveway in Week 3 from a sweet older lady. He told himself it was just one. By Week 8 the calendar was mixed again. Wrong assumption: that founder-enforced rules survive founder sympathy.</div>
+      <div><span class="tag hi">HIGH</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ &times; ] <span class="cell-idx">F2</span></div>
+      <div class="cell-head">Subcontractor damaged the brand</div>
+      <div class="cell-body">Sub did competent-but-not-MM-quality work on an MM-branded invoice. First 4-star review showed up. Then two more. The 100-plus 5-star base started accumulating drift. Wrong assumption: a 15 percent fee aligns the sub's brand discipline with DJ's.</div>
+      <div><span class="tag hi">HIGH</span></div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ &times; ] <span class="cell-idx">F3</span></div>
+      <div class="cell-head">Subscription failed to convert</div>
+      <div class="cell-body">Older affluent customers said "let's see how it goes." They have cash, they have control, no urgency about a once-a-year service. DJ stopped asking by Month 2 because each soft no felt like begging. Recurring revenue never materialized.</div>
+      <div><span class="tag med">MEDIUM</span></div>
+    </div>
+  </div>
+
+  <div class="diagram as-is">
+    <div class="diagram-label">[ &#8862; ] FAILURE MODES &mdash; LIKELIHOOD &times; IMPACT</div>
+    <div class="mermaid">
+quadrantChart
+  title Pre-Mortem Failure Modes
+  x-axis Low Likelihood --> High Likelihood
+  y-axis Low Impact --> High Impact
+  quadrant-1 Fix immediately
+  quadrant-2 Mitigate at design time
+  quadrant-3 Accept
+  quadrant-4 Monitor closely
+  Calendar discipline breaks: [0.72, 0.85]
+  Subcontractor brand drift: [0.38, 0.78]
+  Subscription does not convert: [0.48, 0.55]
+  Apprenticeship attracts romantics: [0.40, 0.45]
+  Founder motivation collapse: [0.22, 0.80]
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-8px;margin-bottom:24px;text-align:center">Each dot is one failure mode from the Pre-Mortem. Top-right quadrant ("Fix immediately") is where likelihood and impact both score high — these are the failures the plan must design against.</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">8.3 &mdash; Second-order consequences</h3>
+  <p class="body-md">Assume the plan worked perfectly. DJ hits $250K solo by month 12. Restoration Day booked four weeks out. Subscription converting at 40 percent. The closer running 2-3 premium days per week.</p>
+  <p class="body-md">First-order: revenue per DJ-day climbs from $300-500 to $1,500-1,800. Second-order: subscribed customers fill 60-80 percent of the calendar a year in advance, the new-customer funnel that built the business shrinks, the closer's pipeline thins. Third-order, and this is the load-bearing one: the plan scales the business by adding people DJ must manage, management has its own time cost, and the number of hours DJ spends with his son Elijah does not grow. It shrinks. The thing the business was supposed to enable becomes the thing that prevents it.</p>
+
+  <div class="callout">
+    <div class="label">[ &check; ] WHAT SURVIVES</div>
+    <div class="headline">The plan holds, with one structural fix.</div>
+    <p><strong style="color:var(--accent)">Held across all attacks.</strong> The structural diagnosis (operating at a third of the proven solo ceiling, math not behavior). The Master Restoration Day product. The subcontractor channel concept. The Subscription, in modified form as a benefits-and-priority membership rather than pre-pay.</p>
+    <p style="margin-top:12px"><strong style="color:var(--warn)">Crumbled &mdash; fixable.</strong> Calendar discipline as a founder-enforced rule. Fix: Jonah owns inbound qualification from Day 1; the closer hire moves earlier in the sequence and exists primarily to enforce calendar rules DJ cannot enforce on himself. Apprenticeship as a Move 3 launch. Fix: partner with a Cherokee County trade school or church program for screening and legal cover. Insurance Partnership as strategic priority. Fix: treat opportunistically, cap at 20 percent of lead flow.</p>
+    <p style="margin-top:12px"><strong style="color:var(--danger)">Crumbled &mdash; fatal as designed.</strong> The operator's goal framing. The BCD said "money-making machine while teaching boys to become men" but DJ's actual motivation is Elijah. Before any move ships, DJ has to answer one question in writing with a number attached: "How many hours per week with Elijah does this plan need to produce to be worth doing?" Every subsequent move is sized against that number. Without it, success is indistinguishable from failure.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- APPENDIX                                  -->
+<!-- ════════════════════════════════════════ -->
+<section class="section" id="appendix">
+  <div class="sec-num">APPENDIX / METHODOLOGY</div>
+  <details>
+    <summary>LENSES APPLIED IN THIS ANALYSIS</summary>
+    <div class="details-body">
+      <ul class="appendix-list">
+        <li><span class="lens-name">JOBS TO BE DONE</span><span class="lens-def">— What job is the customer hiring this service to do?</span></li>
+        <li><span class="lens-name">5 WHYS</span><span class="lens-def">— Drilled "I cannot find an employee" to root cause: no documented process.</span></li>
+        <li><span class="lens-name">PARETO 80/20</span><span class="lens-def">— Identified that whole-property days produce most of the revenue and most of the joy.</span></li>
+        <li><span class="lens-name">THEORY OF CONSTRAINTS</span><span class="lens-def">— Located the binding constraint: one DJ-day per day, regardless of demand.</span></li>
+        <li><span class="lens-name">FIRST PRINCIPLES</span><span class="lens-def">— Stripped the conventions: more services ≠ more revenue, hiring ≠ cloning, premium ≠ discounting.</span></li>
+        <li><span class="lens-name">IKIGAI</span><span class="lens-def">— Mapped operator fit; surfaced "teach boys to become men" as a brand asset, not a hiring requirement.</span></li>
+        <li><span class="lens-name">OPERATOR EDGE</span><span class="lens-def">— Mechanic background + soft/hard wash chemistry + drone skill = unique premium-tier positioning.</span></li>
+        <li><span class="lens-name">VALUE EQUATION</span><span class="lens-def">— Maximized dream outcome, likelihood, time delay, and effort in the redesigned offer.</span></li>
+        <li><span class="lens-name">LEVERAGE POINTS</span><span class="lens-def">— Identified the booking calendar as the single highest-leverage intervention point.</span></li>
+        <li><span class="lens-name">PRICING STRATEGY</span><span class="lens-def">— Repositioned from market floor to defensible upper-tier using existing proof.</span></li>
+        <li><span class="lens-name">COMPARATIVE ADVANTAGE</span><span class="lens-def">— Flagged small engine repair and standalone drone work as outsource/eliminate candidates.</span></li>
+        <li><span class="lens-name">PRE-MORTEM</span><span class="lens-def">— Three failure modes ranked, mitigations specified.</span></li>
+        <li><span class="lens-name">INVERSION (2ND PASS)</span><span class="lens-def">— Verified the plan does not resemble the failure conditions.</span></li>
+        <li><span class="lens-name">VIA NEGATIVA</span><span class="lens-def">— Recursive subtraction: removed two side businesses, the discount close, and the small-ticket calendar slots.</span></li>
+        <li><span class="lens-name">MUSK'S 5-STEP</span><span class="lens-def">— Final validation: question, delete, simplify, accelerate, automate. SOP and Jobber-style scheduling automation flagged.</span></li>
+      </ul>
+    </div>
+  </details>
+  <details>
+    <summary>BCD GAPS &amp; WEB SUPPLEMENT NOTES</summary>
+    <div class="details-body">
+      <p><strong>BCD fields not provided in intake, supplemented from website scrape:</strong></p>
+      <ul class="appendix-list">
+        <li><span class="lens-name">OPERATOR NAME</span><span class="lens-def">— Not in BCD; sourced as "DJ Moran" from prior session memory and confirmed by website ("DJ" on About page).</span></li>
+        <li><span class="lens-name">OPERATOR EMAIL</span><span class="lens-def">— Not provided in BCD or surfaced on site (Cloudflare-protected). Flag for next intake iteration.</span></li>
+        <li><span class="lens-name">GEOGRAPHIC SERVICE AREA</span><span class="lens-def">— Not in BCD; pulled from site: 25-mile radius from Canton, GA (Cherokee County + North Atlanta).</span></li>
+        <li><span class="lens-name">YEARS OF EXPERIENCE</span><span class="lens-def">— BCD says 3–7 years in business; site clarifies 20+ years pressure washing experience starting as a child in his father's mechanic garage.</span></li>
+        <li><span class="lens-name">REVIEW/AWARD PROOF</span><span class="lens-def">— Not in BCD; site confirms 100+ five-star reviews and 4 consecutive Angi Super Service Awards.</span></li>
+        <li><span class="lens-name">PUBLISHED PRICING</span><span class="lens-def">— Not in BCD; site lists $150–$500 range, $300–$400 house, $200–$300 driveway.</span></li>
+        <li><span class="lens-name">TECHNICAL DIFFERENTIATOR</span><span class="lens-def">— Not in BCD; site reveals "3-Step Plant Protection Process" and "Zero plant casualties to date" — material to the Operator Edge analysis.</span></li>
+        <li><span class="lens-name">PERSONAL CONTEXT</span><span class="lens-def">— BCD mentions wanting "a hot girlfriend"; site reveals son Elijah as primary motivation. The site context is the load-bearing one for positioning purposes.</span></li>
+        <li><span class="lens-name">SERVICE SCOPE MISMATCH</span><span class="lens-def">— BCD lists small engine repair and drone photography as services; website (built by Jonah) does not. The site has already been narrowed for him — the report's Move 1 formalizes that narrowing across all channels.</span></li>
+      </ul>
+    </div>
+  </details>
+  <details>
+    <summary>RUN METADATA</summary>
+    <div class="details-body">
+      <p>Prepared for: DJ Moran &lt;email not provided in intake&gt;</p>
+      <p>Business: Mechanical Magic LLC</p>
+      <p>Generated: 2026-05-11</p>
+      <p>BCD file: <code># BUSINESS MODEL INTAKE-Mechanical Magic.md</code></p>
+      <p>Web supplement source: <code>https://mechanicalmagicpressurewashing.com/</code></p>
+      <p>Plugin version: forge v1.0.0</p>
+    </div>
+  </details>
+</section>
+
+<div class="footer-mark">
+  <div>DISTILL</div>
+  <div class="descriptor">Your business isn't broken. Your assumptions are.</div>
+  <div>FORGE v1.0</div>
+</div>
+
+</div>
+
+<script>
+const THEME_KEY = 'forge-report-theme';
+function applyStoredTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  if (stored === 'light') document.documentElement.setAttribute('data-theme', 'light');
+}
+applyStoredTheme();
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  if (current === 'light') {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem(THEME_KEY, 'dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem(THEME_KEY, 'light');
+  }
+  setTimeout(() => { if (window.mermaid) reRenderMermaid(); }, 50);
+});
+</script>
+
+<!-- Mermaid -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+
+  function themeVars() {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    return {
+      primaryColor: isDark ? '#11161A' : '#F4F6F7',
+      primaryTextColor: isDark ? '#E8ECEE' : '#0A0E11',
+      primaryBorderColor: isDark ? '#22E0FF' : '#0FB8D6',
+      lineColor: isDark ? '#22E0FF' : '#0FB8D6',
+      secondaryColor: isDark ? 'rgba(34,224,255,0.12)' : 'rgba(15,184,214,0.10)',
+      tertiaryColor: isDark ? '#0A0E11' : '#FFFFFF',
+      background: isDark ? '#0A0E11' : '#FFFFFF',
+      fontFamily: '"Inter", system-ui, sans-serif',
+      fontSize: '14px'
+    };
+  }
+  function init() {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: themeVars(),
+      look: 'classic',
+      layout: 'elk'
+    });
+  }
+  // Snapshot original Mermaid source BEFORE init() processes any diagram.
+  // Module scripts run after HTML parse but before DOMContentLoaded, so
+  // .mermaid blocks still contain their authored syntax at this point.
+  document.querySelectorAll('.mermaid').forEach((el) => {
+    el.dataset.original = el.textContent.trim();
+  });
+
+  window.reRenderMermaid = () => {
+    document.querySelectorAll('.mermaid').forEach((el) => {
+      if (el.dataset.original) {
+        el.textContent = el.dataset.original;
+        el.removeAttribute('data-processed');
+      }
+    });
+    init();
+    mermaid.run();
+  };
+  init();
+</script>
+
+<!-- Offline graceful fallback: detect Mermaid load failure and surface a notice -->
+<script>
+setTimeout(() => {
+  if (!window.mermaid) {
+    document.querySelectorAll('.mermaid').forEach(el => {
+      const fb = document.createElement('div');
+      fb.style.cssText = 'padding:24px;color:var(--text-muted);font-family:var(--font-mono);font-size:13px;text-align:center';
+      fb.textContent = '[ ⚠ ] Diagrams require internet to load Mermaid library. Reconnect and refresh.';
+      el.replaceWith(fb);
+    });
+  }
+}, 3000);
+</script>
+
+<!-- Effectiveness layer: reading progress + section fade-in + number count-up -->
+<script>
+(function(){
+  const bar = document.getElementById('reading-progress');
+  if (bar) {
+    const updateBar = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+      bar.style.width = pct + '%';
+    };
+    window.addEventListener('scroll', updateBar, { passive: true });
+    window.addEventListener('resize', updateBar);
+    updateBar();
+  }
+
+  document.documentElement.classList.add('fade-init');
+  if ('IntersectionObserver' in window) {
+    const sectionObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          sectionObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('.section').forEach(s => sectionObs.observe(s));
+  } else {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('in-view'));
+  }
+
+  if ('IntersectionObserver' in window) {
+    const numFormat = (n) => Math.round(n).toLocaleString('en-US');
+    const animateCountup = (el) => {
+      const target = parseFloat(el.dataset.countup);
+      if (isNaN(target)) return;
+      const prefix = el.dataset.countupPrefix || '';
+      const suffix = el.dataset.countupSuffix || '';
+      const duration = parseInt(el.dataset.countupDuration || '800', 10);
+      const start = performance.now();
+      const tick = (now) => {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = target * eased;
+        el.textContent = prefix + numFormat(value) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+        else el.textContent = prefix + numFormat(target) + suffix;
+      };
+      requestAnimationFrame(tick);
+    };
+    const countObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCountup(e.target);
+          countObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-countup]').forEach(el => countObs.observe(el));
+  }
+
+  document.querySelectorAll('.appendix-list li').forEach(li => {
+    if (!li.hasAttribute('tabindex')) li.setAttribute('tabindex', '0');
+  });
+})();
+</script>
+
+</body>
+</html>
