@@ -2,6 +2,23 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.2.0] — 2026-05-11
+
+### Changed
+- **Workflow consolidated to a single command.** `/forge:optimize` is now the only surfaced slash command. It routes by intent across three modes:
+  - **Mode A** — BCD detected (pasted, attached, or in `~/forge-intake/`) → run the four-phase pipeline
+  - **Mode B** — no BCD present → point operator to the hosted intake form at `https://skizzy203.github.io/forge/`
+  - **Mode C** — facilitator asks for customization ("custom form", "my workshop email is X", "offline copy") → invoke the internal intake helper to emit a tailored HTML file
+- **`/forge:intake` removed from the operator-facing surface.** The intake skill survives in `skills/intake/` as an internal helper invoked only by `/forge:optimize` Mode C. Its description and `when_to_use` clearly mark it as internal; the README no longer mentions it as a command. End-users interact with one command for everything.
+- **Hosted intake form is the default path.** Operators are pointed to `https://skizzy203.github.io/forge/` (root index redirects to the questionnaire) rather than asked to generate their own copy. Customization remains available through Mode C.
+- **Hook notice text updated.** The auto-detect-bcd hook no longer mentions `/optimize` by name. It now says "Ask Forge to process the latest one when you are ready," matching the auto-invocation model.
+
+### Added
+- **`index.html` at the repo root** — meta-refresh redirect to `skills/intake/templates/questionnaire.html`. Lets the hosted URL be `https://skizzy203.github.io/forge/` (clean, brandable) rather than the long template path.
+
+### Rationale
+The slash command pair `/intake` + `/optimize` exposed two failure modes: (1) "intake" felt clinical (waiting-room language) compared to the actual output (an optimized business model); (2) typing `/optimize` with no BCD in scope produced a dead-end. Consolidating to one verb that matches the deliverable — and routing by intent rather than command name — eliminates both. Customization, offline resilience, and facilitator power-tooling are preserved as routing modes inside the single command.
+
 ## [1.1.0] — 2026-05-11
 
 ### Added

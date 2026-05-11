@@ -1,17 +1,33 @@
 ---
 name: intake
-description: Generates an email-gated multipage HTML questionnaire artifact that collects business context from a workshop applicant. The form outputs a Business Context Document (BCD) as a Markdown file when submitted. Use when starting a Forge engagement, distributing intake to a new applicant, or whenever a fresh BCD is needed.
+description: |
+  INTERNAL HELPER — invoked by `/forge:optimize` (Mode C) when a facilitator needs a customized
+  intake form. Not the default entry point. The standard operator workflow uses the hosted form
+  at https://skizzy203.github.io/forge/ and the single `/forge:optimize` command. This skill
+  exists for three facilitator-specific cases only: (1) per-workshop customization (different
+  FACILITATOR_EMAIL, workshop name, branding line); (2) offline distribution (operator has no
+  internet or the hosted URL is unreachable); (3) self-hosted variants (facilitator wants to
+  host the form on their own domain).
 when_to_use: >
-  Use when the user says: "create the intake form", "new applicant", "send the questionnaire",
-  "generate the BCD form", "start a new workshop intake", "I need the form", or any request
-  to onboard a business owner into the Forge process.
+  Auto-invoked by /forge:optimize when the operator's intent matches facilitator customization.
+  Trigger phrases include: "custom intake form", "customize the questionnaire", "my workshop
+  email is X", "white-label the form", "branded version for [client]", "offline copy of the
+  form", "the hosted URL is down", "I need to email the form myself", "host the form on my
+  own domain". Do not invoke this skill for routine BCD processing (that is /forge:optimize
+  Mode A). Do not invoke when an operator simply wants to fill out the form (point them to
+  the hosted URL via /forge:optimize Mode B).
 disable-model-invocation: false
 allowed-tools: Read Write
 ---
 
-# Intake — Forge Questionnaire Generator
+# Intake — Internal Customization Helper
 
-This skill emits a self-contained HTML questionnaire artifact. Distribute it to a workshop applicant (host it, email it, hand it over on USB). The applicant fills it out, the form generates a Business Context Document (BCD) as Markdown, the applicant downloads it and saves it to `~/forge-intake/` (or wherever the optimize skill is configured to watch).
+> **This is an internal sub-skill.** The default Forge workflow uses the hosted form at
+> https://skizzy203.github.io/forge/ and `/forge:optimize` as the single operator-facing
+> command. This skill is invoked automatically by `/forge:optimize` Mode C when facilitator
+> customization intent is detected. End-users should not need to interact with it directly.
+
+This skill emits a customized self-contained HTML questionnaire artifact for facilitators who need a per-workshop variant of the form (different routing email, workshop branding, offline distribution). Distribute the resulting file by hosting on the facilitator's own domain, emailing to applicants, or handing over on USB. The applicant fills it out, the form generates a Business Context Document (BCD) as Markdown, the applicant downloads it and saves it to `~/forge-intake/` (or pastes it into a Claude Code conversation, which auto-triggers `/forge:optimize` Mode A).
 
 ## What you do
 

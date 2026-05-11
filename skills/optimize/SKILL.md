@@ -1,19 +1,75 @@
 ---
 name: optimize
-description: Runs the full Forge optimization pipeline against a Business Context Document. Scrapes the operator's business website (homepage, About, pricing) to supplement gaps in the BCD, conducts live market research (TAM, signals, competitive density), applies an adaptive mental-model chain with subtractive bias, synthesizes AS-IS and PROPOSED Mermaid business-model diagrams, and produces a terminal-noir HTML intelligence report. Use when a BCD is available and a redesigned business model is needed.
+description: The single entry point for Forge. Routes by intent. (A) When a Business Context Document (BCD) is detected — pasted in chat, attached as a file, or sitting in ~/forge-intake/ — runs the full four-phase optimization pipeline (web supplement → market research → adaptive 38-model mental-model chain → 8-section terminal-noir HTML intelligence report). (B) When no BCD is present and the operator wants to start, points them to the hosted intake form at https://skizzy203.github.io/forge/. (C) When a facilitator needs a customized version of the form (per-workshop email, branding, offline use), invokes the internal intake skill to emit a customized HTML file.
 when_to_use: >
-  Use when the user says: "optimize this business", "run forge on this BCD", "analyze this
-  business", "produce the intelligence report", "run the optimization", "give me the redesign",
-  or when a BCD file is provided as input. Also fires automatically via the auto-detect-bcd
-  hook when a new .bcd.md file appears in the watched folder.
-argument-hint: "[bcd-path]"
+  Use whenever the operator interacts with Forge. The skill routes by intent.
+  Mode A (BCD pipeline): triggered by a BCD attached/pasted, by the auto-detect hook surfacing
+  a file in ~/forge-intake/, or by phrases like "optimize this business", "run forge on this",
+  "analyze this BCD", "give me the redesign", "produce the intelligence report".
+  Mode B (URL pointer): triggered when an operator asks how Forge works, how to get a report,
+  or wants to start but no BCD is present in the conversation or watched folder.
+  Mode C (facilitator customization): triggered by phrases like "custom intake form", "my
+  workshop email is X", "white-label the form", "offline copy of the questionnaire", "branded
+  version for [client]", "host the form on my domain".
+  This is the only slash command surfaced for Forge.
+argument-hint: "[bcd-path or natural-language intent]"
 disable-model-invocation: false
 allowed-tools: Read Write WebSearch WebFetch
 ---
 
-# Optimize — Forge Business Model Optimization Pipeline
+# Forge — Business Model Optimization
 
-Four phases, autonomous from start to deliverable. The operator's only interaction was filling the intake form. This skill does the rest.
+The single entry point for the Forge plugin. Routes by intent.
+
+## Routing modes
+
+Before doing anything else, classify the operator's situation from the conversation context, attachments, and arguments.
+
+### Mode A — BCD present, run the pipeline
+
+**Triggers**
+- A BCD file path is passed as `$ARGUMENTS`
+- A markdown document matching the BCD schema is pasted into the conversation or attached as a file
+- The auto-detect hook has surfaced a pending BCD in `~/forge-intake/` and the operator is ready to process
+- The operator explicitly says "run this", "optimize", "process the latest BCD", or similar
+
+**Action**: proceed with the four-phase pipeline described below (Phases 1A → 4). This is the bulk of the skill's work. The rest of this document specifies that pipeline.
+
+### Mode B — No BCD present, operator wants to start
+
+**Triggers**
+- No BCD attached, no BCD in `~/forge-intake/`, no BCD-shaped content in the conversation
+- The operator asks how Forge works, what they need to provide, how to get a report, etc.
+
+**Action**: respond with the hosted intake form pointer. Adapt the wording to the specific operator; do not paste the example verbatim, but cover the same content:
+
+> Forge needs a Business Context Document (BCD) to run. Fill this out first: **https://skizzy203.github.io/forge/**
+>
+> Takes about ten minutes. When you submit, the form gives you three paths:
+> 1. **Email** the BCD to your workshop facilitator (mailto, with the file auto-downloaded)
+> 2. **Download** the BCD locally — drop it into `~/forge-intake/` (next Claude Code session will pick it up) or paste it back here
+> 3. **Copy** to clipboard — paste it directly into this conversation and I'll process it immediately
+>
+> Once I see the BCD, the analysis runs automatically. No commands needed.
+
+Wait for the BCD. Do not invent business context.
+
+### Mode C — Facilitator customization
+
+**Triggers**
+- Operator says: "custom form", "customize the intake", "my workshop email is X", "white-label the form", "branded version for [client]", "I need an offline copy of the questionnaire", "host the form on my own domain", "the hosted URL is down"
+
+**Action**: invoke the internal intake skill at `skills/intake/SKILL.md`. That skill reads the questionnaire template, substitutes the `FACILITATOR_EMAIL` constant and any other requested branding, and writes the customized HTML file to the working directory.
+
+After the intake skill returns, tell the operator the file path and how to distribute it (host on their own server, email directly to applicants, hand over on USB, etc.).
+
+The intake skill is **internal**. It is not documented as an operator-facing slash command. Mode C is the only path through which it runs.
+
+---
+
+## Inputs (Mode A)
+
+Four phases, autonomous from start to deliverable. After Mode A is selected, the operator's only remaining interaction was filling the intake form. This skill does the rest.
 
 ## Inputs
 
