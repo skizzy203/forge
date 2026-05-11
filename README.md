@@ -1,3 +1,4 @@
+<img width="1774" height="887" alt="forge-product-card" src="https://github.com/user-attachments/assets/8f8fa87c-158a-4fa4-9e06-8f2ab7511553" />
 # Forge
 
 [![Release](https://img.shields.io/github/v/release/skizzy203/forge?label=release&color=10B981&style=flat-square)](https://github.com/skizzy203/forge/releases)
