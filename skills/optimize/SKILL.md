@@ -67,11 +67,11 @@ The intake skill is **internal**. It is not documented as an operator-facing sla
 
 ---
 
-## Inputs (Mode A)
+## Mode A — The four-phase pipeline
 
-Four phases, autonomous from start to deliverable. After Mode A is selected, the operator's only remaining interaction was filling the intake form. This skill does the rest.
+Once Mode A is selected, the operator's only remaining interaction was filling the intake form. This skill does the rest, autonomously, across four phases.
 
-## Inputs
+### Inputs
 
 - BCD path from `$ARGUMENTS` (preferred), or
 - BCD content pasted directly, or
