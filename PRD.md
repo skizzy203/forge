@@ -1,16 +1,16 @@
 # Forge — Product Requirements Document
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Scott Wise
-**Status:** Build spec for shipping (v1.1 ships amplifications, pressure-test, four new diagrams, effectiveness layer, and offline-safe Mermaid bundling)
+**Status:** Shipped (v1.2 consolidates the workflow to a single `/forge:optimize` command with three routing modes; v1.1 added Sections 7 and 8, six diagram types, effectiveness layer, and the graceful offline Mermaid fallback; v1.0 was the initial release. See CHANGELOG.md for the full history.)
 
 ---
 
 ## 1. Overview
 
-Forge is a Claude Code plugin that takes a business owner through a structured questionnaire, runs an adaptive chain of mental-model lenses against the collected context with live market research, and produces a brand-consistent HTML intelligence report covering current state, optimization analysis, proposed redesign, and a three-move implementation plan.
+Forge is a Claude Code plugin that takes a business owner through a structured questionnaire, runs an adaptive chain of mental-model lenses against the collected context with live market research, and produces a brand-consistent 8-section HTML intelligence report covering current state, optimization analysis, proposed redesign, three-move implementation plan, amplified moves with three-year revenue projections, and a pressure test of the resulting strategy.
 
-The plugin has two operator touch points (the questionnaire and a one-time confirmation that the BCD is correct) and zero conversational friction between them. After the BCD lands in the watched folder, the optimize pipeline runs autonomously and emits a downloadable HTML report.
+The plugin exposes a single operator-facing command — `/forge:optimize` — that routes by intent. Mode A runs the full pipeline when a Business Context Document (BCD) is detected. Mode B points new operators to the hosted intake form at `https://skizzy203.github.io/forge/`. Mode C emits a customized questionnaire HTML file when a facilitator needs per-workshop branding or offline distribution.
 
 The primary delivery context is live workshops with business owners. Every component — intake, analysis logic, report structure, visual system — is calibrated for that context: fast, brand-consistent, decision-grade output.
 
