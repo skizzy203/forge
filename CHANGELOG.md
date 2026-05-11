@@ -2,6 +2,15 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.2.1] — 2026-05-11
+
+### Documentation polish (no functional changes)
+- README: six-badge row at the top (release, license, Claude Code, Claude Cowork, last commit, stars) colored from the terminal-noir DESIGN.md palette
+- README: sample-report link now points to the GitHub Pages rendered view (https://skizzy203.github.io/forge/examples/sample-report.html), so clicking it opens the report in a browser rather than showing raw HTML source
+- `optimize/SKILL.md`: deduped a stray `## Inputs` heading left over from the v1.2 refactor; Mode A section now reads `## Mode A — The four-phase pipeline` with `### Inputs` as a subsection
+- `PRD.md`: full v1.2 alignment — §3 User & Use Case, §4 End-to-End Flow, §6.2 Intake, §6.4 Hook, §6.5 References, §9 Open Questions, and §10 Build Sequence & Verification all rewritten to reflect the single-command, three-mode architecture; version header bumped from 1.1 to 1.2 with an accurate three-version status line
+- `intake/SKILL.md`: applicant-workflow references updated from `/optimize` to `/forge:optimize` Mode A auto-invocation
+
 ## [1.2.0] — 2026-05-11
 
 ### Changed
