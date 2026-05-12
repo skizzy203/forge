@@ -173,10 +173,17 @@ details .details-body{padding:0 20px 20px;color:var(--text-primary);font-size:15
 /* Hairline */
 .hr{height:1px;background:var(--rule);margin:48px 0;border:0}
 
+/* Base anchor styling — accent color in both light and dark themes via the CSS custom property.
+   Prevents bare <a> tags inside body paragraphs from falling back to browser-default blue (unreadable on dark bg).
+   More-specific rules below (.sources a, a.move, inline styles) continue to override. */
+a{color:var(--accent);text-decoration:none;transition:color 0.15s,border-color 0.15s}
+a:visited{color:var(--accent)}
+a:hover{text-decoration:underline}
+
 /* Source list */
 .sources{margin-top:16px;font-family:var(--font-mono);font-size:12px;line-height:1.8;color:var(--text-muted)}
 .sources a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.15s}
-.sources a:hover{border-color:var(--accent)}
+.sources a:hover{border-color:var(--accent);text-decoration:none}
 
 /* Appendix — hover-expand lens cards */
 .appendix-list{margin-top:16px;list-style:none;padding:0}

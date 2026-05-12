@@ -223,7 +223,7 @@ If a design need arises that DESIGN.md doesn't cover, follow the §12 governance
 
 ### Verification
 
-**1. Plugin install validation.** Run `/plugin install https://github.com/skizzy203/forge`. Confirm zero validation errors and that the manifest reports v1.2.0.
+**1. Plugin install validation.** Run `/plugin install https://github.com/skizzy203/forge`. Confirm zero validation errors and that the manifest version matches the current release in `.claude-plugin/plugin.json` (kept in lockstep with the latest tagged release on GitHub).
 
 **2. Mode B (no BCD) test.** Open a fresh Claude Code session. Type `/forge:optimize` with no BCD in scope. Verify the model responds with the hosted-URL pointer (`https://skizzy203.github.io/forge/`) and explains the three submission paths. The pipeline must not run; no business context must be invented.
 
