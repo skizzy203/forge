@@ -973,13 +973,15 @@ setTimeout(() => {
   let THREE, gsap, ScrollTrigger;
   try {
     THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160/build/three.module.js');
-    const gsapModule = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js');
+    // GSAP's npm files are CommonJS; use jsdelivr's `+esm` suffix to get ESM-transformed bundles.
+    const gsapModule = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm');
     gsap = gsapModule.gsap || gsapModule.default;
-    const stModule = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js');
+    const stModule = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js/+esm');
     ScrollTrigger = stModule.ScrollTrigger || stModule.default;
+    if (!gsap || !ScrollTrigger) throw new Error('GSAP modules failed to expose expected exports');
     gsap.registerPlugin(ScrollTrigger);
   } catch (e) {
-    // CDN unreachable — leave .cine-* containers transparent, the static document reads normally underneath
+    // CDN unreachable or library shape changed — leave .cine-* containers transparent, the static document reads normally underneath
     console.warn('[forge cinematic] library load failed, falling back to static layout:', e);
     throw e;
   }
