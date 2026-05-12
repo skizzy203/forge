@@ -242,6 +242,19 @@ Inline-bundling Mermaid into every report (to make diagrams render fully offline
 
 Substitute every remaining `{{token}}` in the template. Identity tokens get the values you extracted in the Inputs section — `{{applicant_name}}` becomes the operator's name as they entered it, used in the "Prepared for [Name]" line under the Executive Summary headline and again in the appendix Run Metadata block. Analysis tokens get the chain outputs per `references/report-structure.md` mapping.
 
+### Plugin version substitution
+
+Read `.claude-plugin/plugin.json` once at render time and parse the `version` field. Substitute:
+
+- `{{plugin_version_full}}` → `v` + the full version string (e.g., `v1.3.1`) — appears in the Appendix Run Metadata line `Plugin version: forge {{plugin_version_full}}`.
+- `{{plugin_version_short}}` → `v` + the major.minor of the version (e.g., `v1.3`) — appears in the bottom-right of the brand footer-mark line `FORGE {{plugin_version_short}}`. Patch suffixes are dropped to stay terse and align with marketing-version conventions.
+
+If `plugin.json` is unreadable, fall back to `{{plugin_version_full}} = v?.?.?` and `{{plugin_version_short}} = v?.?` rather than failing the render. Log to Appendix as a run note.
+
+### Tally CTA (fixed footer block)
+
+Between the Appendix and the brand `footer-mark` line, the template carries a fixed `.callout` pointing recipients at the weekly live Business Model Strip Down workshop at `https://tally.so/r/aQj7dy`. This is **not** a token — the block is hardcoded into the template because the workshop time (Thursdays 7pm), the form URL, and the copy are stable across runs. No substitution required; the block ships with every report. Document any future workshop-time or URL change by editing the template directly.
+
 ### Automation Surface (Section 7.0) render
 
 If `AUTOMATION_SURFACE` from Phase 1C is non-empty, render the 7.0 block at the head of Section 7 before the chain-derived 7.1/7.2/7.3 additions. Token substitutions:
