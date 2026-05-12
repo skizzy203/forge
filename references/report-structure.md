@@ -159,10 +159,31 @@ The structure moves the reader from context → evidence → conclusion in the e
 
 **Contents:**
 - Goal-framing callout (a "read before acting" caveat tying the additions back to what the operator actually wants — often surfaced from JTBD output)
+- **7.0 — Automation Surface** (added v1.3) — industry-standard AI, automation, and agentic-AI use cases the operator could plug in immediately. Composed from Phase 1C research (not chain output). Renders only when Phase 1C surfaced at least one viable card.
 - Up to three ranked compounding additions, each rendered as a two-cell pair: "The move" + "Revenue projection"
 - A combined three-year revenue projection grid (Year 1, Year 2, Year 3) with conservative-and-optimistic ranges
 - A death-zone warning callout (conditional render — only when Year 3 ceiling crosses an industry-known margin-compression band identified in Phase 1B research)
 - A one-paragraph sequencing reminder
+
+### 7.0 — Automation Surface (sub-block)
+
+**Purpose:** Surface the lowest-effort, highest-leverage automation layer the operator's industry has already adopted. Most solo operators are unaware of the standard AI/automation toolbox in their sector. The cards sit before the bespoke compounding moves (7.1–7.3) so the operator sees the off-the-shelf wins first, then the chain-derived additions.
+
+**Contents:**
+- One-paragraph intro framing the automations as plug-ins to the base plan from Section 6 (no methodology talk)
+- Total-hours-recoverable callout (sums cited cards only; uses `data-countup` animation on the range)
+- Three-column grid of automation cards (3 to 6 cards). Each card carries: category chip (Standard / Emerging / Experimental), name, what-it-replaces, common stack, weekly hours saved (cited range or "Not benchmarked — pilot to measure")
+- Inline source citations beneath the grid (full URL list, one link per cited card)
+
+**Components used:**
+- `.callout` (total hours headline with `data-countup`)
+- `.grid.cols-3` (card grid; reuses existing `.cell`, `.cell-glyph`, `.cell-head`, `.cell-body`)
+- `.tag.success` (STANDARD), `.tag.med` (EMERGING), `.tag.low` (EXPERIMENTAL) for the category chips
+- `.body-sm` for the sources note
+
+**Data sources:** Each card with a numeric hours figure links to its WebFetch source. No uncited claims sum into the total-hours callout — uncited cards render with "Not benchmarked — pilot to measure" instead of a number. Mirrors Section 2's citation discipline.
+
+**Failure handling:** If Phase 1C surfaced nothing, the entire 7.0 block is omitted (the `{{automation_surface_block}}` token substitutes to empty string). If fewer than three cards survived, render what surfaced plus an Appendix flag noting the count.
 
 **Components used:**
 - `.callout` (goal-framing, death-zone)
@@ -170,7 +191,7 @@ The structure moves the reader from context → evidence → conclusion in the e
 - `.grid.cols-3` (three-year revenue projection cards)
 - Revenue Trajectory Chart (Mermaid `xychart-beta`, three-line comparison of no-changes vs. base-plan vs. amplified scenarios; sits between the projection grid and the death-zone callout)
 
-**Source-chain mapping:** Composed from Phase 2 chain outputs. Operator Edge, Leverage Points, Moats, Asymmetric Risk, and Feedback Loops contribute candidates. Value Equation and Pricing Strategy contribute the math. Phase 1B market research contributes the death-zone band data. See `forge/skills/optimize/SKILL.md` Phase 4 for the full mapping and the accretion filter applied during synthesis.
+**Source-chain mapping:** Sub-section 7.0 is composed from Phase 1C automation research (not from the chain). Sub-sections 7.1–7.3 are composed from Phase 2 chain outputs: Operator Edge, Leverage Points, Moats, Asymmetric Risk, and Feedback Loops contribute candidates; Value Equation and Pricing Strategy contribute the math; Phase 1B market research contributes the death-zone band data. See `forge/skills/optimize/SKILL.md` Phase 4 for the full mapping and the accretion filter applied during synthesis.
 
 **Voice:** Each addition references specific elements from Sections 3–6 of the same report. No generic content. No mention of any other plugin or methodology.
 

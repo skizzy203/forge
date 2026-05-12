@@ -1,6 +1,6 @@
 ---
 name: optimize
-description: The single entry point for Forge. Routes by intent. (A) When a Business Context Document (BCD) is detected — pasted in chat, attached as a file, or sitting in ~/forge-intake/ — runs the full four-phase optimization pipeline (web supplement → market research → adaptive 38-model mental-model chain → 8-section terminal-noir HTML intelligence report). (B) When no BCD is present and the operator wants to start, points them to the hosted intake form at https://skizzy203.github.io/forge/. (C) When a facilitator needs a customized version of the form (per-workshop email, branding, offline use), invokes the internal intake skill to emit a customized HTML file.
+description: The single entry point for Forge. Routes by intent. (A) When a Business Context Document (BCD) is detected — pasted in chat, attached as a file, or sitting in ~/forge-intake/ — runs the full optimization pipeline (web supplement → market research → industry automation surface → adaptive 38-model mental-model chain → 8-section terminal-noir HTML intelligence report). (B) When no BCD is present and the operator wants to start, points them to the hosted intake form at https://skizzy203.github.io/forge/. (C) When a facilitator needs a customized version of the form (per-workshop email, branding, offline use), invokes the internal intake skill to emit a customized HTML file.
 when_to_use: >
   Use whenever the operator interacts with Forge. The skill routes by intent.
   Mode A (BCD pipeline): triggered by a BCD attached/pasted, by the auto-detect hook surfacing
@@ -141,6 +141,45 @@ Use the surfaced market signals to adjust CommercialLeverage scoring for affecte
 - If regulatory tailwind detected → boost Asymmetric Risk, MVE
 - If competitive saturation signal → boost Moats, Switching Costs
 
+## Phase 1C — Automation Surface Research
+
+Industry-standard AI, automation, and agentic-AI use cases that the operator could plug in without redesigning the business. This phase runs **after** Phase 1B (market research) and **before** Phase 2 (chain) so its output is available when the chain reasons about Operator Edge and Leverage Points, and so the synthesized cards can be rendered as Section 7.0 in Phase 4.
+
+The phase is **research-driven, not chain-derived**. It mirrors Phase 1B's epistemic posture: no card carries a numeric weekly-hours-saved figure without a real WebFetch citation backing it.
+
+**Inputs available at this point:**
+- BCD-extracted: industry, what-it-does, biggest problem / primary bottleneck, revenue range
+- Phase 1A `WEB_SUPPLEMENT`: actual industry vocabulary, positioning, and competitor framing — the operator's stated category often differs from the searchable industry term; **prefer the supplement's language** when constructing queries
+- Phase 1B accumulated market context (TAM signals, competitive density, commoditization signals — informs which automations are most relevant)
+
+**Query plan (3–5 WebSearch passes, each followed by 1–2 WebFetch on top results):**
+
+1. `"[industry term] AI automation use cases 2026"` — surfaces vendor case studies and industry-press roundups
+2. `"[business type] workflow automation hours saved"` — biases toward time-quantified benchmarks
+3. `"[industry] agentic AI agents adopted"` — surfaces emerging-tier tools
+4. `"[primary bottleneck from BCD] automation tools"` — anchors at least one card to the operator's stated problem
+5. *(Conditional)* `"[industry] [customer-facing task] AI"` — fires if Phase 1B competitive density signal suggests customer-facing operations are a sector-wide constraint
+
+**Synthesis into `AUTOMATION_SURFACE` accumulated context.** Each entry is a struct:
+
+```
+{
+  name: string,                       // "Inbound lead triage agent"
+  category: "Standard" | "Emerging" | "Experimental",
+  what_it_replaces: string,           // "manually reading and routing every contact-form submission"
+  common_tooling: string,             // "Make.com + GPT-4 + Slack" or "Intercom Fin + HubSpot"
+  hours_per_week_saved: { low: number, high: number } | null,
+  source_url: string | null,          // cited WebFetch URL the hours figure came from
+  confidence: "cited" | "uncited"     // uncited cards render without an hours number
+}
+```
+
+**Bound the work.** Maximum 5 WebSearch + 10 WebFetch calls for this phase. Hard cap at 6 cards rendered. Rank by hours-saved-per-week descending; cards with `confidence: "cited"` are surfaced first.
+
+**Failure handling.** If fewer than three cards survive with cited hours figures, render whatever passes plus an Appendix flag: "Automation research surfaced N cited use cases." If web search is unreachable or returns nothing useful, **skip the 7.0 block entirely** (do not render a header with no content) and log the failure to the Appendix. Mirrors the existing "do not invent market research" rule.
+
+**No hallucinated hours.** Each numeric `hours_per_week_saved` value must trace to a real WebFetch source surfaced during this phase. If a use case is well-known industry-wide but no time benchmark surfaced, still render the card — just with `hours_display = "Not benchmarked — pilot to measure"` and `confidence = "uncited"`. Uncited cards do not contribute to the total-hours-recoverable callout sum.
+
 ## Phase 2 — Adaptive Chain Construction & Execution
 
 Load `references/catalog.md`. For each candidate model, compute:
@@ -202,6 +241,25 @@ Inline-bundling Mermaid into every report (to make diagrams render fully offline
 ### Token substitution
 
 Substitute every remaining `{{token}}` in the template. Identity tokens get the values you extracted in the Inputs section — `{{applicant_name}}` becomes the operator's name as they entered it, used in the "Prepared for [Name]" line under the Executive Summary headline and again in the appendix Run Metadata block. Analysis tokens get the chain outputs per `references/report-structure.md` mapping.
+
+### Automation Surface (Section 7.0) render
+
+If `AUTOMATION_SURFACE` from Phase 1C is non-empty, render the 7.0 block at the head of Section 7 before the chain-derived 7.1/7.2/7.3 additions. Token substitutions:
+
+| Token | Source | Notes |
+|---|---|---|
+| `{{automation_surface_intro}}` | Phase 1C synthesis | 1–2 sentences specific to the operator's industry. No methodology talk. No "AI is transforming…" boilerplate. |
+| `{{automation_total_hours_low}}` | Sum of cited-card lows | Integer. Uses `data-countup` animation. Includes only entries where `confidence == "cited"`. |
+| `{{automation_total_hours_high}}` | Sum of cited-card highs | Integer. Same scoping rule. |
+| `{{automation_total_caveat}}` | Generated | "Assumes full adoption of all N cited tools above. Each figure is sourced from the cited benchmark; uncited entries are excluded from the sum." |
+| `{{automation_cards_html}}` | Loop over `AUTOMATION_SURFACE` | One `.cell` per entry. Cited-cards render first, then uncited. |
+| `{{automation_sources_note}}` | Inline citation list | "Sourced from: [link1] · [link2] · …" using existing `.body-sm` muted styling. Only cited cards contribute links. |
+
+For each card in `{{automation_cards_html}}`:
+- `{{category_tag}}` renders as `STANDARD`, `EMERGING`, or `EXPERIMENTAL` (mono chip; green for Standard, accent-cyan for Emerging, purple `--info` for Experimental)
+- `{{hours_display}}` renders as `4–7 hrs · cited` if confidence is `cited`, or `Not benchmarked — pilot to measure` if uncited
+
+**Conditional skip.** If `AUTOMATION_SURFACE` is empty (Phase 1C skipped or returned nothing), substitute an empty string for the entire 7.0 block (the surrounding markers in the template account for this). Do not render an empty header.
 
 ### Death-zone callout conditional render
 
@@ -267,6 +325,7 @@ Write the populated HTML to the working directory as `forge-report-[business-slu
 - **Do not introduce visual deviations from DESIGN.md.** If the brand system doesn't cover what you need, leave it out.
 - **Do not invent new lenses for Sections 7 and 8.** They compose existing chain output per the mapping tables in Phase 4. If a candidate addition or attack is needed, it should already be in the chain — extend Phase 2 selection, do not bolt on a new model at render time.
 - **Do not collapse Steelman and Strawman.** Section 8 must surface both attacks separately. The Steelman comes from Design-class outputs, the Strawman from Stress-Test-class outputs. The gap between them is the point.
+- **Do not invent automation hours.** Every numeric `hours_per_week_saved` figure in Section 7.0 must trace to a real WebFetch source from Phase 1C. Uncited use cases still render — without a number, with `Not benchmarked — pilot to measure` in the hours slot. The total-hours-recoverable callout sums only cited entries.
 
 ## Output summary
 
