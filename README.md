@@ -93,6 +93,12 @@ forge/
     └── report-structure.md  — gold-standard MBB-derived report structure
 ```
 
+## Try the intake form
+
+**[Open the live intake form →](https://skizzy203.github.io/forge/)** (opens the rendered questionnaire in your browser, no clone required)
+
+About ten minutes to fill. Email-gated, multipage, auto-saves between pages. On submit you get three delivery paths — email to facilitator, download locally, or copy to clipboard. The raw HTML source lives at [skills/intake/templates/questionnaire.html](skills/intake/templates/questionnaire.html).
+
 ## Sample output
 
 **[View the rendered sample report →](https://skizzy203.github.io/forge/examples/sample-report.html)** (opens in your browser, no clone required)
