@@ -2,6 +2,59 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.5.0] — 2026-05-12
+
+### Added — cinematic scroll layer
+
+Two scroll-driven Three.js scenes bookend the intelligence report. The middle of the document stays 2D — the cinematic layer frames the deliverable rather than running through it.
+
+**Hero scene (Section 1).** Four `PlaneGeometry` layers carrying procedural grid textures, receding in z behind the `THE DIAGNOSIS. / THE PLAN.` headline. A 60-point accent cloud glows in `--accent`. ScrollTrigger pinned to `#sec1` dollies the camera from `z: 5` to `z: 1.8` while the four layers separate further in z. The accent point cloud rotates 0.35 rad on Y and intensifies from 55% to 95% opacity. Display text stays anchored above the canvas throughout.
+
+**Footer scene (convergence into the Tally CTA).** Six wireframe `BoxGeometry` primitives start scattered and converge to `(0, 0, 0)` as the user scrolls into the footer region. At the midpoint they fade out; a central accent sphere fades in and runs an infinite sine-in-out pulse loop. Reinforces the report's diagnose-and-converge narrative — many candidate moves resolve into one clear plan, then the Tally CTA presents the next action.
+
+### Brand discipline (DESIGN.md §08 amendment)
+
+The existing §08 Motion rule banned parallax and infinite loops outright. v1.5 adds a tightly-scoped exception for the cinematic layer:
+
+- **Geometry only.** No photographic imagery, no people, no products. Procedural grid textures, wireframe primitives, accent points.
+- **Palette discipline.** Scene materials read from the same CSS custom properties (`--accent`, `--text-faint`, `--rule`, `--bg-primary`) as the rest of the document. No new colors.
+- **Bookended, not pervasive.** Scenes are confined to Section 1 and the footer. The middle of the report stays 2D.
+- **Opt-out by default.** `prefers-reduced-motion: reduce` skips the layer entirely. Print stylesheet hides both containers. CDN failure leaves containers transparent.
+
+### Library loading
+
+Three.js + GSAP + ScrollTrigger load asynchronously from `cdn.jsdelivr.net` via dynamic ESM `import()`:
+
+- `three@0.160` — `build/three.module.js`
+- `gsap@3.12.5` — `index.js`
+- `gsap@3.12.5/ScrollTrigger.js`
+
+Bundle weight is ~380 KB minified+gzipped over the wire, loaded async after first paint so it does not block document render. All three libraries are accessed by URL only; no library code is redistributed in the deliverable.
+
+### Theme reactivity
+
+Both scenes read their palette from CSS custom properties at init. The existing theme toggle now dispatches a `forge-theme-change` CustomEvent that each scene listens for — point materials swap to the new accent color, grid textures regenerate from the new rule color. No flash, no layout shift.
+
+### Failure budget
+
+- **`prefers-reduced-motion: reduce`** → cinematic layer skipped at script entry. Static document reads normally.
+- **`@media print`** → containers hidden by CSS. PDF exports unaffected.
+- **CDN unreachable** → dynamic `import()` rejects, script throws and exits, `.cine-*` containers stay transparent. Reader sees the static document.
+- **Mobile pixel-ratio cap** → `Math.min(window.devicePixelRatio, 2)` prevents 4K retina screens from rendering at 4x cost.
+- **GPU cleanup** → `beforeunload` listener disposes both renderers' WebGL contexts and cancels animation frames.
+
+### Files changed
+
+- `skills/optimize/templates/report.html` — 2 scene containers, ~12 lines of CSS, ~230 lines of inline scene script, theme-toggle dispatch line
+- `examples/sample-report.html` — same additions mirrored so the live GitHub Pages sample plays the scenes
+- `references/visual-primitives.md` — new "§ Cinematic Layer" subsection
+- `references/DESIGN.md` — §08 Motion gains a "Cinematic layer exception" sub-section
+- `PRD.md` — version → 1.5
+- `.claude-plugin/plugin.json` — `1.4.0` → `1.5.0`
+
+### Rationale
+v1.4 closed the operator-content gap. v1.5 closes the visual-distinctiveness gap. The cinematic layer makes the report feel like a deliverable that someone built, not a template that someone filled. Restraint is the brand — scenes are confined to two bookends, geometry-only, palette-respecting, with graceful fallback at every degraded path.
+
 ## [1.4.0] — 2026-05-12
 
 ### Added — three new research-driven sub-blocks

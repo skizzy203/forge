@@ -1,8 +1,8 @@
 # Forge — Product Requirements Document
 
-**Version:** 1.4
+**Version:** 1.5
 **Author:** Scott Wise
-**Status:** Shipped (v1.4 adds three new research-driven sub-blocks — Pricing Power Audit and CAC Benchmark in Section 2, and First-Hire Roadmap with a Predictive Index behavioral-fit recommendation in Section 7; v1.3 added the Automation Surface; v1.2 consolidates the workflow to a single `/forge:optimize` command with three routing modes; v1.1 added Sections 7 and 8, six diagram types, effectiveness layer, and the graceful offline Mermaid fallback; v1.0 was the initial release. See CHANGELOG.md for the full history.)
+**Status:** Shipped (v1.5 adds a scroll-driven cinematic Three.js layer bookending the report — depth-and-parallax behind the Section 1 hero, convergence scene before the Tally CTA; v1.4 adds three new research-driven sub-blocks; v1.3 added the Automation Surface; v1.2 consolidates the workflow to a single `/forge:optimize` command with three routing modes; v1.1 added Sections 7 and 8, six diagram types, effectiveness layer, and the graceful offline Mermaid fallback; v1.0 was the initial release. See CHANGELOG.md for the full history.)
 
 ---
 

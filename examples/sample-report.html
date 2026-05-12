@@ -165,6 +165,17 @@ details .details-body{padding:0 20px 20px;color:var(--text-primary);font-size:15
 /* Tabular numerals on countup spans */
 [data-countup]{font-variant-numeric:tabular-nums}
 
+/* Cinematic layer (v1.5) — two scroll-driven Three.js scenes bookending the document */
+.cine-hero{position:absolute;top:0;left:0;right:0;height:100vh;z-index:0;pointer-events:none;opacity:0;transition:opacity 0.6s}
+.cine-hero[data-cine-state="active"]{opacity:1}
+.cine-hero canvas{width:100%;height:100%;display:block}
+.cine-footer{position:relative;width:100%;height:40vh;margin:48px 0;pointer-events:none;opacity:0;transition:opacity 0.6s;overflow:hidden}
+.cine-footer[data-cine-state="active"]{opacity:1}
+.cine-footer canvas{width:100%;height:100%;display:block}
+#sec1 > *:not(.bg-num):not(.cine-hero){position:relative;z-index:1}
+@media (prefers-reduced-motion: reduce){.cine-hero,.cine-footer{display:none}}
+@media print{.cine-hero,.cine-footer{display:none}}
+
 /* Anchor-styled move teasers in Section 1 */
 a.move{text-decoration:none;color:inherit;display:block;cursor:pointer}
 a.move:hover{border-color:var(--accent)}
@@ -219,6 +230,7 @@ a.move:hover .headline{color:var(--accent)}
 <!-- SECTION 1 — EXECUTIVE SUMMARY            -->
 <!-- ════════════════════════════════════════ -->
 <section class="section" id="sec1">
+  <div class="cine-hero" id="cine-hero" aria-hidden="true" data-cine-state="ready"></div>
   <div class="bg-num">01</div>
   <div class="sec-num">01 / EXECUTIVE SUMMARY</div>
   <h1 class="display">
@@ -957,6 +969,8 @@ quadrantChart
   </details>
 </section>
 
+<div class="cine-footer" id="cine-footer" aria-hidden="true" data-cine-state="ready"></div>
+
 <div class="callout" style="margin:64px 0 32px">
   <div class="label">[ &#9655; ] LIVE WORKSHOP &mdash; THURSDAYS 7PM</div>
   <div class="headline">Apply for the next Business Model Strip Down</div>
@@ -988,6 +1002,7 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
     document.documentElement.setAttribute('data-theme', 'light');
     localStorage.setItem(THEME_KEY, 'light');
   }
+  document.dispatchEvent(new CustomEvent('forge-theme-change'));
   setTimeout(() => { if (window.mermaid) reRenderMermaid(); }, 50);
 });
 </script>
@@ -1120,6 +1135,219 @@ setTimeout(() => {
     if (!li.hasAttribute('tabindex')) li.setAttribute('tabindex', '0');
   });
 })();
+</script>
+
+<!-- Cinematic layer (v1.5) — Three.js + GSAP + ScrollTrigger -->
+<script type="module">
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    throw new Error('reduced-motion: skipping cinematic layer');
+  }
+
+  let THREE, gsap, ScrollTrigger;
+  try {
+    THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160/build/three.module.js');
+    const gsapModule = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js');
+    gsap = gsapModule.gsap || gsapModule.default;
+    const stModule = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js');
+    ScrollTrigger = stModule.ScrollTrigger || stModule.default;
+    gsap.registerPlugin(ScrollTrigger);
+  } catch (e) {
+    console.warn('[forge cinematic] library load failed, falling back to static layout:', e);
+    throw e;
+  }
+
+  function readPalette() {
+    const cs = getComputedStyle(document.documentElement);
+    return {
+      accent: new THREE.Color(cs.getPropertyValue('--accent').trim() || '#22E0FF'),
+      faint: new THREE.Color(cs.getPropertyValue('--text-faint').trim() || '#4A535A'),
+      rule: new THREE.Color(cs.getPropertyValue('--rule').trim() || '#1F2629'),
+      bg: new THREE.Color(cs.getPropertyValue('--bg-primary').trim() || '#0A0E11')
+    };
+  }
+
+  function gridTexture(palette, opts) {
+    const size = 512;
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = 'rgba(0,0,0,0)';
+    ctx.fillRect(0, 0, size, size);
+    ctx.strokeStyle = '#' + palette.rule.getHexString();
+    ctx.lineWidth = opts.lineWidth || 1;
+    ctx.globalAlpha = opts.alpha || 0.5;
+    const step = opts.step || 32;
+    for (let x = 0; x <= size; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, size); ctx.stroke(); }
+    for (let y = 0; y <= size; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size, y); ctx.stroke(); }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(opts.repeat || 1, opts.repeat || 1);
+    return tex;
+  }
+
+  function buildHeroScene(container, palette) {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+    camera.position.set(0, 0, 5);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+
+    const layers = [];
+    const specs = [
+      { z: -3, step: 16, alpha: 0.18, scale: 8 },
+      { z: -1.5, step: 24, alpha: 0.32, scale: 6 },
+      { z: 0, step: 40, alpha: 0.55, scale: 5 },
+      { z: 1, step: 64, alpha: 0.85, scale: 4 }
+    ];
+    specs.forEach(spec => {
+      const tex = gridTexture(palette, { step: spec.step, alpha: spec.alpha, repeat: 2 });
+      const geo = new THREE.PlaneGeometry(spec.scale, spec.scale);
+      const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: spec.alpha });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.z = spec.z;
+      scene.add(mesh);
+      layers.push({ mesh, baseZ: spec.z, spec });
+    });
+
+    const pointCount = 60;
+    const positions = new Float32Array(pointCount * 3);
+    for (let i = 0; i < pointCount; i++) {
+      positions[i * 3]     = (Math.random() - 0.5) * 6;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 4;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 2 - 0.5;
+    }
+    const pointsGeo = new THREE.BufferGeometry();
+    pointsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const pointsMat = new THREE.PointsMaterial({ color: palette.accent, size: 0.06, transparent: true, opacity: 0.55, sizeAttenuation: true });
+    const points = new THREE.Points(pointsGeo, pointsMat);
+    scene.add(points);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+    dir.position.set(2, 3, 4);
+    scene.add(dir);
+
+    let raf;
+    (function render() { renderer.render(scene, camera); raf = requestAnimationFrame(render); })();
+
+    return {
+      camera, layers, points, pointsMat,
+      retint(p) {
+        pointsMat.color = p.accent;
+        layers.forEach(l => {
+          l.mesh.material.map = gridTexture(p, { step: l.spec.step, alpha: l.spec.alpha, repeat: 2 });
+          l.mesh.material.needsUpdate = true;
+        });
+      },
+      resize() {
+        const w = container.clientWidth, h = container.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      },
+      dispose() { cancelAnimationFrame(raf); renderer.dispose(); }
+    };
+  }
+
+  function buildFooterScene(container, palette) {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 50);
+    camera.position.set(0, 0, 4);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+
+    const primitives = [];
+    const startPositions = [
+      [-2.5, 1.2, -1.0], [2.3, 1.4, -0.8], [-2.0, -1.0, 0.4],
+      [2.6, -1.1, 0.6], [-1.4, 0.0, -1.4], [1.7, -0.2, -1.2]
+    ];
+    startPositions.forEach(p => {
+      const geo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+      const mat = new THREE.MeshBasicMaterial({ color: palette.faint, wireframe: true, transparent: true, opacity: 0.65 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(p[0], p[1], p[2]);
+      scene.add(mesh);
+      primitives.push(mesh);
+    });
+
+    const centerGeo = new THREE.SphereGeometry(0.08, 24, 24);
+    const centerMat = new THREE.MeshBasicMaterial({ color: palette.accent, transparent: true, opacity: 0.0 });
+    const center = new THREE.Mesh(centerGeo, centerMat);
+    scene.add(center);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+    let raf;
+    (function render() { renderer.render(scene, camera); raf = requestAnimationFrame(render); })();
+
+    return {
+      camera, primitives, center, centerMat,
+      retint(p) {
+        primitives.forEach(pr => { pr.material.color = p.faint; });
+        centerMat.color = p.accent;
+      },
+      resize() {
+        const w = container.clientWidth, h = container.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      },
+      dispose() { cancelAnimationFrame(raf); renderer.dispose(); }
+    };
+  }
+
+  const heroEl = document.getElementById('cine-hero');
+  const footerEl = document.getElementById('cine-footer');
+  if (!heroEl || !footerEl) throw new Error('cinematic containers missing');
+
+  let palette = readPalette();
+  const hero = buildHeroScene(heroEl, palette);
+  const footer = buildFooterScene(footerEl, palette);
+  heroEl.dataset.cineState = 'active';
+  footerEl.dataset.cineState = 'active';
+
+  gsap.timeline({
+    scrollTrigger: { trigger: '#sec1', start: 'top top', end: 'bottom top', scrub: 0.8 }
+  })
+    .to(hero.camera.position, { z: 1.8, ease: 'power2.inOut' }, 0)
+    .to(hero.layers[0].mesh.position, { z: -5.5, ease: 'none' }, 0)
+    .to(hero.layers[1].mesh.position, { z: -3.0, ease: 'none' }, 0)
+    .to(hero.layers[2].mesh.position, { z: -0.8, ease: 'none' }, 0)
+    .to(hero.layers[3].mesh.position, { z: 0.5, ease: 'none' }, 0)
+    .to(hero.pointsMat, { opacity: 0.95, ease: 'power2.in' }, 0)
+    .to(hero.points.rotation, { y: 0.35, ease: 'none' }, 0);
+
+  const footerTL = gsap.timeline({
+    scrollTrigger: { trigger: '#cine-footer', start: 'top 80%', end: 'bottom 30%', scrub: 0.6 }
+  });
+  footer.primitives.forEach(p => {
+    footerTL.to(p.position, { x: 0, y: 0, z: 0, ease: 'power2.inOut' }, 0)
+            .to(p.rotation, { x: Math.PI * 0.5, y: Math.PI * 0.5, ease: 'none' }, 0)
+            .to(p.material, { opacity: 0.0, ease: 'power2.in' }, 0.5);
+  });
+  footerTL.to(footer.centerMat, { opacity: 1.0, ease: 'power2.in' }, 0.5);
+
+  gsap.to(footer.center.scale, {
+    x: 1.4, y: 1.4, z: 1.4,
+    duration: 1.6, repeat: -1, yoyo: true, ease: 'sine.inOut'
+  });
+
+  document.addEventListener('forge-theme-change', () => {
+    palette = readPalette();
+    hero.retint(palette);
+    footer.retint(palette);
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { hero.resize(); footer.resize(); ScrollTrigger.refresh(); }, 120);
+  });
+
+  window.addEventListener('beforeunload', () => { hero.dispose(); footer.dispose(); });
 </script>
 
 </body>
