@@ -2,6 +2,32 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.5.1] — 2026-05-12
+
+### Fixed — cinematic layer was barely visible
+
+v1.5.0 shipped the two Three.js scenes, but the first live render exposed the issue immediately: the footer scene's six wireframe primitives faded fully to `opacity: 0` at the timeline midpoint, so any reader who scrolled past the trigger range was left looking at a lone pulsing dot. The hero scene's back grid layers were at `opacity: 0.18` and `0.32` on the dark background — close to invisible — and neither scene had any motion when the user wasn't actively scrolling.
+
+This patch addresses all three:
+
+**Hero scene visibility.** Grid layer opacities boosted from `0.18 / 0.32 / 0.55 / 0.85` to `0.45 / 0.65 / 0.85 / 1.0`. Plane scales bumped up. Grid line width set to 1.5px in the canvas texture. Point cloud doubled in density (60 → 120 points) and brightness, with a second `Points` layer in `AdditiveBlending` mode acting as a real glow halo. Camera dolly extended from `z: 5 → 1.8` to `z: 5 → 0.6` for a more cinematic depth pull.
+
+**Ambient motion in both scenes.** Both render loops now advance a continuous time variable and drive small motion regardless of scroll state. Hero gets subtle camera sway on x/y plus slow rotation on the point cloud. Footer gets continuous rotation on each wireframe primitive with a randomized spin speed per cube. The scenes feel alive even when the reader is idle.
+
+**Footer convergence stays visible.** Primitives no longer fade to `opacity: 0` at the end of the convergence — they end at `opacity: 0.4` so the converged composition reads at any scroll position. Primitive color switched from `--text-faint` to `--accent` so they read against the dark background.
+
+**Center pulse is now a beat, not a flicker.** Scale range expanded from `1 → 1.4` to `1 → 2.2`, cadence sped from 1.6s to 1.2s. A halo sphere (additive blending, 2.5× the radius) pulses on a slightly offset 1.5s cycle for a layered breathing effect. The central sphere now starts at `opacity: 0.4` instead of `0` so the reader sees the dot before scroll even fires the timeline.
+
+**Footer trigger range widened.** ScrollTrigger range loosened from `top 80% / bottom 30%` to `top 90% / bottom 40%` so the convergence is in-view for a larger scroll window.
+
+### Files changed
+- `skills/optimize/templates/report.html` — `buildHeroScene`, `buildFooterScene`, both ScrollTrigger timelines, both pulse loops
+- `examples/sample-report.html` — identical changes mirrored so the live GitHub Pages sample reflects the fix
+- `.claude-plugin/plugin.json` — `1.5.0` → `1.5.1`
+
+### Rationale
+The brand spec says "restraint is the brand," but restraint that nobody can see is just absence. v1.5.0 over-corrected on the side of subtlety. v1.5.1 keeps the geometry-only, palette-respecting brand discipline — every change above stays within the existing DESIGN.md §02 palette and the §08 cinematic exception — while bringing the scenes far enough above the perceptual floor that they actually register as motion.
+
 ## [1.5.0] — 2026-05-12
 
 ### Added — cinematic scroll layer
