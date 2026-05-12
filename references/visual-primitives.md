@@ -356,3 +356,50 @@ xychart-beta
 ### Theme compatibility
 
 All four auxiliary diagrams use the existing theme-reactive init block. No new themes needed. Mermaid v11 ships with native styling for sankey, gantt, quadrant, and xychart that respects the `themeVariables` already passed in. The xychart-beta uses an inline `%%{init}%%` directive to scope its `plotColorPalette` so the three trajectory lines render with semantic colors rather than auto-assigned defaults. Verify on first render that line colors and text colors match the rest of the report in both themes.
+
+---
+
+## § Cinematic Layer (added v1.5)
+
+Two scroll-driven Three.js scenes bookend the report. The middle of the document stays 2D — the cinematic layer frames the deliverable, it does not run through it.
+
+### Hero scene — Section 1
+
+**Composition.** Four `PlaneGeometry` layers carrying procedural grid textures, receding in z. A 60-point `Points` cloud glowing in `--accent`. One ambient light + one directional light. Camera at `(0, 0, 5)` with `fov: 45`.
+
+**Scroll behavior.** ScrollTrigger pinned to `#sec1`, `start: 'top top'`, `end: 'bottom top'`, `scrub: 0.8`. The timeline dollies the camera from `z: 5` to `z: 1.8` while the four layers separate further in z. The accent point cloud rotates 0.35 rad on Y and fades from `opacity: 0.55` to `opacity: 0.95`.
+
+**Brand fit.** No photographic imagery. The grid texture is drawn procedurally with `CanvasTexture` using the `--rule` palette color so it themes with light/dark toggle. No specular highlights, no god-rays, no bloom.
+
+### Footer scene — convergence into the Tally CTA
+
+**Composition.** Six wireframe `BoxGeometry` primitives scattered at fixed start positions. One central `SphereGeometry` accent point, initially at `opacity: 0`. Single ambient light. Camera at `(0, 0, 4)` with `fov: 50`.
+
+**Scroll behavior.** ScrollTrigger pinned to `#cine-footer`, `start: 'top 80%'`, `end: 'bottom 30%'`, `scrub: 0.6`. All six primitives animate from their scattered start positions to `(0, 0, 0)` while rotating π/2 on x and y, then fade to `opacity: 0` at the timeline midpoint. The central accent sphere fades in to `opacity: 1` and runs a 1.6s sine-in-out scale pulse loop (yoyo, infinite).
+
+**Narrative.** Scattered geometry gathering to a single point reinforces the report's diagnose-and-converge arc. The pulse then introduces the Tally CTA below — the next action.
+
+### Palette reactivity
+
+Both scenes read their palette from CSS custom properties (`--accent`, `--text-faint`, `--rule`, `--bg-primary`) at init. The theme toggle dispatches a `forge-theme-change` event that triggers `retint()` on each scene — point materials swap to the new accent color, grid textures regenerate from the new rule color.
+
+### Failure budget
+
+- **`prefers-reduced-motion: reduce`** → cinematic layer is skipped at script entry; the `.cine-*` containers stay hidden via the CSS rule. The static document reads normally.
+- **`@media print`** → containers hidden by CSS. Print/PDF exports unaffected.
+- **CDN unreachable** → the dynamic `import()` calls reject; the script throws and exits. The `.cine-*` containers stay at `opacity: 0` (their `[data-cine-state="ready"]` initial state). Reader sees the static document.
+- **Mobile pixel-ratio cap** → `Math.min(window.devicePixelRatio, 2)` prevents 4K retina screens from rendering at 4x cost. No frame-rate auto-degrade in v1.5; if mobile performance proves unacceptable, the next iteration adds point-count reduction.
+
+### Library loading
+
+All three libraries load from `cdn.jsdelivr.net` via dynamic ESM `import()`:
+
+- `three@0.160` — `build/three.module.js`
+- `gsap@3.12.5` — `index.js`
+- `gsap@3.12.5/ScrollTrigger.js`
+
+Bundle weight is ~380 KB minified+gzipped over the wire, loaded async after first paint so it does not block document render.
+
+### Cleanup
+
+`beforeunload` listener disposes both renderers' WebGL contexts and cancels their animation frames. Prevents GPU leaks on long-lived tabs.

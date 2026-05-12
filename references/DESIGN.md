@@ -299,6 +299,17 @@ Terminal motion: type that types itself, rules that draw themselves, panels that
 
 Rules: no bounce, no spring, no overshoot, no parallax, no floating elements, no infinite loops except cursor caret (1Hz). 60fps minimum. Page-load animation budget 1.2s. Individual elements cap at 600ms.
 
+### Cinematic layer exception (added v1.5)
+
+The intelligence report carries two scroll-driven Three.js scenes bookending the document — one behind the Section 1 hero, one at the footer leading into the Tally CTA. These are the only place parallax and infinite loops are permitted in a Forge deliverable, and the exception is scoped tightly:
+
+- **Geometry only.** No photographic imagery, no people, no products. Procedural grid textures, wireframe primitives, accent points.
+- **Palette discipline.** Scene materials read from the same CSS custom properties as the rest of the document. No new colors introduced.
+- **Bookended, not pervasive.** Scenes are confined to Section 1 and the footer. The middle of the report stays 2D.
+- **Opt-out by default.** `prefers-reduced-motion: reduce` skips the layer entirely. Print stylesheet hides both containers. CDN failure leaves containers transparent.
+
+Full spec in `references/visual-primitives.md` § Cinematic Layer. The exception does not extend to other surfaces (questionnaire, intake artifacts) or to mid-document sections.
+
 ---
 
 ## 09 / SURFACE-SPECIFIC RULES
