@@ -33,14 +33,17 @@ The structure moves the reader from context → evidence → conclusion in the e
 - **TAM estimate** — total addressable market with cited sources (link to research)
 - **Three macro signals** — recent trends, regulatory shifts, customer-behavior changes worth acting on
 - **Competitive density assessment** — how crowded is this space, who are the top 3 alternatives
+- **Pricing Power Audit** (added v1.4) — three-tier industry pricing distribution (low / median / premium) with cited example operators at each tier, plus an explicit placement of the operator's current pricing on the distribution
+- **Customer Acquisition Cost** (added v1.4) — industry CAC range, primary channels, payback period, LTV/CAC ratio. Cited or omitted.
 - **Opportunity windows** — timing-sensitive openings the market is creating right now
 
 **Components used:**
 - Component grid (3×2 or 2×2) for the macro signals
+- 3-column grid for Pricing tiers; 2-column grid for CAC range vs. payback
 - Callout box for the TAM headline
 - Severity-tagged annotations on each signal (HIGH / WATCH / NOISE)
 
-**Data sources:** Each cited fact links to its WebFetch source. No uncited claims allowed in this section.
+**Data sources:** Each cited fact links to its WebFetch source. No uncited claims allowed in this section. Pricing and CAC sub-blocks honor the same rule: cite or substitute with "Not benchmarked — pilot to measure."
 
 ---
 
@@ -165,6 +168,25 @@ The structure moves the reader from context → evidence → conclusion in the e
 - A death-zone warning callout (conditional render — only when Year 3 ceiling crosses an industry-known margin-compression band identified in Phase 1B research)
 - A one-paragraph sequencing reminder
 
+### 7.0b — First-Hire Roadmap (sub-block, added v1.4)
+
+**Purpose:** Pair the industry's standard hiring sequence with a behavioral-fit assessment recommendation. Most first hires fail on behavioral mismatch rather than skill mismatch — the roadmap shows operators when and who to hire; the Predictive Index card shows them how to screen.
+
+**Contents:**
+- One-paragraph intro framing the first-hire decision against the operator's revenue range
+- "When" + "Who" cell pair: the cited revenue threshold at which most operators in this industry make their first hire, and the role most commonly hired first
+- "Delegate first" bulleted list — 3 to 5 specific responsibilities the operator typically hands off, in operator language
+- Predictive Index highlight card — hot-linked logo, headline ("Behavioral fit before skill fit."), body copy recommending the operator take the PI Behavioral Assessment themselves before creating any role and screen every candidate against the role's behavioral profile, and a CTA link to https://www.predictiveindex.com/assessments/behavioral-assessment/
+
+**Components used:**
+- `.grid.cols-2` (When / Who pair)
+- `.callout` with flex layout for the PI highlight card (logo left, body right)
+- External `<img>` for the PI logo, hot-linked with `alt="Predictive Index"` and `max-width:180px`
+
+**Data sources:** Phase 1D surfaces the When/Who/Delegate data with cited industry sources. The PI card is fixed copy and renders regardless of Phase 1D's success.
+
+**Failure handling:** If Phase 1D surfaces no cited data, the When/Who cells are replaced with a single body paragraph noting the absence of industry benchmarks for that sector. The PI card still renders — its recommendation is industry-agnostic.
+
 ### 7.0 — Automation Surface (sub-block)
 
 **Purpose:** Surface the lowest-effort, highest-leverage automation layer the operator's industry has already adopted. Most solo operators are unaware of the standard AI/automation toolbox in their sector. The cards sit before the bespoke compounding moves (7.1–7.3) so the operator sees the off-the-shelf wins first, then the chain-derived additions.
@@ -191,7 +213,7 @@ The structure moves the reader from context → evidence → conclusion in the e
 - `.grid.cols-3` (three-year revenue projection cards)
 - Revenue Trajectory Chart (Mermaid `xychart-beta`, three-line comparison of no-changes vs. base-plan vs. amplified scenarios; sits between the projection grid and the death-zone callout)
 
-**Source-chain mapping:** Sub-section 7.0 is composed from Phase 1C automation research (not from the chain). Sub-sections 7.1–7.3 are composed from Phase 2 chain outputs: Operator Edge, Leverage Points, Moats, Asymmetric Risk, and Feedback Loops contribute candidates; Value Equation and Pricing Strategy contribute the math; Phase 1B market research contributes the death-zone band data. See `forge/skills/optimize/SKILL.md` Phase 4 for the full mapping and the accretion filter applied during synthesis.
+**Source-chain mapping:** Sub-section 7.0 is composed from Phase 1C automation research (not from the chain). Sub-section 7.0b is composed from Phase 1D first-hire research plus a fixed Predictive Index recommendation card. Sub-sections 7.1–7.3 are composed from Phase 2 chain outputs: Operator Edge, Leverage Points, Moats, Asymmetric Risk, and Feedback Loops contribute candidates; Value Equation and Pricing Strategy contribute the math; Phase 1B market research contributes the death-zone band data. See `forge/skills/optimize/SKILL.md` Phase 4 for the full mapping and the accretion filter applied during synthesis.
 
 **Voice:** Each addition references specific elements from Sections 3–6 of the same report. No generic content. No mention of any other plugin or methodology.
 

@@ -323,6 +323,40 @@ a.move:hover .headline{color:var(--accent)}
   <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Competitive density</h3>
   <p class="body-md">{{competitive_density}}</p>
 
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Pricing power audit</h3>
+  <p class="body-md">{{pricing_power_intro}}</p>
+  <div class="grid cols-3">
+    <div class="cell">
+      <div class="cell-glyph">[ $ ] <span class="cell-idx">LOW</span></div>
+      <div class="cell-head">{{pricing_low_range}}</div>
+      <div class="cell-body">{{pricing_low_examples}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ $ ] <span class="cell-idx">MEDIAN</span></div>
+      <div class="cell-head">{{pricing_median_range}}</div>
+      <div class="cell-body">{{pricing_median_examples}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">[ $ ] <span class="cell-idx">PREMIUM</span></div>
+      <div class="cell-head">{{pricing_premium_range}}</div>
+      <div class="cell-body">{{pricing_premium_examples}}</div>
+    </div>
+  </div>
+  <p class="body-md" style="margin-top:16px"><strong style="color:var(--accent)">Where you sit:</strong> {{pricing_where_you_sit}}</p>
+
+  <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Customer acquisition cost</h3>
+  <p class="body-md">{{cac_intro}}</p>
+  <div class="grid cols-2">
+    <div class="cell">
+      <div class="cell-head">Industry CAC range</div>
+      <div class="cell-body">{{cac_range_body}}</div>
+    </div>
+    <div class="cell">
+      <div class="cell-head">Payback &amp; LTV/CAC</div>
+      <div class="cell-body">{{cac_payback_body}}</div>
+    </div>
+  </div>
+
   <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:32px 0 12px;color:var(--text-primary)">Opportunity windows</h3>
   <p class="body-md">{{opportunity_windows}}</p>
 
@@ -563,6 +597,8 @@ a.move:hover .headline{color:var(--accent)}
   </div>
 
   {{automation_surface_block}}
+
+  {{first_hire_block}}
 
   <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">7.1 &mdash; {{amp_addition_1_title}}</h3>
   <div class="grid cols-2">

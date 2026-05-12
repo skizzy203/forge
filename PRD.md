@@ -1,8 +1,8 @@
 # Forge — Product Requirements Document
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Scott Wise
-**Status:** Shipped (v1.3 adds the Automation Surface — a research-driven Section 7.0 sub-block showing industry-standard AI/automation use cases with cited weekly-hours-saved estimates; v1.2 consolidates the workflow to a single `/forge:optimize` command with three routing modes; v1.1 added Sections 7 and 8, six diagram types, effectiveness layer, and the graceful offline Mermaid fallback; v1.0 was the initial release. See CHANGELOG.md for the full history.)
+**Status:** Shipped (v1.4 adds three new research-driven sub-blocks — Pricing Power Audit and CAC Benchmark in Section 2, and First-Hire Roadmap with a Predictive Index behavioral-fit recommendation in Section 7; v1.3 added the Automation Surface; v1.2 consolidates the workflow to a single `/forge:optimize` command with three routing modes; v1.1 added Sections 7 and 8, six diagram types, effectiveness layer, and the graceful offline Mermaid fallback; v1.0 was the initial release. See CHANGELOG.md for the full history.)
 
 ---
 
@@ -138,6 +138,8 @@ Four phases, autonomous:
 
 **Phase 1C — Automation surface research.** Runs 3–5 WebSearch queries against the operator's industry term and stated bottleneck to surface common AI, automation, and agentic-AI use cases. WebFetches top results for weekly-hours-saved benchmarks. Synthesizes the `AUTOMATION_SURFACE` context (3–6 cards each with name, category tier, what-it-replaces, common stack, cited hours-saved range). Cards without a cited time benchmark render with "Not benchmarked — pilot to measure" instead of a number. Feeds Section 7.0 of the report.
 
+**Phase 1D — First-hire research (added v1.4).** Runs 3–4 WebSearch queries against the operator's industry to surface revenue-threshold benchmarks for first hire, the role most commonly hired first, and the responsibilities most often delegated. Synthesizes `FIRST_HIRE` context. Feeds Section 7.0b. Pairs with a fixed Predictive Index behavioral-assessment recommendation card that renders even when industry hiring benchmarks are absent.
+
 **Phase 2 — Adaptive chain execution.** Walks the catalog using the scoring formula. Enforces the 5 causal anchors. Runs each selected model's prompt kernel against accumulated context. Maintains causal continuity (each output explicitly informs the next). Closes with Via Negativa (recursive until convergence) → Musk's 5-Step (validation pass). The chain output produced here feeds Sections 3–8 of the report.
 
 **Phase 3 — Mermaid diagram synthesis.** Generates six diagrams: AS-IS flowchart (Section 3), PROPOSED flowchart (Section 5), Revenue Diff Sankey (Section 5), Implementation Gantt (Section 6), Pre-Mortem Quadrant (Section 8), and Revenue Trajectory Chart (Section 7). All diagrams use the theme-reactive Mermaid init block. The trajectory chart uses an inline `%%{init}%%` directive to scope its three-color palette without overriding the global theme.
@@ -162,12 +164,12 @@ SessionStart hook that scans `~/forge-intake/` for pending `*.bcd.md` files and 
 The report extends the McKinsey/BCG/Bain six-section market entry framework with two additional sections (Amplified Moves, Pressure Test) that surface what the chain already produces but earlier versions did not render:
 
 1. **Executive Summary** — single-screen snapshot. Brand-line hero, one-paragraph diagnosis, three move teasers linked to Section 6.
-2. **Market Intelligence Brief** — TAM with sources, three macro signals (severity-tagged), competitive density, opportunity windows.
+2. **Market Intelligence Brief** — TAM with sources, three macro signals (severity-tagged), competitive density, **Pricing Power Audit** (3-tier industry distribution with "where you sit" placement), **Customer Acquisition Cost** (industry CAC range, payback period, LTV/CAC ratio), opportunity windows.
 3. **Where The Business Is Today** — diagnostic snapshot rewritten sharper than the operator's intake. AS-IS Mermaid flowchart with pulsing FRICTION nodes. Insight layer. Collapsible component breakdown. Pull-quote diagnosis.
 4. **Optimization Analysis** — the lenses applied and what each surfaced. Sub-sections: Diagnose Findings, Operator Edge, Design Candidates, Stress-Test Results. Comparison cards, severity tags, collapsible evidence chains.
 5. **The Proposed Model** — two-column contrast (AS-IS / PROPOSED). PROPOSED Mermaid flowchart. Revenue Diff Sankey showing where money rewires. Insight layer. What got removed.
 6. **The Implementation Plan** — three moves (this week / this month / this quarter). Each move = one paragraph, operator language only. Implementation Gantt below the move cards showing dependency timing.
-7. **Amplified Moves** — opens with the **Automation Surface (7.0)**: industry-standard AI/automation/agentic-AI use cases surfaced by Phase 1C research, rendered as a grid of cards with cited weekly-hours-saved estimates and a total-hours-recoverable callout. Below the automation grid, up to three bespoke compounding additions (7.1–7.3) composed from existing chain output (Operator Edge, Leverage Points, Moats, Asymmetric Risk, Feedback Loops) via the accretion filter. Three-year revenue projection cards plus the trajectory chart (no-changes vs. base-plan vs. base-plus-amplifications). Industry-aware death-zone callout when Year 3 crosses a surfaced band.
+7. **Amplified Moves** — opens with the **Automation Surface (7.0)**: industry-standard AI/automation/agentic-AI use cases surfaced by Phase 1C research, rendered as a grid of cards with cited weekly-hours-saved estimates and a total-hours-recoverable callout. Followed by the **First-Hire Roadmap (7.0b, added v1.4)**: cited revenue-threshold benchmarks for when most operators in this sector make their first hire, which role they hire, and what they delegate first — paired with a fixed Predictive Index behavioral-assessment recommendation card. Below those, up to three bespoke compounding additions (7.1–7.3) composed from existing chain output (Operator Edge, Leverage Points, Moats, Asymmetric Risk, Feedback Loops) via the accretion filter. Three-year revenue projection cards plus the trajectory chart (no-changes vs. base-plan vs. base-plus-amplifications). Industry-aware death-zone callout when Year 3 crosses a surfaced band.
 8. **Pressure Test** — Steelman and Strawman attacks, ranked Pre-Mortem failure modes with severity tags, Pre-Mortem Quadrant chart, second-order consequence chain, What-Survives summary (held / fixable / fatal-as-designed).
 
 **Appendix** (collapsed by default) — Lenses Applied (dynamic, only models that fired; hover-expand definitions), market research sources cited, run metadata.

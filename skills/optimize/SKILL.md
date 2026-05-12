@@ -132,8 +132,12 @@ Derive web-research queries from the BCD **plus the Web Supplement from Phase 1A
 4. **Regulatory/macro** (industry-dependent) → query for relevant 2026 regulatory shifts or macro tailwinds/headwinds
 5. **Adjacent disruption** (inferred from operator Cross-Domain Q27) → query for what's working in adjacent fields that could import
 6. **Industry death-zone band** (added v1.1) → query for known revenue ranges where this industry experiences margin compression (e.g., pressure washing $500K–$1.2M, SaaS $1M–$3M, professional services $2M–$5M). If a band is surfaced, capture as `DEATH_ZONE_BAND = [low, high]` in accumulated context. If no band is surfaced for this industry, set `DEATH_ZONE_BAND = null`. Phase 4 uses this to decide whether to render the Section 7 death-zone callout — the callout fires only when the Year 3 amplified projection actually crosses the band.
+7. **Pricing distribution** (added v1.4) → query `"[industry term] pricing tiers low median premium"` plus `"[industry] [primary service] cost guide"`. Surfaces competitor pricing pages, "how much does X cost" articles, and industry survey data. Synthesize into `PRICING_DISTRIBUTION` with `{low_range, median_range, premium_range}` plus 2-3 cited example operators at each tier. Feeds Section 2 Pricing Power Audit sub-block.
+8. **Customer acquisition cost** (added v1.4) → query `"[industry] customer acquisition cost benchmark"` plus `"[industry] LTV CAC ratio payback period"`. Surfaces industry benchmark reports, vendor whitepapers, and ad-platform case studies. Synthesize into `CAC_BENCHMARK` with `{cac_range_low, cac_range_high, payback_months, ltv_cac_ratio, primary_channels}` and a cited source URL. Feeds Section 2 Customer Acquisition Cost sub-block.
 
-Run 3–5 WebSearch queries. For each, WebFetch the top 2–3 sources to extract concrete facts (TAM numbers, citation links, signal descriptions). Synthesize into the Market Intelligence Brief that becomes Section 2 of the report.
+Both Pricing Distribution and CAC Benchmark honor the same citation discipline as Phase 1C (added v1.3): if no benchmark surfaces for the industry, render the sub-block with a `Not benchmarked — pilot to measure` note rather than inventing numbers.
+
+Run 4–8 WebSearch queries. For each, WebFetch the top 2–3 sources to extract concrete facts (TAM numbers, citation links, signal descriptions). Synthesize into the Market Intelligence Brief that becomes Section 2 of the report.
 
 Use the surfaced market signals to adjust CommercialLeverage scoring for affected models. Examples:
 - If TAM is large and growing → boost Blue Ocean Strategy, Operator Edge
@@ -179,6 +183,38 @@ The phase is **research-driven, not chain-derived**. It mirrors Phase 1B's epist
 **Failure handling.** If fewer than three cards survive with cited hours figures, render whatever passes plus an Appendix flag: "Automation research surfaced N cited use cases." If web search is unreachable or returns nothing useful, **skip the 7.0 block entirely** (do not render a header with no content) and log the failure to the Appendix. Mirrors the existing "do not invent market research" rule.
 
 **No hallucinated hours.** Each numeric `hours_per_week_saved` value must trace to a real WebFetch source surfaced during this phase. If a use case is well-known industry-wide but no time benchmark surfaced, still render the card — just with `hours_display = "Not benchmarked — pilot to measure"` and `confidence = "uncited"`. Uncited cards do not contribute to the total-hours-recoverable callout sum.
+
+## Phase 1D — First-Hire Research (added v1.4)
+
+Industry-specific data on when operators in this sector make their first hire, what role they hire, and what gets delegated first. Pairs with the Predictive Index highlight card in Section 7.0b — the research grounds the *when/who/what* in cited industry data; the PI card grounds the *how to screen* in a behavioral-assessment recommendation that holds across industries.
+
+Runs after Phase 1C, before Phase 2. Same epistemic posture as Phase 1B/1C: cite or omit.
+
+**Inputs:** BCD industry, business type, revenue range, primary bottleneck. Phase 1A `WEB_SUPPLEMENT` industry vocabulary. Phase 1B competitive density signals.
+
+**Queries (3–4 WebSearch passes + 1–2 WebFetch per query):**
+
+1. `"[industry] first hire when to hire revenue threshold"` — surfaces revenue-tier hiring benchmarks
+2. `"[business type] first role delegation"` — surfaces what the first role typically owns
+3. `"[industry] hiring sequence solo operator"` — surfaces the role-stacking pattern (e.g., field labor first, then estimator, then office manager)
+4. *(Conditional)* `"[primary bottleneck from BCD] hire first to fix"` — fires when the BCD's stated bottleneck maps to a delegate-able function
+
+**Synthesis into `FIRST_HIRE` accumulated context:**
+
+```
+{
+  trigger_revenue: { low: number, high: number } | null,  // revenue range at which most operators make first hire
+  first_role: string,                                     // "field labor + estimator" / "customer success rep" / etc.
+  what_to_delegate_first: string[],                       // 3-5 specific responsibilities, operator language
+  why_this_role: string,                                  // 1-2 sentence rationale tying to industry constraints
+  source_url: string | null,                              // primary citation
+  confidence: "cited" | "uncited"
+}
+```
+
+**Bound the work.** Maximum 4 WebSearch + 8 WebFetch calls for this phase.
+
+**Failure handling.** If no cited data surfaces, render the `7.0b — First-hire roadmap` block with a "Industry hiring benchmarks not surfaced for this sector — see the assessment recommendation below" note in place of the when/who cells. **The Predictive Index highlight card still renders** because its recommendation is industry-agnostic. Mirrors the existing "cite or omit" rule but with a graceful partial render rather than full block omission, since the PI card carries value on its own.
 
 ## Phase 2 — Adaptive Chain Construction & Execution
 
@@ -273,6 +309,41 @@ For each card in `{{automation_cards_html}}`:
 - `{{hours_display}}` renders as `4–7 hrs · cited` if confidence is `cited`, or `Not benchmarked — pilot to measure` if uncited
 
 **Conditional skip.** If `AUTOMATION_SURFACE` is empty (Phase 1C skipped or returned nothing), substitute an empty string for the entire 7.0 block (the surrounding markers in the template account for this). Do not render an empty header.
+
+### Section 2 v1.4 sub-blocks — Pricing Power Audit + CAC Benchmark
+
+Both blocks render in Section 2 between the Competitive Density paragraph and the Opportunity Windows heading. Each is composed from Phase 1B's new query types 7 and 8.
+
+**Pricing Power Audit tokens** (from `PRICING_DISTRIBUTION`):
+- `{{pricing_power_intro}}` — 1–2 sentences. Specific to the operator's industry. Frames the three tiers and what determines tier placement.
+- `{{pricing_low_range}}`, `{{pricing_median_range}}`, `{{pricing_premium_range}}` — short price-range labels (e.g., `$150–$300 per job`)
+- `{{pricing_low_examples}}`, `{{pricing_median_examples}}`, `{{pricing_premium_examples}}` — cited example operators or positioning patterns at each tier
+- `{{pricing_where_you_sit}}` — explicit placement of the operator's current pricing on the distribution, with one-sentence note on what moving up a tier would require
+
+**CAC Benchmark tokens** (from `CAC_BENCHMARK`):
+- `{{cac_intro}}` — 1 sentence framing the industry-typical CAC and why it matters
+- `{{cac_range_body}}` — cited range, primary channels, and what drives variance
+- `{{cac_payback_body}}` — payback period in months + LTV/CAC ratio if surfaced
+
+**Failure substitution.** If `PRICING_DISTRIBUTION` is empty, all six pricing tokens substitute to `Not benchmarked — pilot to measure` and the "Where you sit" line is omitted. Same rule for `CAC_BENCHMARK`. Cite or omit; no invented numbers.
+
+### Section 7.0b render — First-Hire Roadmap + Predictive Index card
+
+Composed into a single `{{first_hire_block}}` token inserted between `{{automation_surface_block}}` and the 7.1 heading. The pipeline assembles the full sub-block at render time so an empty Phase 1D still leaves a clean substitution.
+
+**Block structure** (composed string substituted into `{{first_hire_block}}`):
+
+| Element | Source |
+|---|---|
+| `7.0b — First-hire roadmap` heading | Fixed |
+| Intro paragraph (`{{first_hire_intro}}`) | Phase 1D synthesis |
+| "When" + "Who" cell pair (`{{first_hire_when}}`, `{{first_hire_when_body}}`, `{{first_hire_role}}`, `{{first_hire_role_body}}`) | From `FIRST_HIRE.trigger_revenue` and `FIRST_HIRE.first_role` |
+| "Delegate first" bullet list (`{{first_hire_delegate_list}}`) | Loop over `FIRST_HIRE.what_to_delegate_first` as `<li>` items |
+| Predictive Index highlight card | Fixed — always renders, even when Phase 1D returned nothing |
+
+**Predictive Index card.** A fixed `.callout` with a hot-linked logo image, a headline ("Behavioral fit before skill fit."), body copy recommending the operator take the PI Behavioral Assessment themselves before creating any role and screen every candidate against the role's behavioral profile, and a CTA link to `https://www.predictiveindex.com/assessments/behavioral-assessment/`. The logo `<img>` references the URL `https://media.predictiveindex.com/legacy/hubfs/leanlabs/img/dev/logo-color.svg` with `alt="Predictive Index"` and `max-width:180px`. The card is hardcoded into the template (not a token), since the recommendation is industry-agnostic and stable across runs.
+
+**Failure handling.** If `FIRST_HIRE.confidence` is `uncited` or `FIRST_HIRE` is empty, substitute the when/who cells with a single body paragraph: "Industry hiring benchmarks not surfaced for this sector — start with the assessment recommendation below to ground role design in behavioral fit before locking on a job title." The PI card still renders.
 
 ### Death-zone callout conditional render
 
