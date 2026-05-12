@@ -2,6 +2,26 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.3.0] — 2026-05-12
+
+### Added
+- **Section 7.0 — Automation Surface** in the intelligence report. A research-driven sub-block at the head of Section 7 (Amplified Moves) that surfaces 3–6 industry-standard AI, automation, and agentic-AI use cases the operator could plug in immediately. Each card carries a category chip (Standard / Emerging / Experimental), what it replaces, common tooling stack, and a cited weekly-hours-saved range. A total-hours-recoverable callout sums the cited cards above the grid with `data-countup` animation. Inline source citations beneath the grid list every WebFetch URL the hours figures came from.
+- **Phase 1C — Automation Surface Research** in `optimize/SKILL.md`. Runs after Phase 1B (market research) and before Phase 2 (chain). Derives 3–5 WebSearch queries from the operator's industry term, business type, and stated bottleneck — preferring the Phase 1A Web Supplement's positioning language over the raw BCD field when industry vocabulary diverges. Bound at 5 searches + 10 fetches. Hard cap at 6 cards rendered.
+
+### Changed
+- **`optimize/SKILL.md` Phase 4** extended with the Automation Surface render section. Documents the token list (`{{automation_surface_block}}`, `{{automation_surface_intro}}`, `{{automation_total_hours_low/high}}`, `{{automation_total_caveat}}`, `{{automation_cards_html}}`, `{{automation_sources_note}}`) and the per-card structure with category chip mapping (Standard → `.tag.success`, Emerging → `.tag.med`, Experimental → `.tag.low`).
+- **`optimize/SKILL.md` "Failure modes to avoid"** gained a "Do not invent automation hours" rule. Every numeric `hours_per_week_saved` figure in Section 7.0 must trace to a real WebFetch source from Phase 1C. Uncited use cases still render — without a number, with `Not benchmarked — pilot to measure` in the hours slot. The total-hours callout sums only cited entries.
+- **`optimize/SKILL.md` front-matter description** updated from "four-phase" to the pipeline-step list, since Phase 1C is a new step but does not break the four-phase mental model (1A/1B/1C are sub-phases of "Phase 1 — Research").
+- **`templates/report.html`** has a single new token `{{automation_surface_block}}` inserted between the goal-framing callout and the 7.1 heading. The pipeline composes the full sub-block (header, callout, grid, sources note) into this token; if Phase 1C surfaced nothing, the substitution is the empty string and the section flows from the goal caveat straight to 7.1.
+- **`references/report-structure.md`** now documents Section 7.0 as a v1.3 sub-block under Section 7, including the per-card structure, component reuse (`.tag.success` / `.tag.med` / `.tag.low` for category chips), and failure handling.
+
+### Rationale
+Most solo operators have never seen the off-the-shelf AI/automation toolbox their sector has already adopted. The chain produces bespoke compounding moves but does not surface this layer — which is the lowest-effort, highest-leverage tier available to almost any operator. Putting it at the head of Section 7 (before the bespoke compounding moves) means the operator sees the plug-in wins first and the chain-derived additions second. Research-only sourcing with citations matches the existing Section 2 discipline; no invented numbers.
+
+### Documentation
+- PRD.md updated: version header bumped to 1.3, Phase 1C added to §6.3, Section 7 description in §7 updated to mention 7.0.
+- `examples/sample-report.html` extended with a representative 7.0 block for the pressure-washing sample BCD.
+
 ## [1.2.2] — 2026-05-11
 
 ### Changed (voice)
