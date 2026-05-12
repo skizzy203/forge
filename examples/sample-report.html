@@ -1198,13 +1198,13 @@ setTimeout(() => {
 
     const layers = [];
     const specs = [
-      { z: -3, step: 16, alpha: 0.18, scale: 8 },
-      { z: -1.5, step: 24, alpha: 0.32, scale: 6 },
-      { z: 0, step: 40, alpha: 0.55, scale: 5 },
-      { z: 1, step: 64, alpha: 0.85, scale: 4 }
+      { z: -3, step: 16, alpha: 0.45, scale: 9 },
+      { z: -1.5, step: 24, alpha: 0.65, scale: 7 },
+      { z: 0, step: 40, alpha: 0.85, scale: 5.5 },
+      { z: 1, step: 64, alpha: 1.0, scale: 4.5 }
     ];
     specs.forEach(spec => {
-      const tex = gridTexture(palette, { step: spec.step, alpha: spec.alpha, repeat: 2 });
+      const tex = gridTexture(palette, { step: spec.step, alpha: 0.95, repeat: 2, lineWidth: 1.5 });
       const geo = new THREE.PlaneGeometry(spec.scale, spec.scale);
       const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: spec.alpha });
       const mesh = new THREE.Mesh(geo, mat);
@@ -1213,33 +1213,53 @@ setTimeout(() => {
       layers.push({ mesh, baseZ: spec.z, spec });
     });
 
-    const pointCount = 60;
+    const pointCount = 120;
     const positions = new Float32Array(pointCount * 3);
     for (let i = 0; i < pointCount; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * 6;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 4;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 2 - 0.5;
+      positions[i * 3]     = (Math.random() - 0.5) * 7;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 5;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 3 - 0.5;
     }
     const pointsGeo = new THREE.BufferGeometry();
     pointsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const pointsMat = new THREE.PointsMaterial({ color: palette.accent, size: 0.06, transparent: true, opacity: 0.55, sizeAttenuation: true });
+    const pointsMat = new THREE.PointsMaterial({
+      color: palette.accent, size: 0.10, transparent: true, opacity: 0.85,
+      sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+    });
     const points = new THREE.Points(pointsGeo, pointsMat);
     scene.add(points);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-    const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+    const haloMat = new THREE.PointsMaterial({
+      color: palette.accent, size: 0.32, transparent: true, opacity: 0.22,
+      sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+    });
+    const halo = new THREE.Points(pointsGeo, haloMat);
+    scene.add(halo);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.7);
     dir.position.set(2, 3, 4);
     scene.add(dir);
 
     let raf;
-    (function render() { renderer.render(scene, camera); raf = requestAnimationFrame(render); })();
+    const t0 = performance.now();
+    (function render() {
+      const t = (performance.now() - t0) * 0.001;
+      camera.position.x = Math.sin(t * 0.25) * 0.10;
+      camera.position.y = Math.cos(t * 0.20) * 0.06;
+      points.rotation.z = t * 0.025;
+      halo.rotation.z = t * 0.025;
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(render);
+    })();
 
     return {
-      camera, layers, points, pointsMat,
+      camera, layers, points, halo, pointsMat, haloMat,
       retint(p) {
         pointsMat.color = p.accent;
+        haloMat.color = p.accent;
         layers.forEach(l => {
-          l.mesh.material.map = gridTexture(p, { step: l.spec.step, alpha: l.spec.alpha, repeat: 2 });
+          l.mesh.material.map = gridTexture(p, { step: l.spec.step, alpha: 0.95, repeat: 2, lineWidth: 1.5 });
           l.mesh.material.needsUpdate = true;
         });
       },
@@ -1264,32 +1284,53 @@ setTimeout(() => {
 
     const primitives = [];
     const startPositions = [
-      [-2.5, 1.2, -1.0], [2.3, 1.4, -0.8], [-2.0, -1.0, 0.4],
-      [2.6, -1.1, 0.6], [-1.4, 0.0, -1.4], [1.7, -0.2, -1.2]
+      [-3.4, 1.6, -1.0], [3.2, 1.8, -0.8], [-2.8, -1.4, 0.4],
+      [3.4, -1.5, 0.6], [-1.9, 0.1, -1.4], [2.3, -0.3, -1.2]
     ];
     startPositions.forEach(p => {
-      const geo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-      const mat = new THREE.MeshBasicMaterial({ color: palette.faint, wireframe: true, transparent: true, opacity: 0.65 });
+      const geo = new THREE.BoxGeometry(0.45, 0.45, 0.45);
+      const mat = new THREE.MeshBasicMaterial({ color: palette.accent, wireframe: true, transparent: true, opacity: 0.55 });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(p[0], p[1], p[2]);
+      mesh.userData.startPos = [...p];
+      mesh.userData.spinSpeed = 0.35 + Math.random() * 0.45;
       scene.add(mesh);
       primitives.push(mesh);
     });
 
-    const centerGeo = new THREE.SphereGeometry(0.08, 24, 24);
-    const centerMat = new THREE.MeshBasicMaterial({ color: palette.accent, transparent: true, opacity: 0.0 });
+    const centerGeo = new THREE.SphereGeometry(0.12, 32, 32);
+    const centerMat = new THREE.MeshBasicMaterial({ color: palette.accent, transparent: true, opacity: 0.4 });
     const center = new THREE.Mesh(centerGeo, centerMat);
     scene.add(center);
+
+    const haloGeo = new THREE.SphereGeometry(0.30, 32, 32);
+    const haloMat = new THREE.MeshBasicMaterial({
+      color: palette.accent, transparent: true, opacity: 0.15,
+      blending: THREE.AdditiveBlending, depthWrite: false
+    });
+    const halo = new THREE.Mesh(haloGeo, haloMat);
+    scene.add(halo);
+
     scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
     let raf;
-    (function render() { renderer.render(scene, camera); raf = requestAnimationFrame(render); })();
+    const t0 = performance.now();
+    (function render() {
+      const t = (performance.now() - t0) * 0.001;
+      primitives.forEach(p => {
+        p.rotation.x = t * p.userData.spinSpeed * 0.5;
+        p.rotation.y = t * p.userData.spinSpeed * 0.6;
+      });
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(render);
+    })();
 
     return {
-      camera, primitives, center, centerMat,
+      camera, primitives, center, centerMat, halo, haloMat,
       retint(p) {
-        primitives.forEach(pr => { pr.material.color = p.faint; });
+        primitives.forEach(pr => { pr.material.color = p.accent; });
         centerMat.color = p.accent;
+        haloMat.color = p.accent;
       },
       resize() {
         const w = container.clientWidth, h = container.clientHeight;
@@ -1314,27 +1355,32 @@ setTimeout(() => {
   gsap.timeline({
     scrollTrigger: { trigger: '#sec1', start: 'top top', end: 'bottom top', scrub: 0.8 }
   })
-    .to(hero.camera.position, { z: 1.8, ease: 'power2.inOut' }, 0)
-    .to(hero.layers[0].mesh.position, { z: -5.5, ease: 'none' }, 0)
-    .to(hero.layers[1].mesh.position, { z: -3.0, ease: 'none' }, 0)
-    .to(hero.layers[2].mesh.position, { z: -0.8, ease: 'none' }, 0)
-    .to(hero.layers[3].mesh.position, { z: 0.5, ease: 'none' }, 0)
-    .to(hero.pointsMat, { opacity: 0.95, ease: 'power2.in' }, 0)
-    .to(hero.points.rotation, { y: 0.35, ease: 'none' }, 0);
+    .to(hero.camera.position, { z: 0.6, ease: 'power2.inOut' }, 0)
+    .to(hero.layers[0].mesh.position, { z: -6.5, ease: 'none' }, 0)
+    .to(hero.layers[1].mesh.position, { z: -4.0, ease: 'none' }, 0)
+    .to(hero.layers[2].mesh.position, { z: -1.5, ease: 'none' }, 0)
+    .to(hero.layers[3].mesh.position, { z: 1.0, ease: 'none' }, 0)
+    .to(hero.pointsMat, { opacity: 1.0, ease: 'power2.in' }, 0)
+    .to(hero.haloMat, { opacity: 0.45, ease: 'power2.in' }, 0)
+    .to(hero.points.rotation, { y: 0.55, ease: 'none' }, 0);
 
   const footerTL = gsap.timeline({
-    scrollTrigger: { trigger: '#cine-footer', start: 'top 80%', end: 'bottom 30%', scrub: 0.6 }
+    scrollTrigger: { trigger: '#cine-footer', start: 'top 90%', end: 'bottom 40%', scrub: 0.6 }
   });
   footer.primitives.forEach(p => {
     footerTL.to(p.position, { x: 0, y: 0, z: 0, ease: 'power2.inOut' }, 0)
-            .to(p.rotation, { x: Math.PI * 0.5, y: Math.PI * 0.5, ease: 'none' }, 0)
-            .to(p.material, { opacity: 0.0, ease: 'power2.in' }, 0.5);
+            .to(p.material, { opacity: 0.40, ease: 'power2.in' }, 0.4);
   });
-  footerTL.to(footer.centerMat, { opacity: 1.0, ease: 'power2.in' }, 0.5);
+  footerTL.to(footer.centerMat, { opacity: 1.0, ease: 'power2.in' }, 0.4)
+          .to(footer.haloMat, { opacity: 0.55, ease: 'power2.in' }, 0.4);
 
   gsap.to(footer.center.scale, {
-    x: 1.4, y: 1.4, z: 1.4,
-    duration: 1.6, repeat: -1, yoyo: true, ease: 'sine.inOut'
+    x: 2.2, y: 2.2, z: 2.2,
+    duration: 1.2, repeat: -1, yoyo: true, ease: 'sine.inOut'
+  });
+  gsap.to(footer.halo.scale, {
+    x: 1.7, y: 1.7, z: 1.7,
+    duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut'
   });
 
   document.addEventListener('forge-theme-change', () => {
