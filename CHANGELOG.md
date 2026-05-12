@@ -2,6 +2,27 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.5.2] — 2026-05-12
+
+### Fixed
+- **Bare `<a>` tags rendered in browser-default blue.** The Automation Surface and First-Hire Roadmap source notes use `<p class="body-sm">Sourced from: <a>…</a></p>` markup. The existing `.sources a` rule is class-scoped and didn't apply to these paragraphs, so the links fell back to the user-agent default `#0000EE` blue — unreadable against the terminal-noir dark background. Added a base `a` rule that styles every anchor in the document with `var(--accent)`, prevents the dreaded purple `:visited` color, and underlines on hover for affordance. More-specific rules (`.sources a`, `a.move`, inline-styled CTAs) continue to override.
+- **Stale `v1.3.1` literal version strings in the rendered sample report.** When v1.5.0 and v1.5.1 shipped, the template's tokenized version substitutions (`{{plugin_version_full}}`, `{{plugin_version_short}}`) were bumped via `plugin.json`, but the static sample at `examples/sample-report.html` still carried the literal `v1.3.1` / `v1.3` strings rendered when v1.3.1 was current. Resynced both to `v1.5.2` / `v1.5` so the live GitHub Pages sample matches the rest of the deliverable.
+- **Stale `FORGE_VERSION` constant in the intake form.** `skills/intake/templates/questionnaire.html` carried `FORGE_VERSION = 'v1.3.1'` left over from the v1.3.1 release. BCDs generated from the form were stamped with the wrong version. Bumped to `v1.5.2`.
+- **Stale `v1.2.0` reference in PRD §10 verification text.** Replaced with a version-agnostic instruction so the verification step doesn't drift again on future releases.
+
+### Rationale
+Comprehensive surface-area audit triggered by a reader screenshot showing the source-note hyperlinks rendering as dark unreadable blue on the dark theme. The audit also surfaced three version-string drift bugs that had no functional impact but eroded the polish of the deliverable. All four fixes ship together as a single patch release. No template structure, no behavior changes, no new dependencies.
+
+### Cross-checked and confirmed correct
+- `references/DESIGN.md` §08 cinematic exception ✓
+- `references/visual-primitives.md` § Cinematic Layer ✓
+- `references/report-structure.md` 7.0 + 7.0b sub-block specs ✓
+- `PRD.md` §6.3 covers Phases 1A/1B/1C/1D ✓
+- `PRD.md` §7 mentions all v1.4 sub-blocks and the v1.5 cinematic layer ✓
+- CHANGELOG entries for 1.3.0, 1.3.1, 1.4.0, 1.5.0, 1.5.1 all present in correct order ✓
+- README "Try the intake form" + "Sample output" links present ✓
+- All hot-linked external assets (PI logo, Three.js, GSAP via jsdelivr) reference by URL only, no asset redistribution ✓
+
 ## [1.5.1] — 2026-05-12
 
 ### Fixed — cinematic layer was barely visible
