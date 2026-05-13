@@ -2,6 +2,33 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.6.4] — 2026-05-13
+
+### Fixed — Sankey path model misunderstood through v1.6.3
+
+Three earlier releases tried to force `fill: var(--accent)` on the Sankey flow paths. Wrong model: **Mermaid v11 sankey-beta renders flow paths via stroke**, with `fill="none"` and a per-link `stroke-width` set proportional to the flow value. Forcing fill on a stroke-rendered path inverts the rendering — the path becomes a hairline filled region instead of a wide stroked ribbon. That's why the flows looked "collapsed" through v1.6.1, v1.6.2, and v1.6.3.
+
+### Restyle, rebuilt with the correct model
+
+**Flow paths** now keep Mermaid's stroke-with-gradient model. The CSS no longer touches `fill` or `stroke` directly — just opacity and blend mode. Mermaid's per-link `stroke="url(#linkGradient-N)"` references are preserved.
+
+**Node bars** cycle through the brand palette via `:nth-of-type(4n+1)`, `(4n+2)`, `(4n+3)`, `(4n+4)` — `--accent` / `--info` / `--warn` / `--success`. Solid fills, no strokes. Each node gets a distinct color from the four-color brand cycle.
+
+**Multicolor flow gradients** restored by overriding the `<linearGradient>` stop colors in `<defs>` via the same nth-of-type cycle. Each link's gradient transitions between two brand colors instead of Mermaid's d3 schemeTableau10 palette (the pink/yellow/random colors visible in earlier screenshots). Cycle: accent→info, info→warn, warn→success, success→accent, repeating.
+
+**Mix-blend-mode** stays — `screen` in dark theme so overlapping flows brighten where they cross, `multiply` in light theme for white-bg legibility.
+
+**Labels** stay uniform `var(--text-primary)` in mono.
+
+### Selector strategy unchanged
+Document-level CSS (not Mermaid themeCSS — that channel is ignored by sankey-beta). Scoped via `:has(g.links)` structural selector plus `aria-roledescription="sankey-beta"` / `"sankey"` fallbacks for browsers without `:has()`.
+
+### Files changed
+- `skills/optimize/templates/report.html` — Sankey CSS rebuilt with correct stroke-path model + nth-of-type palette cycling
+- `examples/sample-report.html` — same mirror + appendix `v1.6.4`
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.6.4`
+- `.claude-plugin/plugin.json` → `1.6.4`
+
 ## [1.6.3] — 2026-05-13
 
 ### Fixed — Sankey CSS escaped Mermaid's themeCSS into the document stylesheet

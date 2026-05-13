@@ -143,51 +143,103 @@ html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var
 .diagram.as-is .diagram-label{color:var(--danger)}
 .diagram.proposed .diagram-label{color:var(--success)}
 
-/* === Sankey diagram terminal-noir restyle (v1.6.3) ===
-   Moved from Mermaid's themeCSS into the document stylesheet because Mermaid v11
-   sankey-beta does not honor themeCSS for its nodes/links — labels were still
-   rendering in Mermaid's auto-assigned per-node palette through v1.6.2.
+/* === Sankey diagram terminal-noir restyle (v1.6.4) ===
+   Mermaid v11 sankey-beta renders flow paths via STROKE (with fill="none"), where
+   stroke-width is set per-link proportional to the flow value. v1.6.1 through v1.6.3
+   tried to force fill on the paths, which inverted the rendering and made flows
+   look like collapsed thin lines.
 
-   Three selector strategies for robustness across Mermaid versions:
-   1. aria-roledescription attributes (preferred where Mermaid sets them)
-   2. :has(g.links) structural selector — sankey is the only diagram type that
-      renders a <g class="links"> child, so this reliably scopes to sankey only */
-.diagram .mermaid svg[aria-roledescription="sankey-beta"] rect,
-.diagram .mermaid svg[aria-roledescription="sankey"] rect,
-.diagram .mermaid svg:has(g.links) g.nodes rect {
-  fill: var(--accent) !important;
+   This rebuild keeps Mermaid's correct stroke-path model and instead:
+   1. Cycles brand-palette colors (accent / info / warn / success) across node rects
+   2. Lets the default `linkColor: gradient` config keep multicolor ribbons
+   3. Overrides each <linearGradient> stop's stop-color via nth-of-type so the
+      gradient flows inherit brand palette colors instead of Mermaid's d3 palette
+
+   Sankey is identified via `:has(g.links)` — the only Mermaid diagram type that
+   produces a <g class="links"> child element. Also tries aria-roledescription
+   for older Chrome versions that don't yet support :has(). */
+
+/* Node bars — cycle brand palette via nth-of-type */
+.diagram .mermaid svg:has(g.links) g.nodes rect,
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] g.nodes rect,
+.diagram .mermaid svg[aria-roledescription="sankey"] g.nodes rect {
   fill-opacity: 1 !important;
   opacity: 1 !important;
-  stroke: var(--accent) !important;
+  stroke: none !important;
   stroke-width: 0 !important;
 }
-.diagram .mermaid svg[aria-roledescription="sankey-beta"] path,
-.diagram .mermaid svg[aria-roledescription="sankey"] path,
-.diagram .mermaid svg:has(g.links) g.links path {
-  fill: var(--accent) !important;
-  fill-opacity: 0.55 !important;
+.diagram .mermaid svg:has(g.links) g.nodes rect:nth-of-type(4n+1) { fill: var(--accent) !important; }
+.diagram .mermaid svg:has(g.links) g.nodes rect:nth-of-type(4n+2) { fill: var(--info) !important; }
+.diagram .mermaid svg:has(g.links) g.nodes rect:nth-of-type(4n+3) { fill: var(--warn) !important; }
+.diagram .mermaid svg:has(g.links) g.nodes rect:nth-of-type(4n+4) { fill: var(--success) !important; }
+/* aria-roledescription fallback for browsers without :has() — same cycle */
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] g.nodes rect:nth-of-type(4n+1),
+.diagram .mermaid svg[aria-roledescription="sankey"] g.nodes rect:nth-of-type(4n+1) { fill: var(--accent) !important; }
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] g.nodes rect:nth-of-type(4n+2),
+.diagram .mermaid svg[aria-roledescription="sankey"] g.nodes rect:nth-of-type(4n+2) { fill: var(--info) !important; }
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] g.nodes rect:nth-of-type(4n+3),
+.diagram .mermaid svg[aria-roledescription="sankey"] g.nodes rect:nth-of-type(4n+3) { fill: var(--warn) !important; }
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] g.nodes rect:nth-of-type(4n+4),
+.diagram .mermaid svg[aria-roledescription="sankey"] g.nodes rect:nth-of-type(4n+4) { fill: var(--success) !important; }
+
+/* Flow paths — KEEP Mermaid's stroke model. Do NOT set fill, do NOT override stroke
+   (Mermaid sets stroke to url(#linkGradient-N) for each link). Just tune opacity. */
+.diagram .mermaid svg:has(g.links) g.links path,
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] g.links path,
+.diagram .mermaid svg[aria-roledescription="sankey"] g.links path {
+  fill: none !important;
+  stroke-opacity: 0.6 !important;
   opacity: 1 !important;
-  stroke: none !important;
   mix-blend-mode: screen;
 }
-.diagram .mermaid svg[aria-roledescription="sankey-beta"] path:hover,
-.diagram .mermaid svg[aria-roledescription="sankey"] path:hover,
-.diagram .mermaid svg:has(g.links) g.links path:hover {
-  fill-opacity: 0.80 !important;
+.diagram .mermaid svg:has(g.links) g.links path:hover,
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] g.links path:hover,
+.diagram .mermaid svg[aria-roledescription="sankey"] g.links path:hover {
+  stroke-opacity: 0.85 !important;
 }
+
+/* Gradient stops — cycle palette so each flow has its own color pair */
+.diagram .mermaid svg:has(g.links) defs linearGradient:nth-of-type(4n+1) stop:nth-of-type(1),
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] defs linearGradient:nth-of-type(4n+1) stop:nth-of-type(1),
+.diagram .mermaid svg[aria-roledescription="sankey"] defs linearGradient:nth-of-type(4n+1) stop:nth-of-type(1) { stop-color: var(--accent) !important; stop-opacity: 1 !important; }
+.diagram .mermaid svg:has(g.links) defs linearGradient:nth-of-type(4n+1) stop:nth-of-type(2),
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] defs linearGradient:nth-of-type(4n+1) stop:nth-of-type(2),
+.diagram .mermaid svg[aria-roledescription="sankey"] defs linearGradient:nth-of-type(4n+1) stop:nth-of-type(2) { stop-color: var(--info) !important; stop-opacity: 1 !important; }
+.diagram .mermaid svg:has(g.links) defs linearGradient:nth-of-type(4n+2) stop:nth-of-type(1),
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] defs linearGradient:nth-of-type(4n+2) stop:nth-of-type(1),
+.diagram .mermaid svg[aria-roledescription="sankey"] defs linearGradient:nth-of-type(4n+2) stop:nth-of-type(1) { stop-color: var(--info) !important; stop-opacity: 1 !important; }
+.diagram .mermaid svg:has(g.links) defs linearGradient:nth-of-type(4n+2) stop:nth-of-type(2),
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] defs linearGradient:nth-of-type(4n+2) stop:nth-of-type(2),
+.diagram .mermaid svg[aria-roledescription="sankey"] defs linearGradient:nth-of-type(4n+2) stop:nth-of-type(2) { stop-color: var(--warn) !important; stop-opacity: 1 !important; }
+.diagram .mermaid svg:has(g.links) defs linearGradient:nth-of-type(4n+3) stop:nth-of-type(1),
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] defs linearGradient:nth-of-type(4n+3) stop:nth-of-type(1),
+.diagram .mermaid svg[aria-roledescription="sankey"] defs linearGradient:nth-of-type(4n+3) stop:nth-of-type(1) { stop-color: var(--warn) !important; stop-opacity: 1 !important; }
+.diagram .mermaid svg:has(g.links) defs linearGradient:nth-of-type(4n+3) stop:nth-of-type(2),
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] defs linearGradient:nth-of-type(4n+3) stop:nth-of-type(2),
+.diagram .mermaid svg[aria-roledescription="sankey"] defs linearGradient:nth-of-type(4n+3) stop:nth-of-type(2) { stop-color: var(--success) !important; stop-opacity: 1 !important; }
+.diagram .mermaid svg:has(g.links) defs linearGradient:nth-of-type(4n+4) stop:nth-of-type(1),
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] defs linearGradient:nth-of-type(4n+4) stop:nth-of-type(1),
+.diagram .mermaid svg[aria-roledescription="sankey"] defs linearGradient:nth-of-type(4n+4) stop:nth-of-type(1) { stop-color: var(--success) !important; stop-opacity: 1 !important; }
+.diagram .mermaid svg:has(g.links) defs linearGradient:nth-of-type(4n+4) stop:nth-of-type(2),
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] defs linearGradient:nth-of-type(4n+4) stop:nth-of-type(2),
+.diagram .mermaid svg[aria-roledescription="sankey"] defs linearGradient:nth-of-type(4n+4) stop:nth-of-type(2) { stop-color: var(--accent) !important; stop-opacity: 1 !important; }
+
+/* Labels — uniform terminal mono in primary text color */
+.diagram .mermaid svg:has(g.links) text,
 .diagram .mermaid svg[aria-roledescription="sankey-beta"] text,
-.diagram .mermaid svg[aria-roledescription="sankey"] text,
-.diagram .mermaid svg:has(g.links) text {
+.diagram .mermaid svg[aria-roledescription="sankey"] text {
   fill: var(--text-primary) !important;
   font-family: var(--font-mono) !important;
   font-size: 12px !important;
   letter-spacing: 0.04em !important;
 }
-[data-theme="light"] .diagram .mermaid svg[aria-roledescription="sankey-beta"] path,
-[data-theme="light"] .diagram .mermaid svg[aria-roledescription="sankey"] path,
-[data-theme="light"] .diagram .mermaid svg:has(g.links) g.links path {
+
+/* Light mode — swap blend mode and ease opacity for white background readability */
+[data-theme="light"] .diagram .mermaid svg:has(g.links) g.links path,
+[data-theme="light"] .diagram .mermaid svg[aria-roledescription="sankey-beta"] g.links path,
+[data-theme="light"] .diagram .mermaid svg[aria-roledescription="sankey"] g.links path {
   mix-blend-mode: multiply;
-  fill-opacity: 0.45 !important;
+  stroke-opacity: 0.55 !important;
 }
 
 /* Insight layer */
