@@ -259,16 +259,16 @@ a:hover{text-decoration:underline}
 /* Cinematic header (v1.6) — WebGL shader text "BUSINESS MODEL OPTIMIZATION REPORT".
    Single bounded element above Section 1 (not layered behind it), so the bg-num "01" stays in its own lane.
    Falls back to a styled static <h1> if WebGL is unavailable or reduced-motion is active. */
-.cine-header{position:relative;width:100%;height:clamp(220px,38vh,460px);margin:24px 0 48px;overflow:hidden;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
-.cine-header canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.cine-header-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:clamp(22px,4.4vw,52px);letter-spacing:0.01em;color:var(--text-primary);text-align:center;padding:0 24px;line-height:1.05;opacity:1;transition:opacity 0.4s;pointer-events:none}
-.cine-header-fallback .accent{color:var(--accent)}
-.cine-header[data-shader-state="active"] .cine-header-fallback{opacity:0}
-@media (prefers-reduced-motion: reduce){
-  .cine-header{height:auto;border:0;margin:24px 0 32px}
-  .cine-header canvas{display:none}
-  .cine-header-fallback{position:relative;padding:48px 24px}
-}
+/* Cinematic header v1.7 — UnicornStudio shader background + overlayed title */
+.cine-header{position:relative;width:100%;height:clamp(220px,38vh,460px);margin:24px 0 48px;overflow:hidden;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--bg-elevated)}
+.cine-header-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.cine-header-bg canvas{width:100% !important;height:100% !important;display:block}
+.cine-header-title{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding:0 24px;line-height:1.0}
+.cine-header-title h1{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,5.2vw,64px);letter-spacing:-0.01em;line-height:1.05;margin:0;color:rgba(232,236,238,0.92);text-shadow:0 0 24px rgba(34,224,255,0.35),0 0 56px rgba(34,224,255,0.18)}
+.cine-header-title h1 .line1{display:block;margin-bottom:0.08em}
+.cine-header-title h1 .line2{display:block;color:var(--accent);opacity:0.95}
+[data-theme="light"] .cine-header-title h1{color:rgba(10,14,17,0.88);text-shadow:0 0 24px rgba(15,184,214,0.25),0 0 56px rgba(15,184,214,0.12)}
+@media (prefers-reduced-motion: reduce){.cine-header-bg{display:none}}
 @media print{.cine-header{display:none}}
 
 /* Anchor-styled move teasers in Section 1 */
@@ -329,10 +329,15 @@ a.move:hover .headline{color:var(--accent)}
 <!-- ════════════════════════════════════════ -->
 <!-- SECTION 1 — EXECUTIVE SUMMARY            -->
 <!-- ════════════════════════════════════════ -->
-<!-- Cinematic shader header (v1.6) -->
-<div class="cine-header" id="cine-header" aria-hidden="true" data-shader-state="ready">
-  <canvas id="cine-header-canvas"></canvas>
-  <div class="cine-header-fallback">Business Model<br><span class="accent">Optimization Report</span></div>
+<!-- Cinematic header (v1.7) — UnicornStudio shader background + overlayed title -->
+<div class="cine-header" id="cine-header" aria-hidden="false">
+  <div data-us-project="bmaMERjX2VZDtPrh4Zwx" class="cine-header-bg"></div>
+  <div class="cine-header-title">
+    <h1>
+      <span class="line1">Business Model</span>
+      <span class="line2">Optimization Report</span>
+    </h1>
+  </div>
 </div>
 
 <section class="section" id="sec1">
@@ -1077,7 +1082,7 @@ quadrantChart
       <p>BCD file: <code># BUSINESS MODEL INTAKE-Mechanical Magic.md</code></p>
       <p>Web supplement source: <code>https://mechanicalmagicpressurewashing.com/</code></p>
       <p>Pruning log: <code>~/forge-runs/mechanical-magic-2026-05-11.models.json</code></p>
-      <p>Plugin version: forge v1.6.4</p>
+      <p>Plugin version: forge v1.7.0</p>
     </div>
   </details>
 </section>
@@ -1092,7 +1097,7 @@ quadrantChart
 <div class="footer-mark">
   <div>DISTILL</div>
   <div class="descriptor">A clear plan for your business, backed by market data.</div>
-  <div>FORGE v1.6</div>
+  <div>FORGE v1.7</div>
 </div>
 
 </div>
@@ -1312,209 +1317,24 @@ setTimeout(() => {
 })();
 </script>
 
-<!-- Cinematic shader header (v1.6) — raw WebGL2/WebGL1, ~5 KB inline, no external library. -->
+<!-- Cinematic header background (v1.7) — UnicornStudio shader -->
 <script>
 (function(){
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  const container = document.getElementById('cine-header');
-  const canvas = document.getElementById('cine-header-canvas');
-  if (!container || !canvas) return;
-
-  const ctxOpts = { alpha: true, antialias: true, premultipliedAlpha: false };
-  const gl = canvas.getContext('webgl2', ctxOpts) || canvas.getContext('webgl', ctxOpts);
-  if (!gl) return;
-  const isGL2 = typeof WebGL2RenderingContext !== 'undefined' && gl instanceof WebGL2RenderingContext;
-
-  const VSHADER = (isGL2
-    ? '#version 300 es\nin vec2 aPos;\nout vec2 vUv;'
-    : 'attribute vec2 aPos;\nvarying vec2 vUv;'
-  ) + `
-void main(){
-  vUv = aPos * 0.5 + 0.5;
-  vUv.y = 1.0 - vUv.y;
-  gl_Position = vec4(aPos, 0.0, 1.0);
-}`;
-
-  // v1.6.1 redesign — three drifting glow blobs behind hollow outlined text. Edge-detected outline.
-  const FSHADER = (isGL2
-    ? '#version 300 es\nprecision highp float;\nin vec2 vUv;\nout vec4 outColor;\n#define SAMPLE(t,uv) texture(t, uv)'
-    : 'precision highp float;\nvarying vec2 vUv;\n#define SAMPLE(t,uv) texture2D(t, uv)'
-  ) + `
-uniform sampler2D uText;
-uniform vec3 uOutlineColor;
-uniform vec3 uColor1;
-uniform vec3 uColor2;
-uniform vec3 uColor3;
-uniform float uTime;
-uniform vec2 uResolution;
-void main(){
-  float ar = uResolution.x / uResolution.y;
-  vec2 uvA = vec2(vUv.x * ar, vUv.y);
-  vec2 p1 = vec2((0.25 + 0.15 * sin(uTime * 0.21)) * ar, 0.50 + 0.18 * cos(uTime * 0.13));
-  vec2 p2 = vec2((0.50 + 0.18 * cos(uTime * 0.15)) * ar, 0.50 + 0.15 * sin(uTime * 0.19));
-  vec2 p3 = vec2((0.75 + 0.15 * sin(uTime * 0.17)) * ar, 0.50 + 0.18 * cos(uTime * 0.11));
-  float r = 0.32;
-  float b1 = exp(-pow(distance(uvA, p1) / r, 2.0));
-  float b2 = exp(-pow(distance(uvA, p2) / r, 2.0));
-  float b3 = exp(-pow(distance(uvA, p3) / r, 2.0));
-  vec3 glow = uColor1 * b1 + uColor2 * b2 + uColor3 * b3;
-  float glowA = clamp(b1 + b2 + b3, 0.0, 1.0);
-  vec2 px = vec2(1.5) / uResolution;
-  float aR = SAMPLE(uText, vUv + vec2(px.x, 0.0)).a;
-  float aL = SAMPLE(uText, vUv - vec2(px.x, 0.0)).a;
-  float aU = SAMPLE(uText, vUv + vec2(0.0, px.y)).a;
-  float aD = SAMPLE(uText, vUv - vec2(0.0, px.y)).a;
-  float maxN = max(max(aR, aL), max(aU, aD));
-  float minN = min(min(aR, aL), min(aU, aD));
-  float edge = clamp((maxN - minN) * 1.6, 0.0, 1.0);
-  vec3 col = mix(glow, uOutlineColor, edge);
-  float alpha = max(glowA * 0.55, edge);
-  ${isGL2 ? 'outColor' : 'gl_FragColor'} = vec4(col * alpha, alpha);
-}`;
-
-  function compile(type, src){
-    const sh = gl.createShader(type);
-    gl.shaderSource(sh, src);
-    gl.compileShader(sh);
-    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-      console.warn('[forge shader] compile failed:', gl.getShaderInfoLog(sh));
-      gl.deleteShader(sh);
-      return null;
+  if (window.UnicornStudio) return;
+  window.UnicornStudio = { isInitialized: false };
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.34/dist/unicornStudio.umd.js';
+  s.onload = function(){
+    if (!window.UnicornStudio.isInitialized && typeof window.UnicornStudio.init === 'function') {
+      window.UnicornStudio.init();
+      window.UnicornStudio.isInitialized = true;
     }
-    return sh;
-  }
-  const vs = compile(gl.VERTEX_SHADER, VSHADER);
-  const fs = compile(gl.FRAGMENT_SHADER, FSHADER);
-  if (!vs || !fs) return;
-
-  const prog = gl.createProgram();
-  gl.attachShader(prog, vs); gl.attachShader(prog, fs);
-  gl.linkProgram(prog);
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-    console.warn('[forge shader] link failed:', gl.getProgramInfoLog(prog));
-    return;
-  }
-  gl.useProgram(prog);
-
-  const buf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
-  const aPos = gl.getAttribLocation(prog, 'aPos');
-  gl.enableVertexAttribArray(aPos);
-  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-  const uText = gl.getUniformLocation(prog, 'uText');
-  const uOutlineColor = gl.getUniformLocation(prog, 'uOutlineColor');
-  const uColor1 = gl.getUniformLocation(prog, 'uColor1');
-  const uColor2 = gl.getUniformLocation(prog, 'uColor2');
-  const uColor3 = gl.getUniformLocation(prog, 'uColor3');
-  const uTime = gl.getUniformLocation(prog, 'uTime');
-  const uResolution = gl.getUniformLocation(prog, 'uResolution');
-  gl.uniform1i(uText, 0);
-
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-  gl.clearColor(0, 0, 0, 0);
-
-  const txCanvas = document.createElement('canvas');
-  const txCtx = txCanvas.getContext('2d');
-  const tex = gl.createTexture();
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-  function hexToRgb(hex){
-    hex = (hex || '').trim().replace('#','');
-    if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
-    const n = parseInt(hex || 'E8ECEE', 16);
-    return [((n>>16)&255)/255, ((n>>8)&255)/255, (n&255)/255];
-  }
-  function readPalette(){
-    const cs = getComputedStyle(document.documentElement);
-    const accentHex = (cs.getPropertyValue('--accent') || '#22E0FF').trim() || '#22E0FF';
-    const infoHex   = (cs.getPropertyValue('--info')   || '#A855F7').trim() || '#A855F7';
-    const warnHex   = (cs.getPropertyValue('--warn')   || '#E8B33A').trim() || '#E8B33A';
-    const textHex   = (cs.getPropertyValue('--text-primary') || '#E8ECEE').trim() || '#E8ECEE';
-    return {
-      outline: hexToRgb(accentHex),
-      blob1: hexToRgb(accentHex),
-      blob2: hexToRgb(infoHex),
-      blob3: hexToRgb(warnHex),
-      textHex
-    };
-  }
-  let palette = readPalette();
-
-  function paintText(){
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (w === 0 || h === 0) return;
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
-    txCanvas.width = canvas.width;
-    txCanvas.height = canvas.height;
-    txCtx.clearRect(0, 0, txCanvas.width, txCanvas.height);
-    const fontSize = Math.min(Math.max(28 * dpr, w * 0.055 * dpr), 64 * dpr);
-    txCtx.font = `800 ${fontSize}px "Inter Tight", "Helvetica Now Display", system-ui, sans-serif`;
-    txCtx.textAlign = 'center';
-    txCtx.textBaseline = 'middle';
-    txCtx.fillStyle = palette.textHex;
-    const lineGap = fontSize * 1.05;
-    const cx = txCanvas.width / 2;
-    const cy = txCanvas.height / 2;
-    txCtx.fillText('BUSINESS MODEL', cx, cy - lineGap * 0.5);
-    txCtx.fillText('OPTIMIZATION REPORT', cx, cy + lineGap * 0.5);
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, txCanvas);
-  }
-
-  function setUniforms(){
-    gl.uniform3f(uOutlineColor, palette.outline[0], palette.outline[1], palette.outline[2]);
-    gl.uniform3f(uColor1, palette.blob1[0], palette.blob1[1], palette.blob1[2]);
-    gl.uniform3f(uColor2, palette.blob2[0], palette.blob2[1], palette.blob2[2]);
-    gl.uniform3f(uColor3, palette.blob3[0], palette.blob3[1], palette.blob3[2]);
-    gl.uniform2f(uResolution, canvas.width, canvas.height);
-  }
-
-  const t0 = performance.now();
-  let raf;
-  function frame(){
-    const t = (performance.now() - t0) * 0.001;
-    gl.uniform1f(uTime, t);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    raf = requestAnimationFrame(frame);
-  }
-
-  paintText();
-  setUniforms();
-  container.dataset.shaderState = 'active';
-  frame();
-
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { paintText(); setUniforms(); }, 120);
-  });
-
-  document.addEventListener('forge-theme-change', () => {
-    palette = readPalette();
-    paintText();
-    setUniforms();
-  });
-
-  window.addEventListener('beforeunload', () => {
-    cancelAnimationFrame(raf);
-    gl.deleteProgram(prog); gl.deleteShader(vs); gl.deleteShader(fs);
-    gl.deleteBuffer(buf); gl.deleteTexture(tex);
-  });
+  };
+  s.onerror = function(){
+    console.warn('[forge cinematic] UnicornStudio CDN unreachable — showing bare title on elevated panel');
+  };
+  (document.head || document.body).appendChild(s);
 })();
 </script>
 
