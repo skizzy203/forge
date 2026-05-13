@@ -143,6 +143,53 @@ html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var
 .diagram.as-is .diagram-label{color:var(--danger)}
 .diagram.proposed .diagram-label{color:var(--success)}
 
+/* === Sankey diagram terminal-noir restyle (v1.6.3) ===
+   Moved from Mermaid's themeCSS into the document stylesheet because Mermaid v11
+   sankey-beta does not honor themeCSS for its nodes/links — labels were still
+   rendering in Mermaid's auto-assigned per-node palette through v1.6.2.
+
+   Three selector strategies for robustness across Mermaid versions:
+   1. aria-roledescription attributes (preferred where Mermaid sets them)
+   2. :has(g.links) structural selector — sankey is the only diagram type that
+      renders a <g class="links"> child, so this reliably scopes to sankey only */
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] rect,
+.diagram .mermaid svg[aria-roledescription="sankey"] rect,
+.diagram .mermaid svg:has(g.links) g.nodes rect {
+  fill: var(--accent) !important;
+  fill-opacity: 1 !important;
+  opacity: 1 !important;
+  stroke: var(--accent) !important;
+  stroke-width: 0 !important;
+}
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] path,
+.diagram .mermaid svg[aria-roledescription="sankey"] path,
+.diagram .mermaid svg:has(g.links) g.links path {
+  fill: var(--accent) !important;
+  fill-opacity: 0.55 !important;
+  opacity: 1 !important;
+  stroke: none !important;
+  mix-blend-mode: screen;
+}
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] path:hover,
+.diagram .mermaid svg[aria-roledescription="sankey"] path:hover,
+.diagram .mermaid svg:has(g.links) g.links path:hover {
+  fill-opacity: 0.80 !important;
+}
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] text,
+.diagram .mermaid svg[aria-roledescription="sankey"] text,
+.diagram .mermaid svg:has(g.links) text {
+  fill: var(--text-primary) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  letter-spacing: 0.04em !important;
+}
+[data-theme="light"] .diagram .mermaid svg[aria-roledescription="sankey-beta"] path,
+[data-theme="light"] .diagram .mermaid svg[aria-roledescription="sankey"] path,
+[data-theme="light"] .diagram .mermaid svg:has(g.links) g.links path {
+  mix-blend-mode: multiply;
+  fill-opacity: 0.45 !important;
+}
+
 /* Insight layer */
 .insight{background:var(--bg-elevated);border:1px solid var(--accent);padding:20px 24px;margin:16px 0 32px}
 .insight-row{display:flex;gap:16px;padding:8px 0;align-items:baseline}
