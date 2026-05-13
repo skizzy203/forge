@@ -896,23 +896,44 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       stroke-dasharray: 4 3 !important;
       opacity: 0.7;
     }
-    /* Sankey-specific overrides (added v1.6.1) — the outline-only rule above targets
-       `.node rect` (descendant selector) which doesn't match sankey's `<rect class="node">`
-       direct element pattern. Mermaid's themeVariables.primaryColor was rendering sankey
-       bars in the dark elevated background, making them blend into the page. Explicit
-       overrides here restore visible filled accent bars and lift the flow-ribbon opacity. */
-    rect.node {
+    /* === Sankey-beta full restyle (v1.6.2) ===
+       Rebuilt from scratch. Scopes via the `aria-roledescription="sankey-beta"` attribute
+       Mermaid v11 sets on the root SVG, which beats the inline `fill="#..."` attributes
+       and the `opacity="0.6"` defaults baked into Mermaid's sankey renderer. */
+    svg[aria-roledescription="sankey-beta"] rect,
+    svg[aria-roledescription="sankey-beta"] g.nodes rect,
+    svg[aria-roledescription="sankey-beta"] rect.node {
       fill: var(--accent) !important;
-      fill-opacity: 0.92 !important;
-      stroke: none !important;
+      fill-opacity: 1 !important;
+      opacity: 1 !important;
+      stroke: var(--accent) !important;
+      stroke-width: 0 !important;
     }
-    .sankey-link, g.links path, path.link {
+    svg[aria-roledescription="sankey-beta"] path,
+    svg[aria-roledescription="sankey-beta"] g.links path,
+    svg[aria-roledescription="sankey-beta"] path.link {
       fill: var(--accent) !important;
+      fill-opacity: 0.55 !important;
+      opacity: 1 !important;
+      stroke: none !important;
+      mix-blend-mode: screen;
+    }
+    svg[aria-roledescription="sankey-beta"] path:hover,
+    svg[aria-roledescription="sankey-beta"] path.link:hover {
+      fill-opacity: 0.80 !important;
+    }
+    svg[aria-roledescription="sankey-beta"] text {
+      fill: var(--text-primary) !important;
+      font-family: var(--font-mono) !important;
+      font-size: 12px !important;
+      letter-spacing: 0.04em !important;
+    }
+    /* Light-mode override — screen blending washes out on white bg; use multiply instead so flows stay readable */
+    [data-theme="light"] svg[aria-roledescription="sankey-beta"] path,
+    [data-theme="light"] svg[aria-roledescription="sankey-beta"] g.links path,
+    [data-theme="light"] svg[aria-roledescription="sankey-beta"] path.link {
+      mix-blend-mode: multiply;
       fill-opacity: 0.45 !important;
-      stroke: none !important;
-    }
-    .sankey-link:hover, path.link:hover {
-      fill-opacity: 0.65 !important;
     }
   `;
 

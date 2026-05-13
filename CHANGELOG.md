@@ -2,6 +2,48 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.6.2] — 2026-05-13
+
+### Fixed — Sankey diagram restyle from scratch
+
+v1.6.1's Sankey overrides didn't reach far enough. Two screenshots in dark and light themes confirmed the node bars were still nearly invisible and the flow ribbons were thin lines, not proportional streams. Diagnosis: Mermaid v11 sankey-beta sets `fill="#color"` and `opacity="0.6"` as **inline SVG attributes** on its node `<rect>` and link `<path>` elements. CSS selectors like `rect.node` matched, but the inline-attribute precedence was beating the override on some browsers, and the `mix-blend-mode` wasn't kicking in at all.
+
+**Rewrote the Sankey CSS scoped via `svg[aria-roledescription="sankey-beta"]`** — the attribute Mermaid v11 sets on the root SVG. Every selector targets that scope:
+
+- Node bars (`rect`, `g.nodes rect`, `rect.node`) → `fill: var(--accent)`, `fill-opacity: 1`, `opacity: 1`, `stroke-width: 0`. The bars now render at full accent-cyan saturation against the dark bg.
+- Flow ribbons (`path`, `g.links path`, `path.link`) → `fill: var(--accent)`, `fill-opacity: 0.55`, `mix-blend-mode: screen` so overlapping flows brighten where they cross.
+- Hover state → `fill-opacity: 0.80` for tactile feedback.
+- Labels → `var(--text-primary)` color, mono font 12px with letter-spacing.
+- Light mode → switches `mix-blend-mode` from `screen` to `multiply` and drops fill-opacity to 0.45 so flows stay readable against the white background.
+
+### Added — percentage labels on Sankey values
+
+The numbers were percentages all along (AS-IS sources sum to 100, outflows sum to 100), but nothing in the diagram or caption signaled that they were percentages. The values could have been read as dollars-in-thousands or job counts.
+
+**Fix:** added a `%%{init}%%` config directive at the top of the Sankey source:
+
+```
+---
+config:
+  sankey:
+    showValues: true
+    suffix: "%"
+    nodeAlignment: justify
+---
+```
+
+`suffix: "%"` appends `%` to every node value. Labels now read `Driveway-only jobs 28%`, `Master Restoration Day 55%`, `Cut from offer (Via Negativa) 15%`, etc.
+
+### Changed — Sankey caption rewritten for clarity
+
+Old caption talked about "revenue share" without explicitly naming the percentage convention. New caption opens with "Numbers are percentages of total revenue. AS-IS source streams on the left (sum to 100%) flow into the central revenue hub and rewire into PROPOSED destinations on the right." The "Cut from offer" language is reinforced as an exit, not a destination.
+
+### Files changed
+- `skills/optimize/templates/report.html` — Sankey CSS rebuilt from scratch with aria-roledescription scoping + light-mode blend-mode override
+- `examples/sample-report.html` — same CSS + `%%{init}%%` directive + caption rewrite + appendix version bump
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.6.2`
+- `.claude-plugin/plugin.json` — `1.6.1` → `1.6.2`
+
 ## [1.6.1] — 2026-05-12
 
 ### Fixed — Sankey diagram visibility and clarity
