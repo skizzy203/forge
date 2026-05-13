@@ -2,6 +2,56 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.6.0] — 2026-05-12
+
+### Changed — cinematic header redesign
+
+The v1.5 Three.js + GSAP + ScrollTrigger scroll layer was retired. First live reads exposed real problems: the hero scene's 100vh canvas overlapped the `.bg-num` "01" section numeral (leaving it floating mid-section with nothing under it), Chrome had occasional rendering hiccups, and the ~380 KB library bundle was outsized for what the scenes actually conveyed.
+
+Replaced with a single bounded **raw-WebGL shader header** above Section 1 that renders the title `BUSINESS MODEL OPTIMIZATION REPORT` in Inter Tight 800 with an accent-tinted sweep across the letterforms and a faint scanline overlay. ~150 lines of inline shader code, no external libraries, ~5 KB on the wire (vs 380 KB before). Sits *above* Section 1 instead of *behind* it, so the `.bg-num` numeral stays in its own visual lane.
+
+The v1.5 footer convergence scene was removed entirely. The Tally CTA now stands alone at the document's close.
+
+### Changed — Mermaid diagrams restyled to outline-only
+
+The AS-IS flowchart's FRICTION nodes used `fill:#ef4444` (red) with `color:#fff`, and the PROPOSED flowchart used `fill:#10b981` (green) and `fill:#f59e0b` (amber). On the terminal-noir dark background the saturated fills overpowered the page and white labels were hard to read against the brighter portions.
+
+Switched to **outline-only via Mermaid's `themeCSS` option**: every node renders with `fill: transparent` and a 1.5px stroke. Class-driven border semantics — `g.node.friction` gets `--warn` (amber), `g.node.added` gets `--success` (green), `g.node.changed` gets `--info` (purple), `g.node.removed` gets `--text-muted` dashed at 0.7 opacity. Labels render in `--text-primary`, contrast-correct in both themes. Light/dark toggle re-themes the SVG in place via CSS custom-property cascade — no re-render.
+
+Diagram source carries only class names; the hardcoded hex fills are gone. `references/visual-primitives.md` updated to reflect the new pattern.
+
+### Added — model-pruning instrumentation (PRD §5 follow-through)
+
+Phase 4 now writes two artifacts on every run so the PRD's empirical-pruning roadmap can actually happen:
+
+- **`~/forge-runs/[business-slug]-[YYYY-MM-DD].models.json`** — full chain trace: every catalog model that was scored, whether it fired, its score components (`base_relevance`, `subtractive_weight`, `bcd_multiplier`, `market_multiplier`), output size, plus BCD context (industry, revenue range, primary bottleneck) and phase durations. Lets you analyze a single run end-to-end.
+- **`~/forge-runs/model-fires.csv`** — one row per `(run, model)` appended on every run, header written on first creation. Columns: `run_id, timestamp, industry, revenue_range, model_name, model_class, fired, score`. Pivot-table source for the across-workshops analysis described in PRD §5.
+
+The Appendix Run Metadata block gains a new `Pruning log:` line linking to the per-run JSON. Falls back to the working directory if `~/forge-runs/` is not writable. Never aborts the report render on log-write failure.
+
+### Fixed
+- **Mobile scroll gap between sections.** The 96px `.section` margin-bottom was visually overlong on narrow viewports, producing a multi-screen blank between Section 6's "What to watch" and Section 7. Added a `@media (max-width: 640px)` rule that compresses section gaps to 56px.
+
+### Removed
+- v1.5 `.cine-hero` element from Section 1 and `.cine-footer` element from before the Tally CTA
+- v1.5 inline Three.js + GSAP + ScrollTrigger script block (~350 lines, ~380 KB CDN payload)
+- All hardcoded fill colors in Mermaid `classDef` declarations (replaced with `fill:none` + `themeCSS` semantics)
+
+### Files changed
+- `skills/optimize/templates/report.html` — cinematic CSS/DOM/script swap, Mermaid `themeCSS` injection, mobile margin rule, Appendix pruning-log line
+- `examples/sample-report.html` — mirrored changes + sample diagrams switched to outline-only `classDef fill:none` + sample pruning-log path in Run Metadata
+- `skills/optimize/SKILL.md` — Phase 4 gains a "Model-pruning instrumentation" subsection specifying JSON + CSV outputs and failure handling
+- `references/visual-primitives.md` — Mermaid Theme section gains `themeCSS` spec; AS-IS and PROPOSED diagram modifier guidance switched to `fill:none`; Cinematic Layer section rewritten for v1.6
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` bumped to `v1.6.0`
+- `examples/sample-report.html` — footer reads `FORGE v1.6`, appendix reads `forge v1.6.0`
+- `.claude-plugin/plugin.json` — `1.5.2` → `1.6.0`
+- `PRD.md` — version header → 1.6
+
+### Rationale
+Three honest reads on what shipped in v1.5 — the Chrome rendering issues, the bg-num overlap, the Mermaid color overload, the mobile gap — drove this release. v1.6 trades the v1.5 dependency-heavy scroll cinematic for a single restrained shader, restyles the diagrams toward the brand's "technical schematic" aesthetic, and instruments the pipeline so the next 5+ workshops produce data that can actually inform PRD §5's catalog pruning.
+
+Workshop-ready: the deliverable now stays clean in both themes, the diagrams read at a glance instead of fighting for attention, and the cinematic motion is bounded and unobtrusive.
+
 ## [1.5.2] — 2026-05-12
 
 ### Fixed

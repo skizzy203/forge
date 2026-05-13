@@ -171,16 +171,20 @@ a:hover{text-decoration:underline}
 /* Tabular numerals on countup spans */
 [data-countup]{font-variant-numeric:tabular-nums}
 
-/* Cinematic layer (v1.5) — two scroll-driven Three.js scenes bookending the document */
-.cine-hero{position:absolute;top:0;left:0;right:0;height:100vh;z-index:0;pointer-events:none;opacity:0;transition:opacity 0.6s}
-.cine-hero[data-cine-state="active"]{opacity:1}
-.cine-hero canvas{width:100%;height:100%;display:block}
-.cine-footer{position:relative;width:100%;height:40vh;margin:48px 0;pointer-events:none;opacity:0;transition:opacity 0.6s;overflow:hidden}
-.cine-footer[data-cine-state="active"]{opacity:1}
-.cine-footer canvas{width:100%;height:100%;display:block}
-#sec1 > *:not(.bg-num):not(.cine-hero){position:relative;z-index:1}
-@media (prefers-reduced-motion: reduce){.cine-hero,.cine-footer{display:none}}
-@media print{.cine-hero,.cine-footer{display:none}}
+/* Cinematic header (v1.6) — WebGL shader text "BUSINESS MODEL OPTIMIZATION REPORT".
+   Single bounded element above Section 1 (not layered behind it), so the bg-num "01" stays in its own lane.
+   Falls back to a styled static <h1> if WebGL is unavailable or reduced-motion is active. */
+.cine-header{position:relative;width:100%;height:clamp(220px,38vh,460px);margin:24px 0 48px;overflow:hidden;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.cine-header canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cine-header-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:clamp(22px,4.4vw,52px);letter-spacing:0.01em;color:var(--text-primary);text-align:center;padding:0 24px;line-height:1.05;opacity:1;transition:opacity 0.4s;pointer-events:none}
+.cine-header-fallback .accent{color:var(--accent)}
+.cine-header[data-shader-state="active"] .cine-header-fallback{opacity:0}
+@media (prefers-reduced-motion: reduce){
+  .cine-header{height:auto;border:0;margin:24px 0 32px}
+  .cine-header canvas{display:none}
+  .cine-header-fallback{position:relative;padding:48px 24px}
+}
+@media print{.cine-header{display:none}}
 
 /* Anchor-styled move teasers in Section 1 */
 a.move{text-decoration:none;color:inherit;display:block;cursor:pointer}
@@ -189,6 +193,8 @@ a.move:hover .headline{color:var(--accent)}
 
 /* Mobile responsive */
 @media (max-width: 640px){
+  /* v1.6: compress section gaps on narrow viewports to remove the long blank scroll between sections */
+  .section{margin-bottom:56px}
   /* Let wide diagrams (gantt, sankey) keep their natural width and scroll inside .diagram.
      Container already has overflow-x:auto; we just disable the shrink-to-fit override. */
   .diagram{padding:16px 12px;-webkit-overflow-scrolling:touch}
@@ -235,8 +241,13 @@ a.move:hover .headline{color:var(--accent)}
 <!-- ════════════════════════════════════════ -->
 <!-- SECTION 1 — EXECUTIVE SUMMARY            -->
 <!-- ════════════════════════════════════════ -->
+<!-- Cinematic shader header (v1.6) -->
+<div class="cine-header" id="cine-header" aria-hidden="true" data-shader-state="ready">
+  <canvas id="cine-header-canvas"></canvas>
+  <div class="cine-header-fallback">Business Model<br><span class="accent">Optimization Report</span></div>
+</div>
+
 <section class="section" id="sec1">
-  <div class="cine-hero" id="cine-hero" aria-hidden="true" data-cine-state="ready"></div>
   <div class="bg-num">01</div>
   <div class="sec-num">01 / EXECUTIVE SUMMARY</div>
   <h1 class="display">
@@ -395,7 +406,7 @@ flowchart TD
   H{"FRICTION: 3 unrelated services compete for the same hours"} -.->|"dilution"| E
   I{"FRICTION: priced at the floor of the Cherokee market"} -.->|"value leak"| F
   J{{"SYSTEM: no documented process, quality lives in DJ's head"}} --> E
-  classDef friction fill:#ef4444,stroke:#dc2626,color:#fff
+  classDef friction fill:none
   class G,H,I friction
     </div>
   </div>
@@ -539,8 +550,8 @@ flowchart TD
   K[/"CHANNEL: subcontractor takes small jobs [+]"/] --> L[("REVENUE: 15% referral fee on overflow [+]")]
   M{{"SYSTEM: documented MM Wash Day SOP [+]"}} --> E
   N["OFFER: Apprenticeship Track [+]"] -.->|"long-term moat"| M
-  classDef added fill:#10b981,stroke:#059669,color:#fff
-  classDef changed fill:#f59e0b,stroke:#d97706,color:#fff
+  classDef added fill:none
+  classDef changed fill:none
   class K,L,M,N added
   class A,B,C,D,E,F changed
     </div>
@@ -970,12 +981,11 @@ quadrantChart
       <p>Generated: 2026-05-11</p>
       <p>BCD file: <code># BUSINESS MODEL INTAKE-Mechanical Magic.md</code></p>
       <p>Web supplement source: <code>https://mechanicalmagicpressurewashing.com/</code></p>
-      <p>Plugin version: forge v1.5.2</p>
+      <p>Pruning log: <code>~/forge-runs/mechanical-magic-2026-05-11.models.json</code></p>
+      <p>Plugin version: forge v1.6.0</p>
     </div>
   </details>
 </section>
-
-<div class="cine-footer" id="cine-footer" aria-hidden="true" data-cine-state="ready"></div>
 
 <div class="callout" style="margin:64px 0 32px">
   <div class="label">[ &#9655; ] LIVE WORKSHOP &mdash; THURSDAYS 7PM</div>
@@ -987,7 +997,7 @@ quadrantChart
 <div class="footer-mark">
   <div>DISTILL</div>
   <div class="descriptor">A clear plan for your business, backed by market data.</div>
-  <div>FORGE v1.5</div>
+  <div>FORGE v1.6</div>
 </div>
 
 </div>
@@ -1032,11 +1042,40 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       fontSize: '14px'
     };
   }
+  const OUTLINE_CSS = `
+    .node rect, .node circle, .node polygon, .node ellipse, .node path {
+      fill: transparent !important;
+      stroke-width: 1.5px !important;
+    }
+    .node .label, .node .nodeLabel, .node text, .node foreignObject div {
+      color: var(--text-primary) !important;
+      fill: var(--text-primary) !important;
+    }
+    .edgePath path, .flowchart-link, .edgePaths .path {
+      stroke-width: 1.5px !important;
+    }
+    g.node.friction rect, g.node.friction circle, g.node.friction polygon, g.node.friction ellipse, g.node.friction path {
+      stroke: var(--warn) !important;
+    }
+    g.node.added rect, g.node.added circle, g.node.added polygon, g.node.added ellipse, g.node.added path {
+      stroke: var(--success) !important;
+    }
+    g.node.changed rect, g.node.changed circle, g.node.changed polygon, g.node.changed ellipse, g.node.changed path {
+      stroke: var(--info) !important;
+    }
+    g.node.removed rect, g.node.removed circle, g.node.removed polygon, g.node.removed ellipse, g.node.removed path {
+      stroke: var(--text-muted) !important;
+      stroke-dasharray: 4 3 !important;
+      opacity: 0.7;
+    }
+  `;
+
   function init() {
     mermaid.initialize({
       startOnLoad: true,
       theme: 'base',
       themeVariables: themeVars(),
+      themeCSS: OUTLINE_CSS,
       look: 'classic',
       layout: 'elk'
     });
@@ -1143,265 +1182,182 @@ setTimeout(() => {
 })();
 </script>
 
-<!-- Cinematic layer (v1.5) — Three.js + GSAP + ScrollTrigger -->
-<script type="module">
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    throw new Error('reduced-motion: skipping cinematic layer');
-  }
+<!-- Cinematic shader header (v1.6) — raw WebGL2/WebGL1, ~5 KB inline, no external library. -->
+<script>
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  let THREE, gsap, ScrollTrigger;
-  try {
-    THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160/build/three.module.js');
-    // GSAP's npm files are CommonJS; use jsdelivr's `+esm` suffix to get ESM-transformed bundles.
-    const gsapModule = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm');
-    gsap = gsapModule.gsap || gsapModule.default;
-    const stModule = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js/+esm');
-    ScrollTrigger = stModule.ScrollTrigger || stModule.default;
-    if (!gsap || !ScrollTrigger) throw new Error('GSAP modules failed to expose expected exports');
-    gsap.registerPlugin(ScrollTrigger);
-  } catch (e) {
-    console.warn('[forge cinematic] library load failed, falling back to static layout:', e);
-    throw e;
-  }
+  const container = document.getElementById('cine-header');
+  const canvas = document.getElementById('cine-header-canvas');
+  if (!container || !canvas) return;
 
-  function readPalette() {
-    const cs = getComputedStyle(document.documentElement);
-    return {
-      accent: new THREE.Color(cs.getPropertyValue('--accent').trim() || '#22E0FF'),
-      faint: new THREE.Color(cs.getPropertyValue('--text-faint').trim() || '#4A535A'),
-      rule: new THREE.Color(cs.getPropertyValue('--rule').trim() || '#1F2629'),
-      bg: new THREE.Color(cs.getPropertyValue('--bg-primary').trim() || '#0A0E11')
-    };
-  }
+  const ctxOpts = { alpha: true, antialias: true, premultipliedAlpha: false };
+  const gl = canvas.getContext('webgl2', ctxOpts) || canvas.getContext('webgl', ctxOpts);
+  if (!gl) return;
+  const isGL2 = typeof WebGL2RenderingContext !== 'undefined' && gl instanceof WebGL2RenderingContext;
 
-  function gridTexture(palette, opts) {
-    const size = 512;
-    const c = document.createElement('canvas');
-    c.width = c.height = size;
-    const ctx = c.getContext('2d');
-    ctx.fillStyle = 'rgba(0,0,0,0)';
-    ctx.fillRect(0, 0, size, size);
-    ctx.strokeStyle = '#' + palette.rule.getHexString();
-    ctx.lineWidth = opts.lineWidth || 1;
-    ctx.globalAlpha = opts.alpha || 0.5;
-    const step = opts.step || 32;
-    for (let x = 0; x <= size; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, size); ctx.stroke(); }
-    for (let y = 0; y <= size; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size, y); ctx.stroke(); }
-    const tex = new THREE.CanvasTexture(c);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(opts.repeat || 1, opts.repeat || 1);
-    return tex;
-  }
+  const VSHADER = (isGL2
+    ? '#version 300 es\nin vec2 aPos;\nout vec2 vUv;'
+    : 'attribute vec2 aPos;\nvarying vec2 vUv;'
+  ) + `
+void main(){
+  vUv = aPos * 0.5 + 0.5;
+  vUv.y = 1.0 - vUv.y;
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}`;
 
-  function buildHeroScene(container, palette) {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-    camera.position.set(0, 0, 5);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
+  const FSHADER = (isGL2
+    ? '#version 300 es\nprecision highp float;\nin vec2 vUv;\nout vec4 outColor;\n#define SAMPLE(t,uv) texture(t, uv)'
+    : 'precision highp float;\nvarying vec2 vUv;\n#define SAMPLE(t,uv) texture2D(t, uv)'
+  ) + `
+uniform sampler2D uText;
+uniform vec3 uAccent;
+uniform vec3 uTextColor;
+uniform float uTime;
+uniform vec2 uResolution;
+void main(){
+  vec4 tx = SAMPLE(uText, vUv);
+  float alpha = tx.a;
+  float sweep = mod(uTime * 0.16, 1.5) - 0.25;
+  float band = exp(-pow((vUv.x - sweep) * 4.5, 2.0));
+  vec3 col = mix(uTextColor, uAccent, clamp(band * 0.85, 0.0, 0.95));
+  float scan = 0.94 + 0.06 * sin(vUv.y * uResolution.y * 0.9);
+  col *= scan;
+  col += uAccent * band * 0.18;
+  ${isGL2 ? 'outColor' : 'gl_FragColor'} = vec4(col * alpha, alpha);
+}`;
 
-    const layers = [];
-    const specs = [
-      { z: -3, step: 16, alpha: 0.45, scale: 9 },
-      { z: -1.5, step: 24, alpha: 0.65, scale: 7 },
-      { z: 0, step: 40, alpha: 0.85, scale: 5.5 },
-      { z: 1, step: 64, alpha: 1.0, scale: 4.5 }
-    ];
-    specs.forEach(spec => {
-      const tex = gridTexture(palette, { step: spec.step, alpha: 0.95, repeat: 2, lineWidth: 1.5 });
-      const geo = new THREE.PlaneGeometry(spec.scale, spec.scale);
-      const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: spec.alpha });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.z = spec.z;
-      scene.add(mesh);
-      layers.push({ mesh, baseZ: spec.z, spec });
-    });
-
-    const pointCount = 120;
-    const positions = new Float32Array(pointCount * 3);
-    for (let i = 0; i < pointCount; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * 7;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 5;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 3 - 0.5;
+  function compile(type, src){
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+      console.warn('[forge shader] compile failed:', gl.getShaderInfoLog(sh));
+      gl.deleteShader(sh);
+      return null;
     }
-    const pointsGeo = new THREE.BufferGeometry();
-    pointsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const pointsMat = new THREE.PointsMaterial({
-      color: palette.accent, size: 0.10, transparent: true, opacity: 0.85,
-      sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    const points = new THREE.Points(pointsGeo, pointsMat);
-    scene.add(points);
-
-    const haloMat = new THREE.PointsMaterial({
-      color: palette.accent, size: 0.32, transparent: true, opacity: 0.22,
-      sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    const halo = new THREE.Points(pointsGeo, haloMat);
-    scene.add(halo);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-    const dir = new THREE.DirectionalLight(0xffffff, 0.7);
-    dir.position.set(2, 3, 4);
-    scene.add(dir);
-
-    let raf;
-    const t0 = performance.now();
-    (function render() {
-      const t = (performance.now() - t0) * 0.001;
-      camera.position.x = Math.sin(t * 0.25) * 0.10;
-      camera.position.y = Math.cos(t * 0.20) * 0.06;
-      points.rotation.z = t * 0.025;
-      halo.rotation.z = t * 0.025;
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(render);
-    })();
-
-    return {
-      camera, layers, points, halo, pointsMat, haloMat,
-      retint(p) {
-        pointsMat.color = p.accent;
-        haloMat.color = p.accent;
-        layers.forEach(l => {
-          l.mesh.material.map = gridTexture(p, { step: l.spec.step, alpha: 0.95, repeat: 2, lineWidth: 1.5 });
-          l.mesh.material.needsUpdate = true;
-        });
-      },
-      resize() {
-        const w = container.clientWidth, h = container.clientHeight;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
-      },
-      dispose() { cancelAnimationFrame(raf); renderer.dispose(); }
-    };
+    return sh;
   }
+  const vs = compile(gl.VERTEX_SHADER, VSHADER);
+  const fs = compile(gl.FRAGMENT_SHADER, FSHADER);
+  if (!vs || !fs) return;
 
-  function buildFooterScene(container, palette) {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 50);
-    camera.position.set(0, 0, 4);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-
-    const primitives = [];
-    const startPositions = [
-      [-3.4, 1.6, -1.0], [3.2, 1.8, -0.8], [-2.8, -1.4, 0.4],
-      [3.4, -1.5, 0.6], [-1.9, 0.1, -1.4], [2.3, -0.3, -1.2]
-    ];
-    startPositions.forEach(p => {
-      const geo = new THREE.BoxGeometry(0.45, 0.45, 0.45);
-      const mat = new THREE.MeshBasicMaterial({ color: palette.accent, wireframe: true, transparent: true, opacity: 0.55 });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(p[0], p[1], p[2]);
-      mesh.userData.startPos = [...p];
-      mesh.userData.spinSpeed = 0.35 + Math.random() * 0.45;
-      scene.add(mesh);
-      primitives.push(mesh);
-    });
-
-    const centerGeo = new THREE.SphereGeometry(0.12, 32, 32);
-    const centerMat = new THREE.MeshBasicMaterial({ color: palette.accent, transparent: true, opacity: 0.4 });
-    const center = new THREE.Mesh(centerGeo, centerMat);
-    scene.add(center);
-
-    const haloGeo = new THREE.SphereGeometry(0.30, 32, 32);
-    const haloMat = new THREE.MeshBasicMaterial({
-      color: palette.accent, transparent: true, opacity: 0.15,
-      blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    const halo = new THREE.Mesh(haloGeo, haloMat);
-    scene.add(halo);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-
-    let raf;
-    const t0 = performance.now();
-    (function render() {
-      const t = (performance.now() - t0) * 0.001;
-      primitives.forEach(p => {
-        p.rotation.x = t * p.userData.spinSpeed * 0.5;
-        p.rotation.y = t * p.userData.spinSpeed * 0.6;
-      });
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(render);
-    })();
-
-    return {
-      camera, primitives, center, centerMat, halo, haloMat,
-      retint(p) {
-        primitives.forEach(pr => { pr.material.color = p.accent; });
-        centerMat.color = p.accent;
-        haloMat.color = p.accent;
-      },
-      resize() {
-        const w = container.clientWidth, h = container.clientHeight;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
-      },
-      dispose() { cancelAnimationFrame(raf); renderer.dispose(); }
-    };
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    console.warn('[forge shader] link failed:', gl.getProgramInfoLog(prog));
+    return;
   }
+  gl.useProgram(prog);
 
-  const heroEl = document.getElementById('cine-hero');
-  const footerEl = document.getElementById('cine-footer');
-  if (!heroEl || !footerEl) throw new Error('cinematic containers missing');
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const aPos = gl.getAttribLocation(prog, 'aPos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
+  const uText = gl.getUniformLocation(prog, 'uText');
+  const uAccent = gl.getUniformLocation(prog, 'uAccent');
+  const uTextColor = gl.getUniformLocation(prog, 'uTextColor');
+  const uTime = gl.getUniformLocation(prog, 'uTime');
+  const uResolution = gl.getUniformLocation(prog, 'uResolution');
+  gl.uniform1i(uText, 0);
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+  gl.clearColor(0, 0, 0, 0);
+
+  const txCanvas = document.createElement('canvas');
+  const txCtx = txCanvas.getContext('2d');
+  const tex = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  function hexToRgb(hex){
+    hex = (hex || '').trim().replace('#','');
+    if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+    const n = parseInt(hex || 'E8ECEE', 16);
+    return [((n>>16)&255)/255, ((n>>8)&255)/255, (n&255)/255];
+  }
+  function readPalette(){
+    const cs = getComputedStyle(document.documentElement);
+    const accentHex = (cs.getPropertyValue('--accent') || '#22E0FF').trim() || '#22E0FF';
+    const textHex = (cs.getPropertyValue('--text-primary') || '#E8ECEE').trim() || '#E8ECEE';
+    return { accent: hexToRgb(accentHex), textPrimary: hexToRgb(textHex), textHex };
+  }
   let palette = readPalette();
-  const hero = buildHeroScene(heroEl, palette);
-  const footer = buildFooterScene(footerEl, palette);
-  heroEl.dataset.cineState = 'active';
-  footerEl.dataset.cineState = 'active';
 
-  gsap.timeline({
-    scrollTrigger: { trigger: '#sec1', start: 'top top', end: 'bottom top', scrub: 0.8 }
-  })
-    .to(hero.camera.position, { z: 0.6, ease: 'power2.inOut' }, 0)
-    .to(hero.layers[0].mesh.position, { z: -6.5, ease: 'none' }, 0)
-    .to(hero.layers[1].mesh.position, { z: -4.0, ease: 'none' }, 0)
-    .to(hero.layers[2].mesh.position, { z: -1.5, ease: 'none' }, 0)
-    .to(hero.layers[3].mesh.position, { z: 1.0, ease: 'none' }, 0)
-    .to(hero.pointsMat, { opacity: 1.0, ease: 'power2.in' }, 0)
-    .to(hero.haloMat, { opacity: 0.45, ease: 'power2.in' }, 0)
-    .to(hero.points.rotation, { y: 0.55, ease: 'none' }, 0);
+  function paintText(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (w === 0 || h === 0) return;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    txCanvas.width = canvas.width;
+    txCanvas.height = canvas.height;
+    txCtx.clearRect(0, 0, txCanvas.width, txCanvas.height);
+    const fontSize = Math.min(Math.max(28 * dpr, w * 0.055 * dpr), 64 * dpr);
+    txCtx.font = `800 ${fontSize}px "Inter Tight", "Helvetica Now Display", system-ui, sans-serif`;
+    txCtx.textAlign = 'center';
+    txCtx.textBaseline = 'middle';
+    txCtx.fillStyle = palette.textHex;
+    const lineGap = fontSize * 1.05;
+    const cx = txCanvas.width / 2;
+    const cy = txCanvas.height / 2;
+    txCtx.fillText('BUSINESS MODEL', cx, cy - lineGap * 0.5);
+    txCtx.fillText('OPTIMIZATION REPORT', cx, cy + lineGap * 0.5);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, txCanvas);
+  }
 
-  const footerTL = gsap.timeline({
-    scrollTrigger: { trigger: '#cine-footer', start: 'top 90%', end: 'bottom 40%', scrub: 0.6 }
-  });
-  footer.primitives.forEach(p => {
-    footerTL.to(p.position, { x: 0, y: 0, z: 0, ease: 'power2.inOut' }, 0)
-            .to(p.material, { opacity: 0.40, ease: 'power2.in' }, 0.4);
-  });
-  footerTL.to(footer.centerMat, { opacity: 1.0, ease: 'power2.in' }, 0.4)
-          .to(footer.haloMat, { opacity: 0.55, ease: 'power2.in' }, 0.4);
+  function setUniforms(){
+    gl.uniform3f(uAccent, palette.accent[0], palette.accent[1], palette.accent[2]);
+    gl.uniform3f(uTextColor, palette.textPrimary[0], palette.textPrimary[1], palette.textPrimary[2]);
+    gl.uniform2f(uResolution, canvas.width, canvas.height);
+  }
 
-  gsap.to(footer.center.scale, {
-    x: 2.2, y: 2.2, z: 2.2,
-    duration: 1.2, repeat: -1, yoyo: true, ease: 'sine.inOut'
-  });
-  gsap.to(footer.halo.scale, {
-    x: 1.7, y: 1.7, z: 1.7,
-    duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut'
-  });
+  const t0 = performance.now();
+  let raf;
+  function frame(){
+    const t = (performance.now() - t0) * 0.001;
+    gl.uniform1f(uTime, t);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    raf = requestAnimationFrame(frame);
+  }
 
-  document.addEventListener('forge-theme-change', () => {
-    palette = readPalette();
-    hero.retint(palette);
-    footer.retint(palette);
-  });
+  paintText();
+  setUniforms();
+  container.dataset.shaderState = 'active';
+  frame();
 
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { hero.resize(); footer.resize(); ScrollTrigger.refresh(); }, 120);
+    resizeTimer = setTimeout(() => { paintText(); setUniforms(); }, 120);
   });
 
-  window.addEventListener('beforeunload', () => { hero.dispose(); footer.dispose(); });
+  document.addEventListener('forge-theme-change', () => {
+    palette = readPalette();
+    paintText();
+    setUniforms();
+  });
+
+  window.addEventListener('beforeunload', () => {
+    cancelAnimationFrame(raf);
+    gl.deleteProgram(prog); gl.deleteShader(vs); gl.deleteShader(fs);
+    gl.deleteBuffer(buf); gl.deleteTexture(tex);
+  });
+})();
 </script>
 
 </body>
