@@ -1,0 +1,84 @@
+name: Auto-tag and release
+
+# Runs on every merge to main. If plugin.json's version doesn't yet have a matching
+# v* tag, this workflow creates the tag and a GitHub release whose notes come from
+# the matching ## [x.y.z] section of CHANGELOG.md.
+#
+# Manual tagging still works — if you've already created the tag externally, the
+# workflow detects it and exits cleanly without re-publishing.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude-plugin/plugin.json'
+
+permissions:
+  contents: write
+
+jobs:
+  tag-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read version from plugin.json
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./.claude-plugin/plugin.json').version")
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not read version from plugin.json"
+            exit 1
+          fi
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "bare=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag already exists
+        id: check
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+          if git rev-parse --verify "refs/tags/$TAG" >/dev/null 2>&1 || git ls-remote --tags origin "$TAG" | grep -q .; then
+            echo "Tag $TAG already exists. Skipping."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Tag $TAG is new. Will create."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract release notes from CHANGELOG
+        if: steps.check.outputs.exists == 'false'
+        id: notes
+        run: |
+          set -euo pipefail
+          BARE="${{ steps.version.outputs.bare }}"
+          # Pull the block between "## [BARE]" and the next "## [" heading
+          awk -v ver="$BARE" '
+            $0 ~ "^## \\[" ver "\\]" { capture=1; print; next }
+            capture && /^## \[/ { exit }
+            capture { print }
+          ' CHANGELOG.md > /tmp/release-notes.md
+          if [ ! -s /tmp/release-notes.md ]; then
+            echo "::warning::No CHANGELOG section found for $BARE. Falling back to a stub note."
+            printf "## [%s]\n\nRelease %s. See CHANGELOG.md for details.\n" "$BARE" "$BARE" > /tmp/release-notes.md
+          fi
+          echo "path=/tmp/release-notes.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag and release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "$TAG"
+          git push origin "$TAG"
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file "${{ steps.notes.outputs.path }}"
