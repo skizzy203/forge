@@ -1,8 +1,8 @@
 # Forge — Product Requirements Document
 
-**Version:** 1.5
+**Version:** 1.6
 **Author:** Scott Wise
-**Status:** Shipped (v1.5 adds a scroll-driven cinematic Three.js layer bookending the report — depth-and-parallax behind the Section 1 hero, convergence scene before the Tally CTA; v1.4 adds three new research-driven sub-blocks; v1.3 added the Automation Surface; v1.2 consolidates the workflow to a single `/forge:optimize` command with three routing modes; v1.1 added Sections 7 and 8, six diagram types, effectiveness layer, and the graceful offline Mermaid fallback; v1.0 was the initial release. See CHANGELOG.md for the full history.)
+**Status:** Shipped (v1.6 replaces the v1.5 Three.js cinematic scenes with a raw-WebGL shader header — `BUSINESS MODEL OPTIMIZATION REPORT` rendered with an accent-sweep effect, bounded above Section 1 instead of layered behind it; restyles Mermaid diagrams to outline-only via `themeCSS` so the orange/red friction fills no longer overpower the page and labels stay legible in both themes; ships model-pruning instrumentation that writes a per-run JSON trace and appends to a CSV aggregate for empirical catalog pruning; tightens mobile section gaps. v1.5 shipped the original Three.js scroll layer; v1.4 added three research-driven sub-blocks; v1.3 added the Automation Surface; v1.2 consolidates the workflow to a single `/forge:optimize` command; v1.1 added Sections 7 and 8, six diagram types, effectiveness layer; v1.0 was the initial release. See CHANGELOG.md for the full history.)
 
 ---
 

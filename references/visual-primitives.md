@@ -50,10 +50,11 @@ flowchart TD
   H{{"SYSTEM: tools and infrastructure"}} --> E
 ```
 
-**Modifiers for AS-IS:**
-- Apply `classDef friction fill:#ef4444,stroke:#dc2626,color:#fff` to all FRICTION nodes
-- FRICTION nodes pulse: `animation: pulse-red 1.5s ease-in-out infinite`
-- Label diagram clearly: **"AS-IS — Where The Business Is Today"** in red-toned header
+**Modifiers for AS-IS (updated v1.6 — outline-only):**
+- Apply `classDef friction fill:none` to all FRICTION nodes — the global Mermaid `themeCSS` override (see § Mermaid Theme below) supplies the amber stroke via `g.node.friction` selector
+- The diagram source carries only the class name; all color is theme-driven so light/dark toggle re-themes the SVG without re-rendering
+- FRICTION pulse animation deprecated — visual emphasis comes from the amber outline contrast against accent-cyan, not from motion
+- Label diagram clearly: **"AS-IS — Where The Business Is Today"**
 - Node content pulled from BCD: OFFER from Q1, AVATAR from Q3, REVENUE from Q2, etc.
 
 ---
@@ -73,12 +74,13 @@ flowchart TD
   I["OFFER: new addition [+]"] -.->|"opportunity"| B
 ```
 
-**Modifiers for PROPOSED:**
-- Apply `classDef added fill:#10b981,stroke:#059669,color:#fff` to new nodes (suffix `[+]`)
-- Apply `classDef removed opacity:0.3` to removed nodes (suffix `[-]`)
-- Apply `classDef changed fill:#f59e0b,stroke:#d97706,color:#fff` to changed nodes (suffix `[~]`)
+**Modifiers for PROPOSED (updated v1.6 — outline-only):**
+- Apply `classDef added fill:none` to new nodes (suffix `[+]`) — themeCSS supplies the success-green stroke
+- Apply `classDef removed fill:none` to removed nodes (suffix `[-]`) — themeCSS supplies the muted-gray dashed stroke and 0.7 opacity
+- Apply `classDef changed fill:none` to changed nodes (suffix `[~]`) — themeCSS supplies the info-purple stroke
+- All color is theme-driven via the Mermaid `themeCSS` injected in the report. Diagram source carries only class names; light/dark toggle re-themes the SVG without re-rendering.
 - FRICTION nodes from AS-IS that have been resolved should be omitted (Via Negativa removed them) or shown with `[-]` suffix and `removed` class
-- Label diagram clearly: **"PROPOSED — The Optimized Model"** in green-toned header
+- Label diagram clearly: **"PROPOSED — The Optimized Model"**
 
 ---
 
@@ -176,6 +178,59 @@ layout: elk
   });
 </script>
 ```
+
+### v1.6 — Outline-only `themeCSS` (overrides node fill, supplies class-driven border semantics)
+
+Pass `themeCSS` alongside `themeVariables` in `mermaid.initialize()`. Mermaid injects the CSS into the rendered SVG. Selectors use CSS custom properties so light/dark toggle re-themes the diagram without a re-render.
+
+```css
+.node rect, .node circle, .node polygon, .node ellipse, .node path {
+  fill: transparent !important;
+  stroke-width: 1.5px !important;
+}
+.node .label, .node .nodeLabel, .node text, .node foreignObject div {
+  color: var(--text-primary) !important;
+  fill: var(--text-primary) !important;
+}
+.edgePath path, .flowchart-link, .edgePaths .path {
+  stroke-width: 1.5px !important;
+}
+g.node.friction rect, g.node.friction circle, g.node.friction polygon, g.node.friction ellipse, g.node.friction path {
+  stroke: var(--warn) !important;
+}
+g.node.added rect, g.node.added circle, g.node.added polygon, g.node.added ellipse, g.node.added path {
+  stroke: var(--success) !important;
+}
+g.node.changed rect, g.node.changed circle, g.node.changed polygon, g.node.changed ellipse, g.node.changed path {
+  stroke: var(--info) !important;
+}
+g.node.removed rect, g.node.removed circle, g.node.removed polygon, g.node.removed ellipse, g.node.removed path {
+  stroke: var(--text-muted) !important;
+  stroke-dasharray: 4 3 !important;
+  opacity: 0.7;
+}
+```
+
+**Pairing with `classDef` in diagram source.** The chain emits each diagram with named classes (`friction`, `added`, `changed`, `removed`) applied via `class A,B,C classname`. The `classDef` declaration carries `fill:none` only — all color comes from `themeCSS`. This keeps the diagram source theme-agnostic and the styling reactive.
+
+Example (AS-IS flowchart tail):
+
+```
+classDef friction fill:none
+class G,H,I friction
+```
+
+Example (PROPOSED flowchart tail):
+
+```
+classDef added fill:none
+classDef changed fill:none
+classDef removed fill:none
+class K,L,M,N added
+class A,B,C,D,E,F changed
+```
+
+Pre-v1.6 hardcoded fill colors like `fill:#ef4444` are deprecated — they bypass the themeCSS and don't re-theme on toggle. New diagram emissions must use the outline-only `fill:none` pattern.
 
 ---
 
@@ -359,47 +414,45 @@ All four auxiliary diagrams use the existing theme-reactive init block. No new t
 
 ---
 
-## § Cinematic Layer (added v1.5)
+## § Cinematic Header (rewritten v1.6, replaces the v1.5 scroll layer)
 
-Two scroll-driven Three.js scenes bookend the report. The middle of the document stays 2D — the cinematic layer frames the deliverable, it does not run through it.
+A single bounded raw-WebGL shader element renders the title "BUSINESS MODEL OPTIMIZATION REPORT" above Section 1. The v1.5 Three.js + GSAP + ScrollTrigger bundle (~380 KB) and its hero + footer scenes were retired in v1.6 — the new approach ships ~5 KB of inline code, no external library, no scroll dependency, no overlap with the `.bg-num` section numeral.
 
-### Hero scene — Section 1
+### Composition
 
-**Composition.** Four `PlaneGeometry` layers carrying procedural grid textures, receding in z. A 60-point `Points` cloud glowing in `--accent`. One ambient light + one directional light. Camera at `(0, 0, 5)` with `fov: 45`.
+- 480px-max tall element (`clamp(220px, 38vh, 460px)`) above Section 1, bounded by hairline `border-top` + `border-bottom`
+- Raw WebGL2 (falls back to WebGL1) fragment shader on a fullscreen triangle
+- A 2D canvas renders the title text in Inter Tight 800-weight crisp at the device pixel ratio (capped at 2). The shader samples that canvas as a texture.
 
-**Scroll behavior.** ScrollTrigger pinned to `#sec1`, `start: 'top top'`, `end: 'bottom top'`, `scrub: 0.8`. The timeline dollies the camera from `z: 5` to `z: 1.8` while the four layers separate further in z. The accent point cloud rotates 0.35 rad on Y and fades from `opacity: 0.55` to `opacity: 0.95`.
+### Shader effect
 
-**Brand fit.** No photographic imagery. The grid texture is drawn procedurally with `CanvasTexture` using the `--rule` palette color so it themes with light/dark toggle. No specular highlights, no god-rays, no bloom.
+- Accent-tinted band sweeps left to right across the letterforms, looping every ~9 seconds
+- Within the band, text color mixes from `--text-primary` toward `--accent` (clamped at 0.95 mix)
+- Subtle pixel-aligned scanline at low amplitude (`0.94 + 0.06 * sin(y * resolution.y * 0.9)`) gives the impression of a CRT-broadcast feel without the kitsch
+- Soft edge glow added where the band is hot — `accent * band * 0.18`
 
-### Footer scene — convergence into the Tally CTA
+Brand fit: no chromatic aberration on the body of the glyph (which would degrade legibility), no bloom, no rotation. The motion is restrained and continuous — "computation happening" not "marketing demo."
 
-**Composition.** Six wireframe `BoxGeometry` primitives scattered at fixed start positions. One central `SphereGeometry` accent point, initially at `opacity: 0`. Single ambient light. Camera at `(0, 0, 4)` with `fov: 50`.
+### Theme reactivity
 
-**Scroll behavior.** ScrollTrigger pinned to `#cine-footer`, `start: 'top 80%'`, `end: 'bottom 30%'`, `scrub: 0.6`. All six primitives animate from their scattered start positions to `(0, 0, 0)` while rotating π/2 on x and y, then fade to `opacity: 0` at the timeline midpoint. The central accent sphere fades in to `opacity: 1` and runs a 1.6s sine-in-out scale pulse loop (yoyo, infinite).
-
-**Narrative.** Scattered geometry gathering to a single point reinforces the report's diagnose-and-converge arc. The pulse then introduces the Tally CTA below — the next action.
-
-### Palette reactivity
-
-Both scenes read their palette from CSS custom properties (`--accent`, `--text-faint`, `--rule`, `--bg-primary`) at init. The theme toggle dispatches a `forge-theme-change` event that triggers `retint()` on each scene — point materials swap to the new accent color, grid textures regenerate from the new rule color.
+The shader reads `--accent` and `--text-primary` from `getComputedStyle(document.documentElement)` at init and on every `forge-theme-change` event. The text canvas re-paints with the new text color, the texture re-uploads, and the shader uniforms update — no flash, no layout shift.
 
 ### Failure budget
 
-- **`prefers-reduced-motion: reduce`** → cinematic layer is skipped at script entry; the `.cine-*` containers stay hidden via the CSS rule. The static document reads normally.
-- **`@media print`** → containers hidden by CSS. Print/PDF exports unaffected.
-- **CDN unreachable** → the dynamic `import()` calls reject; the script throws and exits. The `.cine-*` containers stay at `opacity: 0` (their `[data-cine-state="ready"]` initial state). Reader sees the static document.
-- **Mobile pixel-ratio cap** → `Math.min(window.devicePixelRatio, 2)` prevents 4K retina screens from rendering at 4x cost. No frame-rate auto-degrade in v1.5; if mobile performance proves unacceptable, the next iteration adds point-count reduction.
+- **`prefers-reduced-motion: reduce`** → shader script exits at entry; the `.cine-header-fallback` static `<h1>` stays visible. Container height collapses to `auto`.
+- **`@media print`** → entire `.cine-header` element hidden.
+- **WebGL unavailable** → `gl.getContext()` returns null; script exits; fallback `<h1>` stays visible.
+- **Shader compile/link failure** → script logs to console and exits; fallback `<h1>` stays visible.
+- **Mobile pixel-ratio cap** → `Math.min(window.devicePixelRatio, 2)` prevents 4K retina screens from rendering at 4× cost.
 
-### Library loading
+### No external dependencies
 
-All three libraries load from `cdn.jsdelivr.net` via dynamic ESM `import()`:
-
-- `three@0.160` — `build/three.module.js`
-- `gsap@3.12.5` — `index.js`
-- `gsap@3.12.5/ScrollTrigger.js`
-
-Bundle weight is ~380 KB minified+gzipped over the wire, loaded async after first paint so it does not block document render.
+No CDN imports. No Three.js, no GSAP, no ScrollTrigger. The ~150 lines of shader + setup code are inlined into the report template directly. Bundle reduction vs v1.5: ~380 KB → ~5 KB.
 
 ### Cleanup
 
-`beforeunload` listener disposes both renderers' WebGL contexts and cancels their animation frames. Prevents GPU leaks on long-lived tabs.
+`beforeunload` listener cancels the animation frame, deletes shader program, vertex/fragment shaders, attribute buffer, and texture to prevent GPU leaks on long-lived tabs.
+
+### Retired in v1.6
+- v1.5 hero scene (Three.js layered grid planes + accent point cloud + halo + scroll-pinned camera dolly) — replaced
+- v1.5 footer convergence scene (six wireframe primitives converging to central accent sphere) — removed entirely. Tally CTA stands alone now.

@@ -398,6 +398,56 @@ The "What Survives" summary classifies plan elements into three buckets: held ac
 
 Every word of generated copy must pass DESIGN.md §01 voice rules. No em-dashes. No tricolons. No "Let's dive in." No throat-clearing. Specific over abstract.
 
+### Model-pruning instrumentation (added v1.6)
+
+Phase 2 already tracks the score and order of every chain pick. Phase 4 persists that trace to disk so the operator can analyze which models actually fire across real workshop runs and use the data to drive PRD §5's empirical pruning.
+
+**Per-run JSON.** Write `~/forge-runs/[business-slug]-[YYYY-MM-DD].models.json` after the chain completes and before the report renders, so the path can be substituted into the Appendix:
+
+```json
+{
+  "run_id": "[business-slug]-[YYYY-MM-DD]",
+  "timestamp": "ISO-8601",
+  "bcd": {
+    "business_name": "...",
+    "industry": "...",
+    "revenue_range": "...",
+    "primary_bottleneck": "..."
+  },
+  "phase_durations_ms": { "1a": 0, "1b": 0, "1c": 0, "1d": 0, "2": 0 },
+  "models": [
+    {
+      "name": "JTBD",
+      "class": "Orient",
+      "order": 1,
+      "score": 4.5,
+      "base_relevance": 3,
+      "subtractive_weight": 1.0,
+      "bcd_multiplier": 1.5,
+      "market_multiplier": 1.0,
+      "fired": true,
+      "output_chars": 1842
+    }
+  ],
+  "convergence_reason": "two consecutive picks below threshold 4.0",
+  "report_path": "forge-report-[business-slug]-[YYYY-MM-DD].html"
+}
+```
+
+Every catalog model the scoring loop evaluated gets one row, whether it fired or not (`fired: false` plus the score it would have received). The pruning analysis later compares fired-rate across industries and revenue tiers.
+
+**CSV aggregate.** Append one row per `(run, model)` to `~/forge-runs/model-fires.csv` after the JSON is written. Create the file with the header on first write if it does not exist. Columns:
+
+```
+run_id,timestamp,industry,revenue_range,model_name,model_class,fired,score
+```
+
+This is the pivot-table source for PRD §5's empirical pruning. After 5+ workshops a quick spreadsheet roll-up by `(industry, model_name)` surfaces models that never fire across a sector.
+
+**Appendix link.** Substitute `{{pruning_log_path}}` in the Run Metadata block with the full path to the per-run JSON file. Render the path inside the existing `<code>` element so the operator can copy it.
+
+**Failure handling.** If the home directory or `~/forge-runs/` is not writable, log to the working directory instead with the same filenames. Tell the user where the logs landed. Never abort the report render on log-write failure.
+
 Write the populated HTML to the working directory as `forge-report-[business-slug]-[YYYY-MM-DD].html`. Tell the user the file path and how to open it.
 
 ## Failure modes to avoid
