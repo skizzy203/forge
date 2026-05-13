@@ -2,6 +2,38 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.7.0] — 2026-05-13
+
+### Changed — cinematic header rebuilt around UnicornStudio shader
+
+The v1.6.x raw WebGL shader (multicolor glow blobs behind hollow outlined text) is retired. Replaced with the UnicornStudio shader at `data-us-project="bmaMERjX2VZDtPrh4Zwx"`, with the title `Business Model Optimization Report` overlaid on top — no outlines, semi-transparent fill (`rgba(232,236,238,0.92)`), accent-cyan glow via two-layer `text-shadow`.
+
+Why the shift: the user provided UnicornStudio's official embed snippet for the specific shader they wanted. UnicornStudio is a third-party shader-as-a-service product — their CDN loads the project visual via `cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.34`. We embed it the same way we embed Mermaid: load the loader script, mark the container with the `data-us-project` attribute, let the library handle the rest. Standard public-CDN embed usage.
+
+### Title overlay
+
+The title sits in a separate `.cine-header-title` layer above the shader (`z-index: 1`). Display font, 800 weight, `clamp(28px, 5.2vw, 64px)`. First line in `--text-primary` at 92% opacity, second line in `--accent`. Two-layer text-shadow gives a soft accent glow that reads in both themes (`[data-theme="light"]` swaps the glow color to the light-mode accent).
+
+### Failure budget
+
+- **`prefers-reduced-motion: reduce`** → loader script exits at entry; `.cine-header-bg` hidden via CSS. Bare title sits on the `--bg-elevated` panel — clean, readable.
+- **`@media print`** → full `.cine-header` hidden.
+- **CDN unreachable** → `script.onerror` logs a warning to console; `.cine-header-bg` stays empty. The title is always visible on the elevated panel, so the report reads correctly without the shader.
+- **Light/dark theme toggle** → title text-shadow swaps to light-mode accent via `[data-theme="light"]` override. The UnicornStudio shader itself doesn't theme — it's fixed per the project's design — but its visual works against both backgrounds.
+
+### Bundle weight
+
+The v1.6 raw WebGL shader was ~5 KB inline. UnicornStudio loader is ~50 KB minified, plus the project data downloads from their CDN behind the scenes. Acceptable for the brand-coherent visual upgrade.
+
+### Files changed
+- `skills/optimize/templates/report.html` — `.cine-header` CSS restructured into bg + title + fallback layers; DOM swapped for UnicornStudio embed + title overlay; v1.6 raw WebGL shader script removed; UnicornStudio loader script added before `</body>`
+- `examples/sample-report.html` — same mirror + appendix `v1.7.0` + footer `FORGE v1.7`
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.7.0`
+- `.claude-plugin/plugin.json` — `1.6.4` → `1.7.0` (minor bump for the shader architecture change)
+
+### Why a minor bump (1.6 → 1.7)
+The visual API doesn't break — the `.cine-header` element is in the same place with the same dimensions. But the underlying shader implementation switches from in-tree raw WebGL to an external CDN-hosted shader service. That's a significant architecture change worth a minor version, not just a patch.
+
 ## [1.6.4] — 2026-05-13
 
 ### Fixed — Sankey path model misunderstood through v1.6.3
