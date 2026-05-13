@@ -2,6 +2,36 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.6.3] — 2026-05-13
+
+### Fixed — Sankey CSS escaped Mermaid's themeCSS into the document stylesheet
+
+v1.6.2's Sankey overrides lived inside Mermaid's `themeCSS` config option. Live-URL inspection after that release showed the node labels were still rendering in Mermaid's auto-assigned per-node color palette (pink for "Mixed house wash", yellow for "Drone photography", cyan for "Master Restoration Day", etc.) — strong evidence that **Mermaid v11 sankey-beta does not honor the `themeCSS` option for its rendered nodes and links**, even though it does for flowcharts. Two release iterations of themeCSS overrides had no effect on the Sankey at all.
+
+**Fix:** moved every Sankey selector out of `themeCSS` and into the document's main `<style>` block. Document-level CSS cascades into inline SVGs unconditionally, so it doesn't depend on Mermaid's injection mechanism working for any specific diagram type.
+
+Three selector strategies are stacked for robustness across Mermaid versions:
+
+1. `svg[aria-roledescription="sankey-beta"]` — preferred when Mermaid sets that attribute on the root SVG
+2. `svg[aria-roledescription="sankey"]` — fallback for variants where Mermaid drops the `-beta` suffix
+3. `svg:has(g.links)` — structural fallback. Sankey is the only diagram type that produces a `<g class="links">` element, so this reliably catches the Sankey SVG regardless of aria attributes. Modern browser support is good (Chrome 105+, Firefox 121+, Safari 15.4+).
+
+After this fix:
+- Node bars render at full accent-cyan saturation
+- Flow ribbons render at 0.55 fill-opacity with `mix-blend-mode: screen` so overlapping flows brighten where they cross
+- Labels render in `var(--text-primary)` mono at 12px (Mermaid's per-node palette is fully suppressed)
+- Light mode switches blend mode to `multiply` for white-bg readability
+
+### Lessons recorded
+- Mermaid v11 sankey-beta's CSS extension surface is incomplete relative to flowchart-v2. Document-level CSS is the durable path for sankey styling. Saved to project memory.
+- The `:has()` structural selector is the most version-stable way to identify the Sankey SVG when aria attributes vary.
+
+### Files changed
+- `skills/optimize/templates/report.html` — Sankey CSS block moved out of `OUTLINE_CSS` (which is passed as `themeCSS`) into the document's main `<style>` section. The themeCSS sankey rules from v1.6.2 stay too, as harmless backup for any future Mermaid release that does honor them.
+- `examples/sample-report.html` — same change mirrored + appendix version bump
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.6.3`
+- `.claude-plugin/plugin.json` — `1.6.2` → `1.6.3`
+
 ## [1.6.2] — 2026-05-13
 
 ### Fixed — Sankey diagram restyle from scratch

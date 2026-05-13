@@ -120,6 +120,45 @@ html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var
 .diagram-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
 .diagram.as-is .diagram-label{color:var(--danger)}
 .diagram.proposed .diagram-label{color:var(--success)}
+
+/* Sankey terminal-noir restyle (v1.6.3) — document-level CSS, no dependency on Mermaid's themeCSS */
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] rect,
+.diagram .mermaid svg[aria-roledescription="sankey"] rect,
+.diagram .mermaid svg:has(g.links) g.nodes rect {
+  fill: var(--accent) !important;
+  fill-opacity: 1 !important;
+  opacity: 1 !important;
+  stroke: var(--accent) !important;
+  stroke-width: 0 !important;
+}
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] path,
+.diagram .mermaid svg[aria-roledescription="sankey"] path,
+.diagram .mermaid svg:has(g.links) g.links path {
+  fill: var(--accent) !important;
+  fill-opacity: 0.55 !important;
+  opacity: 1 !important;
+  stroke: none !important;
+  mix-blend-mode: screen;
+}
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] path:hover,
+.diagram .mermaid svg[aria-roledescription="sankey"] path:hover,
+.diagram .mermaid svg:has(g.links) g.links path:hover {
+  fill-opacity: 0.80 !important;
+}
+.diagram .mermaid svg[aria-roledescription="sankey-beta"] text,
+.diagram .mermaid svg[aria-roledescription="sankey"] text,
+.diagram .mermaid svg:has(g.links) text {
+  fill: var(--text-primary) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  letter-spacing: 0.04em !important;
+}
+[data-theme="light"] .diagram .mermaid svg[aria-roledescription="sankey-beta"] path,
+[data-theme="light"] .diagram .mermaid svg[aria-roledescription="sankey"] path,
+[data-theme="light"] .diagram .mermaid svg:has(g.links) g.links path {
+  mix-blend-mode: multiply;
+  fill-opacity: 0.45 !important;
+}
 .insight{background:var(--bg-elevated);border:1px solid var(--accent);padding:20px 24px;margin:16px 0 32px}
 .insight-row{display:flex;gap:16px;padding:8px 0;align-items:baseline}
 .insight-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);min-width:180px;font-weight:600;flex-shrink:0}
@@ -995,7 +1034,7 @@ quadrantChart
       <p>BCD file: <code># BUSINESS MODEL INTAKE-Mechanical Magic.md</code></p>
       <p>Web supplement source: <code>https://mechanicalmagicpressurewashing.com/</code></p>
       <p>Pruning log: <code>~/forge-runs/mechanical-magic-2026-05-11.models.json</code></p>
-      <p>Plugin version: forge v1.6.2</p>
+      <p>Plugin version: forge v1.6.3</p>
     </div>
   </details>
 </section>
