@@ -2,6 +2,27 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.6.1] — 2026-05-12
+
+### Fixed — Sankey diagram visibility and clarity
+
+Three issues surfaced on the first live read of the v1.6.0 Sankey:
+
+**Node bars blending into the background.** The v1.6.0 outline-only `themeCSS` rule targeted `.node rect` as a descendant selector, which doesn't match Sankey's `<rect class="node">` direct-element pattern. But Mermaid's `themeVariables.primaryColor: '#11161A'` (the dark elevated background) was being applied as the Sankey node fill, so the bars rendered in nearly the same color as the page. Added an explicit `rect.node` override in `themeCSS` that paints Sankey node bars in `var(--accent)` at 0.92 fill-opacity. Restores the prominent colored side and center bars from v1.5.
+
+**Flow ribbons too dim against the dark background.** Default Sankey-beta link rendering was muted. Added overrides for `.sankey-link`, `g.links path`, and `path.link` that fill in accent cyan at 0.45 opacity (lifting to 0.65 on hover). Ribbons now read clearly against the terminal-noir bg without competing with the node bars.
+
+**"Eliminated lines 15" reading as a proposed revenue destination.** The original spec modeled the cut revenue as an outflow from the AS-IS Revenue hub (so the math balances at 100), but the label "Eliminated lines" in the destination column read as a fourth proposed revenue stream alongside Master Restoration Day and Subscription book. Renamed to `Cut from offer (Via Negativa)` so it's explicit that this is revenue being removed from the model, not redirected to a new destination. Updated the caption beneath to reinforce: "the 'Cut from offer' outflow is revenue Via Negativa removes from the model — not a destination, just where the eliminated lines land in the math."
+
+### Files changed
+- `skills/optimize/templates/report.html` — Sankey-specific overrides appended to `OUTLINE_CSS`
+- `examples/sample-report.html` — same overrides + "Eliminated lines" → "Cut from offer (Via Negativa)" label rename + caption update
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.6.1`
+- `.claude-plugin/plugin.json` — `1.6.0` → `1.6.1`
+
+### Auto-tag workflow first activation
+v1.6.0 added `.github/workflows/auto-tag-release.yml` but the workflow couldn't fire on its own v1.6.0 merge (it wasn't on main yet). v1.6.1 is the first release where the workflow auto-creates the tag and GitHub release on merge — the manual `git tag` + `gh release create` steps from earlier releases are skipped.
+
 ## [1.6.0] — 2026-05-12
 
 ### Changed — cinematic header redesign

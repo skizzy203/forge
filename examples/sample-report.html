@@ -575,10 +575,10 @@ Drone photography,AS-IS Revenue,8
 AS-IS Revenue,Master Restoration Day,55
 AS-IS Revenue,Subscription book,18
 AS-IS Revenue,Subcontractor referral fees,12
-AS-IS Revenue,Eliminated lines,15
+AS-IS Revenue,Cut from offer (Via Negativa),15
     </div>
   </div>
-  <p class="body-sm" style="margin-top:-8px;margin-bottom:24px;text-align:center">Width of each stream is proportional to revenue share. AS-IS streams (left) flow through the current revenue total (center) and rewire into PROPOSED streams (right). The "Eliminated" outflow shows what Via Negativa removes.</p>
+  <p class="body-sm" style="margin-top:-8px;margin-bottom:24px;text-align:center">Width of each stream is proportional to revenue share. AS-IS streams (left) flow through the current revenue total (center) and rewire into PROPOSED streams (right). The "Cut from offer" outflow is revenue Via Negativa removes from the model — not a destination, just where the eliminated lines land in the math.</p>
 
   <div class="insight">
     <div class="insight-row"><span class="insight-label">What got removed</span><span class="insight-value">Small engine repair, standalone drone photography, $150–$500 jobs on DJ's personal calendar, the today-vs-later discount close at premium tier.</span></div>
@@ -988,7 +988,7 @@ quadrantChart
       <p>BCD file: <code># BUSINESS MODEL INTAKE-Mechanical Magic.md</code></p>
       <p>Web supplement source: <code>https://mechanicalmagicpressurewashing.com/</code></p>
       <p>Pruning log: <code>~/forge-runs/mechanical-magic-2026-05-11.models.json</code></p>
-      <p>Plugin version: forge v1.6.0</p>
+      <p>Plugin version: forge v1.6.1</p>
     </div>
   </details>
 </section>
@@ -1073,6 +1073,20 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       stroke: var(--text-muted) !important;
       stroke-dasharray: 4 3 !important;
       opacity: 0.7;
+    }
+    /* Sankey-specific overrides (added v1.6.1) */
+    rect.node {
+      fill: var(--accent) !important;
+      fill-opacity: 0.92 !important;
+      stroke: none !important;
+    }
+    .sankey-link, g.links path, path.link {
+      fill: var(--accent) !important;
+      fill-opacity: 0.45 !important;
+      stroke: none !important;
+    }
+    .sankey-link:hover, path.link:hover {
+      fill-opacity: 0.65 !important;
     }
   `;
 

@@ -896,6 +896,24 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       stroke-dasharray: 4 3 !important;
       opacity: 0.7;
     }
+    /* Sankey-specific overrides (added v1.6.1) — the outline-only rule above targets
+       `.node rect` (descendant selector) which doesn't match sankey's `<rect class="node">`
+       direct element pattern. Mermaid's themeVariables.primaryColor was rendering sankey
+       bars in the dark elevated background, making them blend into the page. Explicit
+       overrides here restore visible filled accent bars and lift the flow-ribbon opacity. */
+    rect.node {
+      fill: var(--accent) !important;
+      fill-opacity: 0.92 !important;
+      stroke: none !important;
+    }
+    .sankey-link, g.links path, path.link {
+      fill: var(--accent) !important;
+      fill-opacity: 0.45 !important;
+      stroke: none !important;
+    }
+    .sankey-link:hover, path.link:hover {
+      fill-opacity: 0.65 !important;
+    }
   `;
 
   function init() {
