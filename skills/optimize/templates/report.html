@@ -134,6 +134,9 @@ html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var
 
 /* Diagrams */
 .diagram{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px;margin:24px 0;overflow-x:auto}
+/* v1.6.1: center the rendered Mermaid SVG within its container row. Narrow diagrams center; wider ones still scroll horizontally on mobile via .diagram's overflow-x:auto. */
+.diagram .mermaid{text-align:center}
+.diagram .mermaid svg{display:inline-block;margin:0 auto}
 .diagram.as-is{border-color:rgba(239,68,68,0.3)}
 .diagram.proposed{border-color:rgba(16,185,129,0.3)}
 .diagram-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
@@ -229,6 +232,9 @@ a.move:hover .headline{color:var(--accent)}
 @media (max-width: 640px){
   /* v1.6: compress section gaps on narrow viewports to remove the long blank scroll between sections */
   .section{margin-bottom:56px}
+  /* v1.6.1: PI highlight card stacks vertically on narrow viewports so the logo + text don't crush */
+  .pi-card{flex-direction:column !important;align-items:center !important;text-align:center;gap:16px !important}
+  .pi-card img{max-width:140px !important}
   .diagram{padding:16px 12px;-webkit-overflow-scrolling:touch}
   .diagram .mermaid{min-width:560px}
   .diagram .mermaid svg{max-width:none;width:auto;height:auto}
@@ -1036,24 +1042,50 @@ void main(){
   gl_Position = vec4(aPos, 0.0, 1.0);
 }`;
 
+  // v1.6.1 redesign — three drifting glow blobs (cyan + purple + amber) behind the title.
+  // Text rendered as filled alpha to the canvas; shader edge-detects the alpha to produce a hollow outline.
+  // Outline color is the brand accent. The glow shines through the transparent letter interiors.
   const FSHADER = (isGL2
     ? '#version 300 es\nprecision highp float;\nin vec2 vUv;\nout vec4 outColor;\n#define SAMPLE(t,uv) texture(t, uv)'
     : 'precision highp float;\nvarying vec2 vUv;\n#define SAMPLE(t,uv) texture2D(t, uv)'
   ) + `
 uniform sampler2D uText;
-uniform vec3 uAccent;
-uniform vec3 uTextColor;
+uniform vec3 uOutlineColor;
+uniform vec3 uColor1;
+uniform vec3 uColor2;
+uniform vec3 uColor3;
 uniform float uTime;
 uniform vec2 uResolution;
 void main(){
-  vec4 tx = SAMPLE(uText, vUv);
-  float alpha = tx.a;
-  float sweep = mod(uTime * 0.16, 1.5) - 0.25;
-  float band = exp(-pow((vUv.x - sweep) * 4.5, 2.0));
-  vec3 col = mix(uTextColor, uAccent, clamp(band * 0.85, 0.0, 0.95));
-  float scan = 0.94 + 0.06 * sin(vUv.y * uResolution.y * 0.9);
-  col *= scan;
-  col += uAccent * band * 0.18;
+  // Aspect-correct UV so blobs render as circles, not ovals
+  float ar = uResolution.x / uResolution.y;
+  vec2 uvA = vec2(vUv.x * ar, vUv.y);
+
+  // Three glow blobs drifting on independent slow cycles
+  vec2 p1 = vec2((0.25 + 0.15 * sin(uTime * 0.21)) * ar, 0.50 + 0.18 * cos(uTime * 0.13));
+  vec2 p2 = vec2((0.50 + 0.18 * cos(uTime * 0.15)) * ar, 0.50 + 0.15 * sin(uTime * 0.19));
+  vec2 p3 = vec2((0.75 + 0.15 * sin(uTime * 0.17)) * ar, 0.50 + 0.18 * cos(uTime * 0.11));
+
+  float r = 0.32;
+  float b1 = exp(-pow(distance(uvA, p1) / r, 2.0));
+  float b2 = exp(-pow(distance(uvA, p2) / r, 2.0));
+  float b3 = exp(-pow(distance(uvA, p3) / r, 2.0));
+  vec3 glow = uColor1 * b1 + uColor2 * b2 + uColor3 * b3;
+  float glowA = clamp(b1 + b2 + b3, 0.0, 1.0);
+
+  // Edge-detect the filled text alpha to derive a thin outline (works at any font weight)
+  vec2 px = vec2(1.5) / uResolution;
+  float aR = SAMPLE(uText, vUv + vec2(px.x, 0.0)).a;
+  float aL = SAMPLE(uText, vUv - vec2(px.x, 0.0)).a;
+  float aU = SAMPLE(uText, vUv + vec2(0.0, px.y)).a;
+  float aD = SAMPLE(uText, vUv - vec2(0.0, px.y)).a;
+  float maxN = max(max(aR, aL), max(aU, aD));
+  float minN = min(min(aR, aL), min(aU, aD));
+  float edge = clamp((maxN - minN) * 1.6, 0.0, 1.0);
+
+  // Composite: glow as the base layer, outline punches through on top
+  vec3 col = mix(glow, uOutlineColor, edge);
+  float alpha = max(glowA * 0.55, edge);
   ${isGL2 ? 'outColor' : 'gl_FragColor'} = vec4(col * alpha, alpha);
 }`;
 
@@ -1089,8 +1121,10 @@ void main(){
   gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
   const uText = gl.getUniformLocation(prog, 'uText');
-  const uAccent = gl.getUniformLocation(prog, 'uAccent');
-  const uTextColor = gl.getUniformLocation(prog, 'uTextColor');
+  const uOutlineColor = gl.getUniformLocation(prog, 'uOutlineColor');
+  const uColor1 = gl.getUniformLocation(prog, 'uColor1');
+  const uColor2 = gl.getUniformLocation(prog, 'uColor2');
+  const uColor3 = gl.getUniformLocation(prog, 'uColor3');
   const uTime = gl.getUniformLocation(prog, 'uTime');
   const uResolution = gl.getUniformLocation(prog, 'uResolution');
   gl.uniform1i(uText, 0);
@@ -1118,8 +1152,16 @@ void main(){
   function readPalette(){
     const cs = getComputedStyle(document.documentElement);
     const accentHex = (cs.getPropertyValue('--accent') || '#22E0FF').trim() || '#22E0FF';
-    const textHex = (cs.getPropertyValue('--text-primary') || '#E8ECEE').trim() || '#E8ECEE';
-    return { accent: hexToRgb(accentHex), textPrimary: hexToRgb(textHex), textHex };
+    const infoHex   = (cs.getPropertyValue('--info')   || '#A855F7').trim() || '#A855F7';
+    const warnHex   = (cs.getPropertyValue('--warn')   || '#E8B33A').trim() || '#E8B33A';
+    const textHex   = (cs.getPropertyValue('--text-primary') || '#E8ECEE').trim() || '#E8ECEE';
+    return {
+      outline: hexToRgb(accentHex),
+      blob1: hexToRgb(accentHex),
+      blob2: hexToRgb(infoHex),
+      blob3: hexToRgb(warnHex),
+      textHex
+    };
   }
   let palette = readPalette();
 
@@ -1150,8 +1192,10 @@ void main(){
   }
 
   function setUniforms(){
-    gl.uniform3f(uAccent, palette.accent[0], palette.accent[1], palette.accent[2]);
-    gl.uniform3f(uTextColor, palette.textPrimary[0], palette.textPrimary[1], palette.textPrimary[2]);
+    gl.uniform3f(uOutlineColor, palette.outline[0], palette.outline[1], palette.outline[2]);
+    gl.uniform3f(uColor1, palette.blob1[0], palette.blob1[1], palette.blob1[2]);
+    gl.uniform3f(uColor2, palette.blob2[0], palette.blob2[1], palette.blob2[2]);
+    gl.uniform3f(uColor3, palette.blob3[0], palette.blob3[1], palette.blob3[2]);
     gl.uniform2f(uResolution, canvas.width, canvas.height);
   }
 

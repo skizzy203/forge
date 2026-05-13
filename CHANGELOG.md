@@ -32,10 +32,17 @@ The Appendix Run Metadata block gains a new `Pruning log:` line linking to the p
 ### Fixed
 - **Mobile scroll gap between sections.** The 96px `.section` margin-bottom was visually overlong on narrow viewports, producing a multi-screen blank between Section 6's "What to watch" and Section 7. Added a `@media (max-width: 640px)` rule that compresses section gaps to 56px.
 
+### Polish iterations folded into v1.6.0
+- **Shader effect redesigned to multicolor glow + hollow text.** First live read showed the bump-textured filled letters didn't read as cleanly as intended. Replaced with three drifting glow blobs (`--accent` cyan + `--info` purple + `--warn` amber) behind hollow outlined text. The text canvas paints a filled alpha mask; the fragment shader edge-detects that mask to produce a thin accent-cyan outline. The glow shines through the transparent letter interiors. All three blob positions drift on independent slow cycles for continuous motion.
+- **All six Mermaid diagrams centered within their `.diagram` row.** Previously the rendered SVG sat left-justified inside the container, leaving uneven negative space on the right. Added `.diagram .mermaid { text-align: center }` and `.diagram .mermaid svg { display: inline-block; margin: 0 auto }` so AS-IS, PROPOSED, Sankey, Gantt, Pre-Mortem Quadrant, and Revenue Trajectory all center cleanly. Wide diagrams still scroll horizontally on mobile via the existing `.diagram { overflow-x: auto }`.
+- **PI highlight card stacks vertically on viewports <640px.** The inline `display:flex` was cramping the logo + text row on phone widths. Added `.pi-card` class and a `@media (max-width:640px)` rule that flips to `flex-direction: column`, centers everything, and caps the logo at 140px. SKILL.md PI card spec updated to require the class.
+- **Auto-tag GitHub Action.** `.github/workflows/auto-tag-release.yml` reads `plugin.json` on every push to main and creates a matching `v*` tag + GitHub release whose notes come from the matching `## [x.y.z]` section of CHANGELOG.md. Detects existing tags and exits cleanly to avoid duplicate releases. Activates from v1.6.1 onward; v1.6.0 itself is tagged manually before the workflow lands on main.
+
 ### Removed
 - v1.5 `.cine-hero` element from Section 1 and `.cine-footer` element from before the Tally CTA
 - v1.5 inline Three.js + GSAP + ScrollTrigger script block (~350 lines, ~380 KB CDN payload)
 - All hardcoded fill colors in Mermaid `classDef` declarations (replaced with `fill:none` + `themeCSS` semantics)
+- v1.6.0 first-iteration shader (filled letters with band sweep + scanline) — superseded by the multicolor-glow + hollow-text redesign described above
 
 ### Files changed
 - `skills/optimize/templates/report.html` — cinematic CSS/DOM/script swap, Mermaid `themeCSS` injection, mobile margin rule, Appendix pruning-log line
