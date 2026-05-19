@@ -132,8 +132,8 @@ Derive web-research queries from the BCD **plus the Web Supplement from Phase 1A
 4. **Regulatory/macro** (industry-dependent) → query for relevant 2026 regulatory shifts or macro tailwinds/headwinds
 5. **Adjacent disruption** (inferred from operator Cross-Domain Q27) → query for what's working in adjacent fields that could import
 6. **Industry death-zone band** (added v1.1) → query for known revenue ranges where this industry experiences margin compression (e.g., pressure washing $500K–$1.2M, SaaS $1M–$3M, professional services $2M–$5M). If a band is surfaced, capture as `DEATH_ZONE_BAND = [low, high]` in accumulated context. If no band is surfaced for this industry, set `DEATH_ZONE_BAND = null`. Phase 4 uses this to decide whether to render the Section 7 death-zone callout — the callout fires only when the Year 3 amplified projection actually crosses the band.
-7. **Pricing distribution** (added v1.4) → query `"[industry term] pricing tiers low median premium"` plus `"[industry] [primary service] cost guide"`. Surfaces competitor pricing pages, "how much does X cost" articles, and industry survey data. Synthesize into `PRICING_DISTRIBUTION` with `{low_range, median_range, premium_range}` plus 2-3 cited example operators at each tier. Feeds Section 2 Pricing Power Audit sub-block.
-8. **Customer acquisition cost** (added v1.4) → query `"[industry] customer acquisition cost benchmark"` plus `"[industry] LTV CAC ratio payback period"`. Surfaces industry benchmark reports, vendor whitepapers, and ad-platform case studies. Synthesize into `CAC_BENCHMARK` with `{cac_range_low, cac_range_high, payback_months, ltv_cac_ratio, primary_channels}` and a cited source URL. Feeds Section 2 Customer Acquisition Cost sub-block.
+7. **Pricing distribution** (added v1.4, anchored v1.8) → query `"[industry term] pricing tiers low median premium"` plus `"[industry] [primary service] cost guide"`. Surfaces competitor pricing pages, "how much does X cost" articles, and industry survey data. Synthesize into `PRICING_DISTRIBUTION` with `{low_range, median_range, premium_range}` plus 2-3 cited example operators at each tier. **Anchor the operator's tier placement using the BCD's `Pricing snapshot` field (Q10d, added v1.8) — do not guess from prose.** Feeds Section 2 Pricing Power Audit sub-block including the "Where you sit" placement.
+8. **Customer acquisition cost** (added v1.4, anchored v1.8) → query `"[industry] customer acquisition cost benchmark"` plus `"[industry] LTV CAC ratio payback period"`. Surfaces industry benchmark reports, vendor whitepapers, and ad-platform case studies. Synthesize into `CAC_BENCHMARK` with `{cac_range_low, cac_range_high, payback_months, ltv_cac_ratio, primary_channels}` and a cited source URL. **Cross-reference the BCD's `Top acquisition channels` field (Q13, added v1.8) when computing the operator's "where you sit" CAC estimate — favor the channels they actually use.** Feeds Section 2 Customer Acquisition Cost sub-block.
 
 Both Pricing Distribution and CAC Benchmark honor the same citation discipline as Phase 1C (added v1.3): if no benchmark surfaces for the industry, render the sub-block with a `Not benchmarked — pilot to measure` note rather than inventing numbers.
 
@@ -153,6 +153,8 @@ The phase is **research-driven, not chain-derived**. It mirrors Phase 1B's epist
 
 **Inputs available at this point:**
 - BCD-extracted: industry, what-it-does, biggest problem / primary bottleneck, revenue range
+- BCD `Where the week goes` field (Q14, added v1.8 — optional) → anchors automation recommendations to the operator's actual top task categories instead of generic industry recommendations
+- BCD `Tools in use today` field (Q19, added v1.8 — optional) → **do not recommend tools the operator already runs**. If a card's `common_tooling` matches a tool listed in Q19, either swap it for an alternative tool or annotate the card with "you already run this — opportunity is workflow refinement, not net-new install"
 - Phase 1A `WEB_SUPPLEMENT`: actual industry vocabulary, positioning, and competitor framing — the operator's stated category often differs from the searchable industry term; **prefer the supplement's language** when constructing queries
 - Phase 1B accumulated market context (TAM signals, competitive density, commoditization signals — informs which automations are most relevant)
 
@@ -190,7 +192,7 @@ Industry-specific data on when operators in this sector make their first hire, w
 
 Runs after Phase 1C, before Phase 2. Same epistemic posture as Phase 1B/1C: cite or omit.
 
-**Inputs:** BCD industry, business type, revenue range, primary bottleneck. Phase 1A `WEB_SUPPLEMENT` industry vocabulary. Phase 1B competitive density signals.
+**Inputs:** BCD industry, business type, revenue range, primary bottleneck. BCD `Where the week goes` field (Q14, added v1.8 — optional) → anchors the "Delegate first" list to the operator's actual top task categories instead of generic industry recommendations. Phase 1A `WEB_SUPPLEMENT` industry vocabulary. Phase 1B competitive density signals.
 
 **Queries (3–4 WebSearch passes + 1–2 WebFetch per query):**
 
@@ -245,7 +247,7 @@ Each model's output explicitly informs the next. Maintain causal continuity.
 
 Load `references/visual-primitives.md`. Generate five diagrams across the report:
 
-**AS-IS flowchart (Section 3)** — from the BCD. Map the operator's current business as OFFER → AVATAR → CHANNEL → CONVERSION → DELIVERY → REVENUE, with SYSTEM nodes for infrastructure and FRICTION nodes pulled from Pareto/ToC findings. FRICTION nodes pulse red.
+**AS-IS flowchart (Section 3)** — from the BCD. Map the operator's current business as OFFER → AVATAR → CHANNEL → CONVERSION → DELIVERY → REVENUE, with SYSTEM nodes for infrastructure and FRICTION nodes pulled from Pareto/ToC findings. FRICTION nodes pulse red. **CHANNEL nodes are sourced from the BCD's `Top acquisition channels` field (Q13, added v1.8)**, one node per ranked channel — do not invent channels not listed there.
 
 **PROPOSED flowchart (Section 5)** — from the chain's accumulated output. Apply changes:
 - Removed elements (from Via Negativa) get `[-]` suffix and `removed` class
@@ -254,7 +256,7 @@ Load `references/visual-primitives.md`. Generate five diagrams across the report
 
 If AS-IS has ≤ 12 nodes: render as animated morph (per visual-primitives.md). Otherwise: render side-by-side static.
 
-**Revenue Diff Sankey (Section 5)** — generated from BCD revenue breakdown plus Pareto, Value Equation, Pricing Strategy, and Via Negativa outputs. Renders AS-IS revenue streams flowing into a center "AS-IS total" node, then flowing out to PROPOSED streams (with an "Eliminated" outflow for removed lines). Native `sankey-beta` syntax. Weights are proportional estimates summing to ~100; do not invent dollar amounts the chain did not produce.
+**Revenue Diff Sankey (Section 5)** — generated from the BCD's `Revenue stream split` field (Q12, added v1.8) for AS-IS source proportions, then flowing into a center "AS-IS Revenue 100%" node, and rewiring out to PROPOSED streams produced by Pareto, Value Equation, Pricing Strategy, and Via Negativa chain outputs. The "Cut from offer (Via Negativa)" outflow balances the math. Native `sankey-beta` syntax with `%%{init: {"sankey": {"showValues": true, "suffix": "%"}}}%%` so values render as percentages. **Do not invent AS-IS proportions** — if Q12 is empty, render the Sankey with a single "AS-IS Revenue 100%" stream and an Appendix flag noting the missing breakdown.
 
 **Implementation Gantt (Section 6)** — generated from the three move paragraphs. Break each move into 2–3 concrete sub-tasks with imperative names. Anchor dates to the run timestamp (today for Move 1 start, +week, +month, +quarter for downstream tasks). Native `gantt` syntax.
 
