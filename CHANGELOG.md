@@ -2,6 +2,55 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.8.0] — 2026-05-13
+
+### Added — five new questionnaire fields anchoring report sections previously inferred from prose
+
+A coverage audit cross-referenced each report section against the questions that fed it and found four high-priority gaps where the chain was inventing or guessing data because the questionnaire never asked for it. v1.8.0 closes the gaps with three required and two optional new fields, all on Page 3 of the intake alongside the existing financial baseline.
+
+**Q10d — Pricing snapshot** (required). "What does the offer cost today?" Real price points, per-unit / per-job / per-month. Anchors the Section 2 Pricing Power Audit "where you sit" placement — replaces the chain's prose-inferred guess with the operator's actual numbers.
+
+**Q12 — Revenue stream split** (required). Per-line-item percentage of revenue, summing to ~100. Anchors the Section 5 Revenue Diff Sankey's AS-IS source proportions. Previously the chain invented these proportions or pulled them from Q2 prose; now they come from the operator directly. SKILL.md Phase 3 updated with the rule: "Do not invent AS-IS proportions — if Q12 is empty, render the Sankey with a single AS-IS Revenue 100% stream and an Appendix flag."
+
+**Q13 — Top acquisition channels** (required). Ranked top 3 sources of new customers. Anchors:
+- Section 2 CAC Benchmark "where you sit" — chain cross-references industry CAC ranges against the channels the operator actually uses
+- Section 3 AS-IS flowchart CHANNEL nodes — sourced one node per ranked channel rather than inferred from prose
+
+**Q14 — Where the week goes** (optional). Top 3 categories of work consuming weekly hours with rough %. Anchors:
+- Section 7.0 Automation Surface recommendations — automations are ranked against the operator's actual top tasks
+- Section 7.0b First-Hire Roadmap "Delegate first" list — items pulled from the operator's stated time-consumers
+
+**Q19 — Tools in use today** (optional). Software running the business today. Phase 1C updated with the rule: "Do not recommend tools the operator already runs. If a card's `common_tooling` matches a tool listed in Q19, swap for an alternative or annotate as a workflow-refinement opportunity instead of net-new install."
+
+### Added — explicit deep-dive checkboxes on Page 4
+
+The conditional sections on Page 5 (operational complexity, retention, team alignment) previously fired only via the `detectTriggers()` keyword regex on Q4 and Q7 prose. Phrasing like "operations are eating my evenings" wouldn't match the operational keyword set.
+
+New `Q4b` on Page 4 — "Want to go deeper on any of these? (pick 0–3)" with three explicit checkboxes:
+- Operations & workload
+- Retention & churn
+- Team alignment & incentives
+
+`detectTriggers()` rewritten to OR the explicit checkbox state with the legacy prose keyword match. The checkbox is the primary signal; prose keywords remain as a fallback for operators who skip the checkboxes but describe the problem in matching language.
+
+Checked-box state is written to the BCD under a new `## Requested Deep-Dive Areas` section so the chain can surface it as a signal in the Appendix.
+
+### Added — Wispr Flow dictation tip card on Page 1
+
+Promo card above the form on Page 1 recommending [Wispr Flow](https://wisprflow.ai/) — a free dictation tool — as a way to give richer answers. Standard `.callout` style with accent border, mono label `[ 🎤 ] PRO TIP — DICTATE YOUR ANSWERS`, brief copy ("3–4× more detail than typing alone"), and a CTA link to https://wisprflow.ai/. Standard nominative-use linking, same pattern as the Predictive Index recommendation in Section 7.0b.
+
+### Files changed
+- `skills/intake/templates/questionnaire.html` — Wispr Flow card on Page 1; five new fields on Page 3 (Q10d, Q12, Q13, Q14, Q19); Q4b checkbox on Page 4; `detectTriggers()` rewritten to OR checkbox + keyword signals; `buildBCD()` writer extended with new fields plus a `## Requested Deep-Dive Areas` block; `FORGE_VERSION` → `v1.8.0`
+- `skills/optimize/SKILL.md` — Phase 1B query 7 (Pricing) anchored by Q10d; query 8 (CAC) anchored by Q13; Phase 1C anchored by Q14 + Q19 (don't recommend tools already in use); Phase 1D anchored by Q14; Phase 3 AS-IS flowchart CHANNEL nodes sourced from Q13; Phase 3 Revenue Diff Sankey sourced from Q12 with explicit "do not invent" rule
+- `examples/sample-report.html` — appendix `forge v1.8.0`, footer `FORGE v1.8`
+- `.claude-plugin/plugin.json` — `1.7.0` → `1.8.0`
+- `CHANGELOG.md` — `[1.8.0]` entry
+
+### Rationale
+The audit found that the chain was repeatedly guessing or inventing data the report displayed as concrete (pricing tier placement, Sankey revenue proportions, channel mix, tool stack). Closing four of the gaps with three required + two optional questions adds ~3–5 minutes to the intake but moves the report from "looks specific" to "actually specific" in the most visually prominent diagrams (Sankey, AS-IS flowchart, Section 2 sub-blocks). The fifth gap (geographic scope for local-service businesses) was triaged to a future release as low-impact.
+
+The Wispr Flow card is a separate but related improvement — operators who dictate produce richer prose for the long-form questions (Q1, Q4, Q5, Q7, Q25–Q30), which feeds the chain's qualitative analysis. The card is a recommendation, not required; intake works the same without it.
+
 ## [1.7.0] — 2026-05-13
 
 ### Changed — cinematic header rebuilt around UnicornStudio shader
