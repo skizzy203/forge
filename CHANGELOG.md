@@ -2,6 +2,36 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.10.2] — 2026-05-20
+
+### Codename: Cohesion (inherited from v1.10.0)
+
+Patch release. Plugin description and README intro rewrites. No behavior change, no chain change, no render change.
+
+### Changed — `plugin.json` description (the "About" line)
+
+**Before:** "Business model optimization. Email-gated HTML intake, adaptive mental-model analysis with live market research, and terminal-noir intelligence report."
+
+**After:** "Business model optimization for business owners and strategists. Adaptive 40-model analysis grounded in live market research. Output: before-and-after model flowcharts, implementation Gantt, revenue trajectory chart, and pressure test."
+
+Drops two phrases that telegraphed implementation detail (`Email-gated HTML intake`) and styling (`terminal-noir intelligence report`) but carried no value signal. Adds audience naming so non-target readers self-disqualify in the plugin browser, names three concrete diagram outputs so the visual layer reads as the deliverable rather than decoration, and closes on `pressure test` as the differentiator. No trending-keyword vocabulary (no "first principles," no "strip assumptions," no "axiomatic truths") — the structural property is named through the diagrams and the pressure-test clause instead.
+
+### Changed — README tagline + intro paragraph
+
+Tagline matches the new `plugin.json` description verbatim. Intro paragraph rewritten to:
+- Lead with the differentiator: "It pressure-tests its own recommendations rather than just emitting them."
+- Name three uniquely-identifiable mental-model lenses (Jobs-to-Be-Done, Inversion, Via Negativa) plus "others" — telegraphs depth without author attribution.
+- Add the structural property: "biased toward subtraction" — captures Via Negativa / Pareto / First Principles thinking without using any of the trending-keyword vocabulary.
+- Name the four Phase 1B market-research dimensions explicitly (TAM, competitive density, pricing distribution, customer acquisition cost).
+- Name six concrete outputs in the closing sentence (before-and-after flowcharts, Sankey, Gantt, trajectory chart, Steelman / Strawman / Pre-Mortem attack).
+
+### Files changed
+
+- `.claude-plugin/plugin.json` — `description` field rewritten; `version` `1.10.1` → `1.10.2`
+- `README.md` — bolded tagline + intro paragraph (lines 11–13) rewritten
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.10.2`
+- `examples/sample-report.html` — Appendix Run Metadata `forge v1.10.1` → `v1.10.2`
+
 ## [1.10.1] — 2026-05-20
 
 ### Codename: Cohesion (inherited from v1.10.0)

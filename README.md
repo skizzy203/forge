@@ -8,9 +8,9 @@
 [![Last commit](https://img.shields.io/github/last-commit/skizzy203/forge?color=A855F7&style=flat-square)](https://github.com/skizzy203/forge/commits/main)
 [![Stars](https://img.shields.io/github/stars/skizzy203/forge?style=flat-square&color=E8B33A)](https://github.com/skizzy203/forge/stargazers)
 
-**Business model optimization. Email-gated HTML intake, adaptive mental-model analysis with live market research, terminal-noir intelligence report.**
+**Business model optimization for business owners and strategists. Adaptive 40-model analysis grounded in live market research. Output: before-and-after model flowcharts, implementation Gantt, revenue trajectory chart, and pressure test.**
 
-Forge is a Claude Code plugin that takes a business owner through a structured questionnaire, runs an adaptive chain of mental-model lenses against the collected context with live web-sourced market research, and produces a brand-consistent HTML intelligence report covering current state, optimization analysis, proposed redesign, and a three-move implementation plan.
+Forge is a business model optimization plugin for business owners and strategists. It pressure-tests its own recommendations rather than just emitting them. The plugin runs your business context through a 40-model analysis chain anchored by named lenses (Jobs-to-Be-Done, Inversion, Via Negativa, others) and biased toward subtraction. Live market research grounds the analysis in TAM, competitive density, pricing distribution, and customer acquisition cost data. Output is an HTML report with before-and-after model flowcharts, a revenue-rewiring Sankey, a three-move implementation Gantt, a three-year revenue trajectory chart, and a Steelman / Strawman / Pre-Mortem attack on the resulting strategy.
 
 ---
 
