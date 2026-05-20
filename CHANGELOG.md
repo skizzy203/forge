@@ -2,6 +2,41 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.10.3] — 2026-05-20
+
+### Codename: Cohesion (inherited from v1.10.0)
+
+Patch release. Fixes a render bug that could leave Section 7 (Amplified Moves) invisible with a sizable scroll gap on certain viewport sizes. Surfaced by a workshop run on a real BCD (Vital Vessel — chiropractic / wellness). DevTools confirmed the failure mode: `#sec7.in_view: false, opacity: '0'` while sections above and below rendered fine.
+
+### Fixed — IntersectionObserver threshold too restrictive for tall sections
+
+The scroll-triggered section fade-in used `threshold: 0.12` on the IntersectionObserver. For very tall sections (Section 7 with all five sub-blocks 7.0 + 7.0b + 7.0c + 7.1 + 7.2 + 7.3 + combined projections + trajectory chart + death-zone callout often exceeds 8000px rendered height), the max possible intersection ratio equals `viewport_height / section_height`. On a typical laptop viewport (~700–900px effective), an 8000px section can never reach 12% intersection, so the observer never fires and `.in-view` is never added. The section stays at `opacity: 0` from the `.fade-init .section` rule while still occupying scroll space — exactly the bug observed.
+
+**Fix:** changed threshold from `0.12` to `0` and tightened `rootMargin` from `0px 0px -60px 0px` to `0px 0px -10% 0px`. With `threshold: 0`, any pixel intersection fires the observer — guaranteed to work for any section height. The `-10%` bottom margin preserves the "fade in slightly before bottom of viewport" UX that the 0.12 threshold was reaching for.
+
+### Fixed — CSS selector collision with Mermaid Gantt SVG
+
+Mermaid's Gantt-chart syntax (`section Move 1`, `section Move 2`, etc.) generates SVG `<g class="section">` elements for the background bands behind each section's bars. Our CSS rule `.fade-init .section { opacity: 0 }` and our `document.querySelectorAll('.section')` both matched these SVG elements as well as the actual `<section>` tags. Result: every Gantt chart added 3–5 phantom "sections" to the IntersectionObserver's watch list (visible in DevTools as `(no id)` entries with opacity `0.2`). Visually benign because Mermaid's own styling re-asserted, but it's class-name pollution and a real cleanliness issue.
+
+**Fix:** tightened the selector from `.section` to `section.section` in both CSS (`.fade-init section.section`, `.fade-init section.section.in-view`, `@media (prefers-reduced-motion: reduce) .fade-init section.section`) and JavaScript (`document.querySelectorAll('section.section')`). Only matches `<section>` tags carrying the `.section` class — never SVG groups.
+
+### Files changed
+
+- `skills/optimize/templates/report.html` — CSS selector + JS selector + IntersectionObserver threshold/rootMargin
+- `examples/sample-report.html` — same three fixes applied to the bundled sample so it ships with the corrected behavior
+- `.claude-plugin/plugin.json` — `1.10.2` → `1.10.3`
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.10.3`
+
+### How to verify
+
+Open any v1.10.3+ report in a browser, F12 → Console, paste:
+
+```js
+document.querySelector('#sec7').classList.contains('in-view')
+```
+
+Scrolling past Section 6 should now return `true` once Section 7 enters the viewport, with `getComputedStyle(document.querySelector('#sec7')).opacity` reading `1`.
+
 ## [1.10.2] — 2026-05-20
 
 ### Codename: Cohesion (inherited from v1.10.0)

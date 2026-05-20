@@ -249,9 +249,9 @@ a:hover{text-decoration:underline}
 .reading-progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);z-index:50;transition:width 0.08s linear;pointer-events:none}
 
 /* Scroll-triggered section fade-in (JS adds .fade-init on load) */
-.fade-init .section{opacity:0;transform:translateY(12px);transition:opacity 0.6s ease,transform 0.6s ease}
-.fade-init .section.in-view{opacity:1;transform:none}
-@media (prefers-reduced-motion: reduce){.fade-init .section{opacity:1;transform:none;transition:none}}
+.fade-init section.section{opacity:0;transform:translateY(12px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-init section.section.in-view{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.fade-init section.section{opacity:1;transform:none;transition:none}}
 
 /* Tabular numerals on countup spans */
 [data-countup]{font-variant-numeric:tabular-nums}
@@ -1166,7 +1166,7 @@ quadrantChart
       <p>BCD file: <code># BUSINESS MODEL INTAKE-Mechanical Magic.md</code></p>
       <p>Web supplement source: <code>https://mechanicalmagicpressurewashing.com/</code></p>
       <p>Pruning log: <code>~/forge-runs/mechanical-magic-2026-05-11.models.json</code></p>
-      <p>Plugin version: forge v1.10.2</p>
+      <p>Plugin version: forge v1.10.3</p>
     </div>
   </details>
 </section>
@@ -1358,10 +1358,10 @@ setTimeout(() => {
           sectionObs.unobserve(e.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-    document.querySelectorAll('.section').forEach(s => sectionObs.observe(s));
+    }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('section.section').forEach(s => sectionObs.observe(s));
   } else {
-    document.querySelectorAll('.section').forEach(s => s.classList.add('in-view'));
+    document.querySelectorAll('section.section').forEach(s => s.classList.add('in-view'));
   }
 
   if ('IntersectionObserver' in window) {

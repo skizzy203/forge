@@ -339,10 +339,12 @@ a:hover{text-decoration:underline}
 /* Reading progress bar */
 .reading-progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);z-index:50;transition:width 0.08s linear;pointer-events:none}
 
-/* Scroll-triggered section fade-in (JS adds .fade-init on load; sections start hidden only when JS is active) */
-.fade-init .section{opacity:0;transform:translateY(12px);transition:opacity 0.6s ease,transform 0.6s ease}
-.fade-init .section.in-view{opacity:1;transform:none}
-@media (prefers-reduced-motion: reduce){.fade-init .section{opacity:1;transform:none;transition:none}}
+/* Scroll-triggered section fade-in (JS adds .fade-init on load; sections start hidden only when JS is active).
+   Selector is `section.section` (not `.section`) so SVG <g class="section"> nodes that Mermaid emits for
+   Gantt-chart "section" syntax don't inherit the opacity:0 + transform and don't get observed. */
+.fade-init section.section{opacity:0;transform:translateY(12px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-init section.section.in-view{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.fade-init section.section{opacity:1;transform:none;transition:none}}
 
 /* Tabular numerals on countup spans so width doesn't jump while animating */
 [data-countup]{font-variant-numeric:tabular-nums}
@@ -1146,7 +1148,10 @@ setTimeout(() => {
     updateBar();
   }
 
-  // 2. Section fade-in on scroll (JS-gated so sections render normally if JS fails)
+  // 2. Section fade-in on scroll (JS-gated so sections render normally if JS fails).
+  // Selector is `section.section` (not `.section`) to avoid SVG g.section nodes that Mermaid emits
+  // for Gantt-chart section syntax. threshold:0 fires on any pixel intersection so very tall sections
+  // (which can never satisfy a fractional threshold on a small viewport) still fade in correctly.
   document.documentElement.classList.add('fade-init');
   if ('IntersectionObserver' in window) {
     const sectionObs = new IntersectionObserver((entries) => {
@@ -1156,10 +1161,10 @@ setTimeout(() => {
           sectionObs.unobserve(e.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-    document.querySelectorAll('.section').forEach(s => sectionObs.observe(s));
+    }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('section.section').forEach(s => sectionObs.observe(s));
   } else {
-    document.querySelectorAll('.section').forEach(s => s.classList.add('in-view'));
+    document.querySelectorAll('section.section').forEach(s => s.classList.add('in-view'));
   }
 
   // 3. Number count-up animation
