@@ -260,6 +260,8 @@ If AS-IS has ≤ 12 nodes: render as animated morph (per visual-primitives.md). 
 
 **Implementation Gantt (Section 6)** — generated from the three move paragraphs. Break each move into 2–3 concrete sub-tasks with imperative names. Anchor dates to the run timestamp (today for Move 1 start, +week, +month, +quarter for downstream tasks). Native `gantt` syntax.
 
+**Cash-recovery Move 1 override (added v1.10).** When the Cash Conversion Check chain model fires with `verdict: "likely_failing"`, Move 1's first concrete sub-task must implement one of the verdict's `recommended_levers` (reduce CAC, raise prices, add upsell, accelerate collection). The Gantt task title names the lever explicitly — e.g., "Add Premium tier upsell to recover CAC inside 30 days" or "Raise Front-door price to $X to widen first-30-day gross margin." When verdict is `likely_passing` or `indeterminate`, no override applies — Move 1 follows normal chain-ranking selection. Cite-or-omit: an `indeterminate` verdict (low-confidence soft-signal inference) does NOT override Move 1.
+
 **Pre-Mortem Quadrant (Section 8.2)** — generated from Pre-Mortem Analysis chain output. Each failure mode becomes a point on Likelihood × Impact axes. Translate Likelihood and Impact tags to 0.0–1.0 coordinates (Low=0.2, Med=0.5, High=0.75–0.8) with small offsets to prevent dot overlap. Native `quadrantChart` syntax.
 
 **Revenue Trajectory Chart (Section 7)** — generated as a three-line xychart-beta showing how revenue diverges under three scenarios. Line 1 (No changes) = BCD current revenue compounded by Phase 1B market CAGR with a soft cap at the industry's solo-operator ceiling. Line 2 (Base plan only) = current revenue interpolated to Section 6's stated ceiling over three years (Year 1 ≈ 60% of ceiling, Year 2 = ceiling, Year 3 = ceiling). Line 3 (Base + amplifications) = year-by-year midpoint of Section 7's conservative-and-optimistic projection ranges. Use the inline `%%{init}%%` directive from `visual-primitives.md` to set the three-color palette (`#8A949A, #10B981, #0FB8D6`). Y-axis ceiling scales to ~120% of the amplified Year-3 high.
@@ -381,7 +383,9 @@ Composed into a single `{{money_model_block}}` token inserted between `{{first_h
 **Voice rules:**
 - Brand-neutral operator-facing copy. No mention of "Hormozi", "$100M", or "30-day rule" in the rendered section. The catalog model names (`Money Model Architecture (Hormozi)`, `Cash Conversion Check (30-day rule)`) and the Appendix lens-list definitions carry the framework attribution.
 - Each tier cell's body must reference a Section 5 stream by name. Sankey labels and tier names must match exactly.
+- **Core tier identity (added v1.10).** The Core tier MUST be identical — by name and value promise — to Section 4.3's redesigned offer. Both render the Value Equation chain output; the Core tier card carries the same offer name as Section 4.3's heading and the same one-sentence value promise. `{{mma_intro}}` explicitly cites Section 4.3 by anchor ("The Core tier is the redesigned offer surfaced in Section 4.3…"). The other three tiers (Front-door, Premium, Subscription) frame as the ladder built **around** that core.
 - Same accretion-filter discipline as 7.1–7.3 — every tier must make existing elements more valuable, not just add line items.
+- **Move-1 reconciliation (added v1.10).** Before final render, compare the `sequencing_note` tier reference against Section 6 Move 1's tier focus. If they disagree, rewrite `sequencing_note` so it names the same tier as Move 1. Move 1 is the authoritative tier-priority signal; 7.0c reinforces it, never contradicts it.
 
 **Failure handling.**
 - Money Model Architecture model didn't fire → `{{money_model_block}}` substitutes empty. Appendix gap note.
@@ -414,6 +418,8 @@ Sections 7 (Amplified Moves) and 8 (Pressure Test) are rendered from chain outpu
 
 Apply the **accretion filter** to every candidate before ranking: "If this is added, do existing elements become more valuable, or does the plan just have more elements?" Discard anything that fails. Rank survivors by magnitude of compounding × durability × buildability × cost-of-being-wrong. Surface the top three.
 
+**Anchor rule (added v1.10).** Each of the three compounding additions (7.1, 7.2, 7.3) must name its anchor — either a specific Section 3–6 element OR a Section 7.0c tier (Front-door / Core / Premium / Subscription) — and state which element/tier becomes more valuable when the addition is in place. Additions that cannot point to a concrete upstream surface fail the accretion filter and are dropped before ranking. When Section 7.0c is present, prefer tier anchors for additions that sharpen the offer ladder and Section 3–6 anchors for additions that strengthen positioning, operations, or distribution.
+
 **Revenue projection math** for Section 7:
 - **Year 1 lift** = base ceiling from chain + any Q1-shippable addition's contribution (typically only Addition 1 ships in Year 1)
 - **Year 2** = Year 1 + compounding from renewals, apprentice graduates, channel maturity (additions reaching first productive output)
@@ -429,6 +435,8 @@ Express each projection as a conservative-and-optimistic range with the assumpti
 | Inversion (2nd pass) | Strawman — failure conditions the plan resembles |
 | Second-Order Thinking | Consequence chain when success creates a worse problem |
 | Value Equation + Operator Edge + JTBD | Steelman — strongest case for the plan |
+| Money Model Architecture (added v1.10) | Steelman — tier ladder as the affirmative architecture; surfaces which tier carries the load if the plan succeeds |
+| Cash Conversion Check (added v1.10) | Strawman — when verdict is `likely_failing`, foreground the cash-recovery gap as the attackable mechanic; cite the failing levers from `recommended_levers` |
 | Via Negativa + First Principles | What survived stress |
 
 **Run Steelman and Strawman separately** before synthesizing the "What Survives" summary. Do not collapse them. The Steelman draws on Design-class chain outputs (the affirmative case). The Strawman draws on Stress-Test-class chain outputs (the weakest load-bearing point). The gap between them is where the actual risk lives, and "What Survives" names what holds across both attacks.

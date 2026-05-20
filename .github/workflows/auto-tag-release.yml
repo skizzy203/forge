@@ -37,6 +37,35 @@ jobs:
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
           echo "bare=$VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: Lookup codename from CODENAMES.md
+        id: codename
+        run: |
+          set -euo pipefail
+          BARE="${{ steps.version.outputs.bare }}"
+          # Extract major.minor (drop the patch number) — e.g. 1.9.0 -> 1.9
+          MINOR=$(echo "$BARE" | awk -F. '{print $1"."$2}')
+          KEY="v${MINOR}.x"
+          # Match table row "| v1.9.x  | Ladder | ..." and capture the codename in column 3
+          if [ -f CODENAMES.md ]; then
+            CODENAME=$(awk -F'|' -v key="$KEY" '
+              /^\| v[0-9]+\.[0-9]+\.x/ {
+                col2=$2; col3=$3
+                gsub(/^[[:space:]]+|[[:space:]]+$/, "", col2)
+                gsub(/^[[:space:]]+|[[:space:]]+$/, "", col3)
+                if (col2 == key) { print col3; exit }
+              }
+            ' CODENAMES.md)
+          else
+            CODENAME=""
+          fi
+          if [ -z "$CODENAME" ]; then
+            echo "::warning::No codename found for $KEY in CODENAMES.md. Falling back to tag-only title."
+            echo "title=v$BARE" >> "$GITHUB_OUTPUT"
+          else
+            echo "Codename for $KEY: $CODENAME"
+            echo "title=Forge v$BARE — $CODENAME — Business Model Optimization" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Check if tag already exists
         id: check
         run: |
@@ -80,5 +109,5 @@ jobs:
           git tag -a "$TAG" -m "$TAG"
           git push origin "$TAG"
           gh release create "$TAG" \
-            --title "$TAG" \
+            --title "${{ steps.codename.outputs.title }}" \
             --notes-file "${{ steps.notes.outputs.path }}"
