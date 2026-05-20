@@ -2,6 +2,49 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.10.0] — 2026-05-20
+
+### Codename: Cohesion
+
+Two parallel tracks. Track 1 tightens the order-of-operations around v1.9's Section 7.0c Money Model Architecture sub-block so the tier ladder integrates with the rest of the report instead of reading as an island. Track 2 ships a release-codename system so every release on the GitHub Releases page carries a memorable single-word identifier alongside the version number.
+
+### Track 1 — Order-of-Ops tightening (five gap fixes)
+
+No new chain models. No catalog changes. No new questionnaire fields. All five are voice-rule and Phase 4 render-instruction insertions in existing files.
+
+- **Gap A — Section 7 anchor rule.** Each of 7.1/7.2/7.3 must name its anchor: either a specific Section 3–6 element OR a 7.0c tier (Front-door / Core / Premium / Subscription) — and state which element/tier becomes more valuable when the addition lands. Additions without a concrete upstream surface fail the accretion filter.
+- **Gap B — Section 8 source-chain table.** Money Model Architecture now feeds the Steelman (tier ladder as the affirmative architecture); Cash Conversion Check feeds the Strawman when verdict is `likely_failing` (cash-recovery gap as attackable mechanic).
+- **Gap C — Core tier ≡ Section 4.3 redesigned offer.** The 7.0c Core tier card now carries the same offer name and value promise as Section 4.3's redesigned-offer heading. The 7.0c intro paragraph explicitly cites Section 4.3 by anchor. Front-door, Premium, and Subscription frame as the ladder built around that core.
+- **Gap D — Cash-recovery Move 1 override.** When Cash Conversion verdict is `likely_failing`, Section 6 Move 1's first concrete sub-task must implement one of the verdict's `recommended_levers` (reduce CAC, raise prices, add upsell, accelerate collection). `indeterminate` verdicts don't override (cite-or-omit).
+- **Gap E — Sequencing-note Move-1 reconciliation.** Before final render, the 7.0c `sequencing_note` is reconciled against Section 6 Move 1's tier focus. If they disagree, `sequencing_note` is rewritten to match Move 1. Move 1 is the authoritative tier-priority signal; 7.0c reinforces, never contradicts.
+
+### Track 2 — Release codename system
+
+- **New `CODENAMES.md` at repo root.** Single source of truth mapping each minor version to a single-word codename. Patch releases inherit their minor's codename. Reserved codenames (Schematic, Anchor) held for future themed releases; no retro-application to non-existent v1.0 or v1.4.
+- **Auto-tag workflow patched.** `.github/workflows/auto-tag-release.yml` now reads CODENAMES.md on every merge, looks up the codename for the version's major.minor, and stamps the release title as `Forge vX.Y.Z — Codename — Business Model Optimization`. Falls back to a tag-only title with a workflow warning when no codename is found.
+- **Retroactive title edits.** Existing GitHub releases v1.1.0 through v1.9.0 retitled via `gh release edit` to match the new title shape — metadata-only edits, no tag changes, no re-publish, release URLs unaffected. Performed as a manual post-merge step (workflow only handles new releases).
+
+### What's not in this release
+
+- **File-tree timestamps untouched.** Files like `LICENSE`, `.gitignore`, `.github/workflows/*`, and hooks keep their original commit timestamps. That's normal GitHub behavior for any repo where most files don't change with every release. Canonical version surface stays the version badge on the live sample report, the GitHub releases page, and this CHANGELOG.
+- **No new chain models, no catalog changes, no questionnaire changes.** v1.9.0's two new entries (#39 Money Model Architecture, #40 Cash Conversion Check) carry through unchanged. All five gap fixes are render instructions, not new analytical capability.
+- **No DESIGN.md component changes.** All five gap fixes use existing components, voice rules, and tier-anchor patterns.
+
+### Files changed
+
+- `skills/optimize/SKILL.md` — four voice-rule / instruction blocks inserted in existing Phase 4 sections (Gaps A, B, D, E)
+- `references/report-structure.md` — Gap C voice rule + Gap E reconciliation rule inserted in §7.0c spec
+- `examples/sample-report.html` — applied all five gap fixes to the Mechanical Magic sample: Core tier intro paragraph cites Section 4.3; 7.1/7.2/7.3 each carry explicit tier anchors (Subscription / Core / Premium); Section 8 Steelman + Strawman + "What Survives" reference Money Model Architecture and Cash Conversion Check; sequencing reminder rewritten to match Move 1's Core-tier focus. Footer + appendix version bumped.
+- `CODENAMES.md` — new file at repo root
+- `.github/workflows/auto-tag-release.yml` — new `Lookup codename from CODENAMES.md` step; `gh release create --title` now reads the codename-stamped title output
+- `.claude-plugin/plugin.json` — `1.9.0` → `1.10.0`
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.10.0`
+- `PRD.md` — version header → 1.10; Status paragraph updated to cover v1.10 (codename Cohesion); §7 Section 7 description adds the v1.10 voice-rule integrations
+
+### Pre-existing inconsistency carried forward (still out of scope)
+
+`catalog.md:10` documents scoring formula with 3 factors; `SKILL.md` Phase 2 and `PRD.md` §5 document it as 4 factors (adding `market_multiplier`). Not introduced by this work. Flag for a separate v1.x patch.
+
 ## [1.9.0] — 2026-05-19
 
 ### Added — Section 7.0c Money Model Architecture (new sub-block) + two new chain models

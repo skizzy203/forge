@@ -235,6 +235,8 @@ The structure moves the reader from context → evidence → conclusion in the e
 **Voice:**
 - Brand-neutral operator-facing copy. No mention of "Hormozi", "$100M", or "30-day rule" in the rendered section. The catalog and the Appendix lens list carry the framework attribution.
 - Each tier cell names a specific Section 5 (Proposed Model) revenue stream via the `section_5_anchor` field — Section 5 Sankey labels and Section 7.0c tier names must match exactly
+- **Core tier identity (added v1.10):** the Core tier MUST be identical — by name and value promise — to Section 4.3's redesigned offer. The 7.0c intro paragraph cites Section 4.3 by anchor; Front-door, Premium, and Subscription frame as the ladder built around that core.
+- **Move-1 reconciliation (added v1.10):** before final render, compare the `sequencing_note` tier reference against Section 6 Move 1's tier focus. If they disagree, rewrite `sequencing_note` to match Move 1. Move 1 is the authoritative tier-priority signal; 7.0c reinforces it, never contradicts it.
 - Same accretion-filter discipline as 7.1–7.3 — each tier must make existing elements more valuable, not just add line items
 
 **Failure handling:**
