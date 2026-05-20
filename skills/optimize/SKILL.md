@@ -347,6 +347,47 @@ Composed into a single `{{first_hire_block}}` token inserted between `{{automati
 
 **Failure handling.** If `FIRST_HIRE.confidence` is `uncited` or `FIRST_HIRE` is empty, substitute the when/who cells with a single body paragraph: "Industry hiring benchmarks not surfaced for this sector — start with the assessment recommendation below to ground role design in behavioral fit before locking on a job title." The PI card still renders.
 
+### Section 7.0c render — Money Model Architecture + Cash Conversion Check (added v1.9)
+
+Composed into a single `{{money_model_block}}` token inserted between `{{first_hire_block}}` (Section 7.0b) and the 7.1 heading. Renders only when the `Money Model Architecture (Hormozi)` chain model (catalog #39) actually fires during Phase 2. If the model didn't fire, the token substitutes to an empty string — sub-block omits cleanly. Mirrors the v1.3/v1.4 pattern for `{{automation_surface_block}}` and `{{first_hire_block}}`.
+
+**Block structure** (composed string substituted into `{{money_model_block}}`):
+
+| Element | Source |
+|---|---|
+| `7.0c — Money Model Architecture` heading | Fixed |
+| Intro paragraph (`{{mma_intro}}`) | Chain output (Money Model Architecture kernel) tying tiers to operator's Q4 bottleneck and Section 6 base plan |
+| 4-tier `.grid.cols-2` canvas | Chain output: `MMA.front_door`, `MMA.core`, `MMA.premium`, `MMA.subscription` structs. Each cell renders six fields plus a one-line Section 5 stream anchor |
+| Customer Ascension `flowchart LR` Mermaid diagram | Generated from the 4 tier names + Phase 1B conversion benchmarks where surfaced; otherwise `n/a` on edges |
+| Cash Conversion Diagnostic `.callout` | Cash Conversion Check chain output: `CCC.verdict`, `CCC.drivers`, `CCC.recommended_levers` |
+| Sequencing reminder paragraph (`{{mma_sequencing_note}}`) | Chain output tying tier-design priority to the operator's bottleneck |
+
+**Verdict color-class mapping** for the Cash Conversion callout:
+
+| `CCC.verdict` | CSS treatment |
+|---|---|
+| `likely_passing` | `.callout` with `success` border color + `[ ✓ ] LIKELY PASSING` label |
+| `likely_failing` | `.callout` with `warn` border color + `[ ! ] LIKELY FAILING` label |
+| `indeterminate` | `.callout` with default accent border + `[ ? ] INDETERMINATE — PILOT TO MEASURE` label |
+
+**Section 5 anchor enforcement.** Every tier cell must name a specific Section 5 (Proposed Model) revenue stream via the `section_5_anchor` field. The chain validates that each tier's anchor string matches a stream name surfaced in Section 5's Sankey output. If a tier's anchor doesn't match any Section 5 stream, the chain re-runs Money Model Architecture with corrective context (Section 5's stream list passed in explicitly). After two failed validations, render the tier with an Appendix flag noting the inconsistency.
+
+**Cash Conversion soft-signal inference rule.** Compute the verdict as follows:
+1. Estimate `first_30d_cash_per_customer` from `MMA.front_door.price_anchor × MMA.front_door.gross_profit_estimate × first_30d_attach_rate`. Use `first_30d_attach_rate = 0.30` as default unless Phase 1B surfaced a higher industry-specific rate.
+2. Estimate `CAC` from Phase 1B `CAC_BENCHMARK` for the operator's top channel (first entry in Q13). If Q13 lists multiple channels, use a weighted average across the top 2.
+3. Verdict: `likely_passing` if `first_30d_cash_per_customer > CAC.high`; `likely_failing` if `first_30d_cash_per_customer < CAC.low`; otherwise `indeterminate`.
+4. Confidence drops from `high` per: Phase 1B CAC band wide-or-missing (-1), Q10b margin unparsable (-1), Q10d pricing not concrete (-1). `low` confidence forces `indeterminate` regardless of inference.
+
+**Voice rules:**
+- Brand-neutral operator-facing copy. No mention of "Hormozi", "$100M", or "30-day rule" in the rendered section. The catalog model names (`Money Model Architecture (Hormozi)`, `Cash Conversion Check (30-day rule)`) and the Appendix lens-list definitions carry the framework attribution.
+- Each tier cell's body must reference a Section 5 stream by name. Sankey labels and tier names must match exactly.
+- Same accretion-filter discipline as 7.1–7.3 — every tier must make existing elements more valuable, not just add line items.
+
+**Failure handling.**
+- Money Model Architecture model didn't fire → `{{money_model_block}}` substitutes empty. Appendix gap note.
+- Cash Conversion Check model didn't fire → architecture renders; the diagnostic callout substitutes the indeterminate verdict with the "Pilot to measure" lever set.
+- Customer Ascension Mermaid fails → existing v1.1 graceful offline notice applies.
+
 ### Death-zone callout conditional render
 
 If `DEATH_ZONE_BAND` from Phase 1B is non-null AND the Year 3 amplified projection (high end) crosses or exceeds the band's low boundary, render the full death-zone callout block into `{{amp_death_zone_callout}}`. Otherwise substitute an empty string. The callout body should reference the specific band low and high values from the surfaced research, not generic numbers.
