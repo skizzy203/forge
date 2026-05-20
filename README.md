@@ -72,7 +72,7 @@ The report writes to your working directory. Open in a browser, share, print, or
 `/forge:optimize` Mode A runs:
 
 1. **Web supplement + market research** — scrapes the operator's website (if provided in the BCD), then WebSearch + WebFetch for TAM, macro signals, competitive density, and industry death-zone bands
-2. **Adaptive chain** — mental-model selection with subtractive bias and causal-chain anchors (38-model catalog, 5 hard causal anchors)
+2. **Adaptive chain** — mental-model selection with subtractive bias and causal-chain anchors (40-model catalog, 5 hard causal anchors)
 3. **Mermaid diagram synthesis** — six diagrams: AS-IS flowchart, PROPOSED flowchart, Revenue Diff Sankey, Implementation Gantt, Pre-Mortem Quadrant, Revenue Trajectory Chart
 4. **Report render** — 8-section terminal-noir HTML with the effectiveness layer (reading progress bar, scroll-triggered section fade-in, animated number count-up, hover-expand Appendix glossary), graceful offline fallback for Mermaid, mobile-responsive diagrams that scroll horizontally on narrow viewports
 
@@ -88,7 +88,7 @@ forge/
 ├── examples/            — sample rendered report
 └── references/
     ├── DESIGN.md            — terminal-noir / terminal-blanc brand spec
-    ├── catalog.md           — 38 mental models with kernels + scoring
+    ├── catalog.md           — 40 mental models with kernels + scoring
     ├── visual-primitives.md — Mermaid templates for business-model diagrams
     └── report-structure.md  — gold-standard MBB-derived report structure
 ```

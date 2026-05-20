@@ -2,6 +2,36 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.10.1] — 2026-05-20
+
+### Codename: Cohesion (inherited from v1.10.0)
+
+Patch release. Two doc-consistency fixes flagged in the v1.10.0 release notes as out-of-scope. No behavior change, no chain change, no operator-facing render change.
+
+### Fixed — scoring formula consistency
+
+`references/catalog.md` documented the runtime scoring formula as three factors (`base_relevance × subtractive_weight × bcd_multiplier`); `skills/optimize/SKILL.md` Phase 2 and `PRD.md` §5 both documented it as four factors with `market_multiplier` added. The 4-factor version is authoritative — the model-pruning JSON schema in SKILL.md captures `market_multiplier` as a top-level field per pruned model, and Phase 1B market research feeds the multiplier (commoditization signal boosts Via Negativa, etc.). `catalog.md:10` updated to match. The 4-factor formula now reads identically across all three documents.
+
+### Fixed — "38 models" → "40 models" drift
+
+v1.9.0 added catalog entries #39 (Money Model Architecture) and #40 (Cash Conversion Check), but the model count was left at 38 in four places:
+- `references/catalog.md:3` — "The 38 models the optimize skill draws from"
+- `PRD.md:214` — "40 models with kernels and scoring"
+- `README.md:75` — "(40-model catalog, 5 hard causal anchors)"
+- `README.md:91` — directory-tree comment "40 mental models with kernels + scoring"
+- `skills/optimize/SKILL.md:3` — frontmatter description "adaptive 40-model mental-model chain"
+
+All five updated to 40. The historical v1.1 entry in CHANGELOG.md ("38-model mental-model catalog") is left intact — it documents the catalog's state at v1.1 and changing it would rewrite history.
+
+### Files changed
+- `references/catalog.md` — scoring formula + model count
+- `PRD.md` — model count in §10 file inventory
+- `README.md` — model count in features list + directory tree
+- `skills/optimize/SKILL.md` — model count in frontmatter description
+- `.claude-plugin/plugin.json` — `1.10.0` → `1.10.1`
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.10.1`
+- `examples/sample-report.html` — Appendix Run Metadata `forge v1.10.0` → `v1.10.1` (footer reads `FORGE v1.10` major.minor — unchanged)
+
 ## [1.10.0] — 2026-05-20
 
 ### Codename: Cohesion

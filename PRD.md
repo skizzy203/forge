@@ -211,7 +211,7 @@ If a design need arises that DESIGN.md doesn't cover, follow the §12 governance
 ### Files in build order
 1. `.claude-plugin/plugin.json` — manifest, validation foundation
 2. `references/DESIGN.md` — brand spec, loaded by all surface generators
-3. `references/catalog.md` — 38 models with kernels and scoring
+3. `references/catalog.md` — 40 models with kernels and scoring
 4. `references/visual-primitives.md` — Mermaid templates (six diagram types)
 5. `references/report-structure.md` — 8-section report spec
 6. `skills/intake/SKILL.md` + `templates/questionnaire.html` — internal customization helper (invoked by /forge:optimize Mode C)
