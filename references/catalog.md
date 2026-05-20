@@ -1,18 +1,19 @@
 # Forge — Mental Model Catalog
 
-The 38 models the optimize skill draws from. Each entry includes the prompt kernel applied during chain execution, the relevance scoring data the optimizer uses for adaptive selection, and the causal-chain dependencies that constrain ordering.
+The 40 models the optimize skill draws from. Each entry includes the prompt kernel applied during chain execution, the relevance scoring data the optimizer uses for adaptive selection, and the causal-chain dependencies that constrain ordering.
 
 ## How scoring works
 
 For each model, the optimize skill computes a runtime score:
 
 ```
-score = base_relevance × subtractive_weight × bcd_multiplier
+score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier
 ```
 
 - **base_relevance** (1–3) — how universally applicable to business optimization
 - **subtractive_weight** — 1.5 if model is subtractive class (its primary mechanism is removing elements), else 1.0
-- **bcd_multiplier** — boost from BCD triggers, capped at 2.0×
+- **bcd_multiplier** — 1.0 baseline; boosted by 1.5× per BCD trigger detected, capped at 2.0× total
+- **market_multiplier** — adjustments applied during Phase 1B based on web-sourced market signals (e.g., commoditization signal boosts Via Negativa). 1.0 when no signal applies.
 
 Models are selected in descending score order, with five hard causal anchors enforced as ordering rules:
 1. JTBD opens every chain
