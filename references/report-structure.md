@@ -207,13 +207,48 @@ The structure moves the reader from context → evidence → conclusion in the e
 
 **Failure handling:** If Phase 1C surfaced nothing, the entire 7.0 block is omitted (the `{{automation_surface_block}}` token substitutes to empty string). If fewer than three cards survived, render what surfaced plus an Appendix flag noting the count.
 
+### 7.0c — Money Model Architecture (sub-block, added v1.9)
+
+**Purpose:** Map the operator's offer structure across four tiers — Front-door, Core, Premium, Subscription — so the reader sees not just one redesigned offer (the Section 4.3 output) but the full ladder that takes a stranger to a paying customer to a recurring customer to an advocate. The chain produces the architecture; this sub-block surfaces it. Pairs with a Cash Conversion Diagnostic that probabilistically estimates whether the front-door offer recoups its own acquisition cost in ~30 days.
+
+**Position:** Renders between `{{first_hire_block}}` (Section 7.0b) and the `7.1` heading. The Section 7 sub-block trio (7.0 / 7.0b / 7.0c) becomes the "structural amplification" trio; 7.1–7.3 stay the "specific compounding moves" trio.
+
+**Contents:**
+- One-paragraph intro tying the architecture to the operator's primary bottleneck (Q4) and the Section 6 base plan
+- **4-tier offer canvas** (2×2 grid on desktop, stacks on mobile). Each cell carries: tier name, target audience, price anchor, value promise, gross profit estimate, time to deliver, and a one-line Section 5 stream anchor naming the corresponding revenue stream
+- **Customer Ascension Mermaid** (`flowchart LR`, 4 nodes left-to-right) with semantic colors: Front-door = `--accent`, Core = `--info`, Premium = `--warn`, Subscription = `--success`. Edge labels carry typical conversion rates from Phase 1B benchmarks where available; otherwise `n/a`
+- **Cash Conversion Diagnostic** (`.callout`) with verdict headline + driver paragraph + recommended-levers list. Verdict color-class: `likely_passing` → success, `likely_failing` → warn/danger, `indeterminate` → default accent
+- **Sequencing reminder** (single paragraph) telling the operator which tier to design or sharpen first
+
+**Components used:**
+- `.grid.cols-2` (4-tier canvas)
+- `.callout` with severity class (Cash Conversion verdict)
+- `.diagram .mermaid` with `flowchart LR` (ascension flowchart)
+- Reuses existing outline-only Mermaid `themeCSS` (v1.6.4 heritage); 4-tier semantic colors added via document-stylesheet `g.node:nth-of-type(N) rect` rules
+
+**Data sources:**
+- Money Model Architecture chain model (catalog #39) produces the 4-tier struct
+- Cash Conversion Check chain model (catalog #40) produces the verdict + drivers + levers
+- BCD fields consumed: Q10a (revenue), Q10b (margin), Q10d (pricing snapshot), Q12 (revenue stream split), Q13 (top acquisition channels)
+- Phase 1B `CAC_BENCHMARK` for the operator's top channel anchors the Cash Conversion inference
+
+**Voice:**
+- Brand-neutral operator-facing copy. No mention of "Hormozi", "$100M", or "30-day rule" in the rendered section. The catalog and the Appendix lens list carry the framework attribution.
+- Each tier cell names a specific Section 5 (Proposed Model) revenue stream via the `section_5_anchor` field — Section 5 Sankey labels and Section 7.0c tier names must match exactly
+- Same accretion-filter discipline as 7.1–7.3 — each tier must make existing elements more valuable, not just add line items
+
+**Failure handling:**
+- If Money Model Architecture chain model can't fire (Q10d / Q12 / Q13 thin and no Value Equation output): the entire 7.0c sub-block omits via the `{{money_model_block}}` token substituting to empty string. Mirrors 7.0 / 7.0b skip pattern. Appendix gains a gap note.
+- If Cash Conversion Check can't fire (no Phase 1B `CAC_BENCHMARK` or all inputs loose): the diagnostic callout renders with `verdict: "indeterminate"` and the "Pilot to measure" lever set. The 4-tier canvas still renders.
+- If the Customer Ascension flowchart fails to render: existing v1.1 graceful-offline-notice fallback applies (no new code).
+
 **Components used:**
 - `.callout` (goal-framing, death-zone)
 - `.grid.cols-2` (per-addition move + projection cells)
 - `.grid.cols-3` (three-year revenue projection cards)
 - Revenue Trajectory Chart (Mermaid `xychart-beta`, three-line comparison of no-changes vs. base-plan vs. amplified scenarios; sits between the projection grid and the death-zone callout)
 
-**Source-chain mapping:** Sub-section 7.0 is composed from Phase 1C automation research (not from the chain). Sub-section 7.0b is composed from Phase 1D first-hire research plus a fixed Predictive Index recommendation card. Sub-sections 7.1–7.3 are composed from Phase 2 chain outputs: Operator Edge, Leverage Points, Moats, Asymmetric Risk, and Feedback Loops contribute candidates; Value Equation and Pricing Strategy contribute the math; Phase 1B market research contributes the death-zone band data. See `forge/skills/optimize/SKILL.md` Phase 4 for the full mapping and the accretion filter applied during synthesis.
+**Source-chain mapping:** Sub-section 7.0 is composed from Phase 1C automation research (not from the chain). Sub-section 7.0b is composed from Phase 1D first-hire research plus a fixed Predictive Index recommendation card. Sub-section 7.0c is composed from the Money Model Architecture and Cash Conversion Check chain models (catalog #39 and #40) — chain output, anchored by BCD fields Q10a/Q10b/Q10d/Q12/Q13 and Phase 1B `CAC_BENCHMARK`. Sub-sections 7.1–7.3 are composed from Phase 2 chain outputs: Operator Edge, Leverage Points, Moats, Asymmetric Risk, and Feedback Loops contribute candidates; Value Equation and Pricing Strategy contribute the math; Phase 1B market research contributes the death-zone band data. See `forge/skills/optimize/SKILL.md` Phase 4 for the full mapping and the accretion filter applied during synthesis.
 
 **Voice:** Each addition references specific elements from Sections 3–6 of the same report. No generic content. No mention of any other plugin or methodology.
 

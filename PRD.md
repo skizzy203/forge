@@ -1,6 +1,6 @@
 # Forge — Product Requirements Document
 
-**Version:** 1.6
+**Version:** 1.9
 **Author:** Scott Wise
 **Status:** Shipped (v1.6 replaces the v1.5 Three.js cinematic scenes with a raw-WebGL shader header — `BUSINESS MODEL OPTIMIZATION REPORT` rendered with an accent-sweep effect, bounded above Section 1 instead of layered behind it; restyles Mermaid diagrams to outline-only via `themeCSS` so the orange/red friction fills no longer overpower the page and labels stay legible in both themes; ships model-pruning instrumentation that writes a per-run JSON trace and appends to a CSV aggregate for empirical catalog pruning; tightens mobile section gaps. v1.5 shipped the original Three.js scroll layer; v1.4 added three research-driven sub-blocks; v1.3 added the Automation Surface; v1.2 consolidates the workflow to a single `/forge:optimize` command; v1.1 added Sections 7 and 8, six diagram types, effectiveness layer; v1.0 was the initial release. See CHANGELOG.md for the full history.)
 
@@ -57,7 +57,7 @@ The primary delivery context is live workshops with business owners. Every compo
 ## 5. The Optimization Logic
 
 ### Catalog
-38 mental models in `references/catalog.md`, spanning Orient → Diagnose → Opportunity → Design → Decision → Stress-Test → Simplify. Each entry includes name, class, prompt kernel, key question, base relevance score (1–3), subtractive flag, causal dependencies, and BCD-trigger boosts.
+40 mental models in `references/catalog.md`, spanning Orient → Diagnose → Opportunity → Design → Decision → Stress-Test → Simplify. Each entry includes name, class, prompt kernel, key question, base relevance score (1–3), subtractive flag, causal dependencies, and BCD-trigger boosts.
 
 The catalog is kept full to provide edge-case coverage. Pruning happens empirically: models that don't fire across 5+ real workshops become candidates for removal.
 
@@ -153,7 +153,7 @@ SessionStart hook that scans `~/forge-intake/` for pending `*.bcd.md` files and 
 ### 6.5 — References
 
 - **`DESIGN.md`** — terminal-noir / terminal-blanc brand spec. Authoritative for all visual surfaces.
-- **`catalog.md`** — 38 mental models with prompt kernels, scoring data, causal dependencies.
+- **`catalog.md`** — 40 mental models with prompt kernels, scoring data, causal dependencies.
 - **`visual-primitives.md`** — Mermaid templates for AS-IS / PROPOSED business model diagrams, theme derivation, animation rules.
 - **`report-structure.md`** — authoritative spec for the 8-section intelligence report (extends the McKinsey/BCG/Bain six-section market-entry framework with Amplified Moves and Pressure Test as Sections 7 and 8). Documents per-section components, source-chain mappings, and the v1.1 visual enhancements layer.
 
@@ -169,7 +169,7 @@ The report extends the McKinsey/BCG/Bain six-section market entry framework with
 4. **Optimization Analysis** — the lenses applied and what each surfaced. Sub-sections: Diagnose Findings, Operator Edge, Design Candidates, Stress-Test Results. Comparison cards, severity tags, collapsible evidence chains.
 5. **The Proposed Model** — two-column contrast (AS-IS / PROPOSED). PROPOSED Mermaid flowchart. Revenue Diff Sankey showing where money rewires. Insight layer. What got removed.
 6. **The Implementation Plan** — three moves (this week / this month / this quarter). Each move = one paragraph, operator language only. Implementation Gantt below the move cards showing dependency timing.
-7. **Amplified Moves** — opens with the **Automation Surface (7.0)**: industry-standard AI/automation/agentic-AI use cases surfaced by Phase 1C research, rendered as a grid of cards with cited weekly-hours-saved estimates and a total-hours-recoverable callout. Followed by the **First-Hire Roadmap (7.0b, added v1.4)**: cited revenue-threshold benchmarks for when most operators in this sector make their first hire, which role they hire, and what they delegate first — paired with a fixed Predictive Index behavioral-assessment recommendation card. Below those, up to three bespoke compounding additions (7.1–7.3) composed from existing chain output (Operator Edge, Leverage Points, Moats, Asymmetric Risk, Feedback Loops) via the accretion filter. Three-year revenue projection cards plus the trajectory chart (no-changes vs. base-plan vs. base-plus-amplifications). Industry-aware death-zone callout when Year 3 crosses a surfaced band.
+7. **Amplified Moves** — opens with the **Automation Surface (7.0)**: industry-standard AI/automation/agentic-AI use cases surfaced by Phase 1C research, rendered as a grid of cards with cited weekly-hours-saved estimates and a total-hours-recoverable callout. Followed by the **First-Hire Roadmap (7.0b, added v1.4)**: cited revenue-threshold benchmarks for when most operators in this sector make their first hire, which role they hire, and what they delegate first — paired with a fixed Predictive Index behavioral-assessment recommendation card. Followed by the **Money Model Architecture (7.0c, added v1.9)**: a four-tier offer canvas (Front-door / Core / Premium / Subscription) produced by two new chain models, with a Customer Ascension flowchart and a Cash Conversion Diagnostic that probabilistically tests whether the front-door offer recoups its own acquisition cost within ~30 days. Below those, up to three bespoke compounding additions (7.1–7.3) composed from existing chain output (Operator Edge, Leverage Points, Moats, Asymmetric Risk, Feedback Loops) via the accretion filter. Three-year revenue projection cards plus the trajectory chart (no-changes vs. base-plan vs. base-plus-amplifications). Industry-aware death-zone callout when Year 3 crosses a surfaced band.
 8. **Pressure Test** — Steelman and Strawman attacks, ranked Pre-Mortem failure modes with severity tags, Pre-Mortem Quadrant chart, second-order consequence chain, What-Survives summary (held / fixable / fatal-as-designed).
 
 **Appendix** (collapsed by default) — Lenses Applied (dynamic, only models that fired; hover-expand definitions), market research sources cited, run metadata.

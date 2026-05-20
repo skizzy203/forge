@@ -242,6 +242,46 @@ html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var
   stroke-opacity: 0.55 !important;
 }
 
+/* === Customer Ascension flowchart (Section 7.0c, added v1.9.0) ===
+   4-tier semantic color cycle. Scoped via `.money-model-ascension` class on the
+   `.diagram` container so the rules apply only to this specific flowchart, not
+   the AS-IS or PROPOSED diagrams which keep their friction/added/changed/removed
+   class-driven coloring. */
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(1) rect,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(1) polygon,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(1) circle,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(1) ellipse,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(1) path {
+  stroke: var(--accent) !important;
+}
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(2) rect,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(2) polygon,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(2) circle,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(2) ellipse,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(2) path {
+  stroke: var(--info) !important;
+}
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(3) rect,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(3) polygon,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(3) circle,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(3) ellipse,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(3) path {
+  stroke: var(--warn) !important;
+}
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(4) rect,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(4) polygon,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(4) circle,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(4) ellipse,
+.diagram.money-model-ascension .mermaid svg g.nodes g.node:nth-of-type(4) path {
+  stroke: var(--success) !important;
+}
+/* Ascension flow arrows — use accent so the customer-progression direction reads cleanly */
+.diagram.money-model-ascension .mermaid svg .edgePaths path,
+.diagram.money-model-ascension .mermaid svg .edgePath path {
+  stroke: var(--accent) !important;
+  stroke-opacity: 0.7 !important;
+}
+
 /* Insight layer */
 .insight{background:var(--bg-elevated);border:1px solid var(--accent);padding:20px 24px;margin:16px 0 32px}
 .insight-row{display:flex;gap:16px;padding:8px 0;align-items:baseline}
@@ -741,6 +781,8 @@ a.move:hover .headline{color:var(--accent)}
   {{automation_surface_block}}
 
   {{first_hire_block}}
+
+  {{money_model_block}}
 
   <h3 class="body-md" style="font-family:var(--font-display);font-weight:700;font-size:22px;margin:48px 0 16px;color:var(--text-primary)">7.1 &mdash; {{amp_addition_1_title}}</h3>
   <div class="grid cols-2">

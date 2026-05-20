@@ -412,6 +412,39 @@ xychart-beta
 
 All four auxiliary diagrams use the existing theme-reactive init block. No new themes needed. Mermaid v11 ships with native styling for sankey, gantt, quadrant, and xychart that respects the `themeVariables` already passed in. The xychart-beta uses an inline `%%{init}%%` directive to scope its `plotColorPalette` so the three trajectory lines render with semantic colors rather than auto-assigned defaults. Verify on first render that line colors and text colors match the rest of the report in both themes.
 
+### Customer Ascension flowchart — Section 7.0c (added v1.9)
+
+Rendered inside the Money Model Architecture sub-block. A 4-node `flowchart LR` showing tier progression: Front-door → Core → Premium → Subscription. Each tier-node carries the tier label plus the price anchor on a second line; edges carry typical conversion / attach rates from Phase 1B benchmarks where surfaced, otherwise `n/a`.
+
+**Container class.** Wrap the `.diagram .mermaid` in `<div class="diagram money-model-ascension">` so the 4-tier semantic color CSS (in the document stylesheet) targets only this specific flowchart, not the AS-IS or PROPOSED diagrams which keep their friction/added/changed/removed class-driven colors.
+
+**Semantic color cycle** (one new CSS block in `templates/report.html`, ~30 lines):
+
+| Tier (nth-of-type) | Stroke color | CSS variable |
+|---|---|---|
+| 1 — Front-door | accent-cyan | `--accent` |
+| 2 — Core | info-purple | `--info` |
+| 3 — Premium | warn-amber | `--warn` |
+| 4 — Subscription | success-green | `--success` |
+
+Edge arrows render in `--accent` at 0.7 stroke-opacity so the progression direction reads clearly without competing with the per-tier stroke colors.
+
+**Source syntax** (composed by the chain into `{{money_model_block}}`):
+
+```
+flowchart LR
+  A["Front-door tier name<br/>$price–anchor"] -->|"~conversion%"| B["Core tier name<br/>$price–anchor"]
+  B -->|"~attach%"| C["Premium tier name<br/>$price–anchor"]
+  B -->|"~join%"| D["Subscription tier name<br/>$price–anchor"]
+  C --> D
+```
+
+Node IDs A/B/C/D map deterministically to nth-of-type 1/2/3/4 because Mermaid emits nodes in source declaration order. The C → D edge has no conversion label because it represents a natural pipeline rather than a measured attach rate.
+
+**Theme reactivity.** Inherits from the outline-only Mermaid themeCSS (v1.6.4 heritage). Light/dark toggle re-themes via the CSS-variable cascade. No re-render required.
+
+**Failure handling.** If Mermaid fails to render the ascension diagram, the v1.1 graceful offline notice replaces it (existing pattern; no new code).
+
 ---
 
 ## § Cinematic Header (rewritten v1.6, replaces the v1.5 scroll layer)

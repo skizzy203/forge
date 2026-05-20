@@ -240,6 +240,14 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Prompt kernel:** Compare price against three anchors: (1) Cost-plus (margin structure), (2) Competitive (positioning vs. survival), (3) Value-based (customer ROI at current price). Identify type: underpriced (value > price), overpriced (price > perceived value), or mismatch (right number, wrong structure). Propose minimum change that captures more of the value being delivered.
 - **BCD boosts:** "pricing problem", "underpriced", "offer not converting"
 
+### Money Model Architecture (Hormozi)
+- **Class:** Design
+- **Base relevance:** 2 | **Subtractive:** N
+- **Causal:** requires Value Equation complete; soft-fires after Pricing Strategy
+- **Key question:** Across four tiers (Front-door, Core, Premium, Subscription), what offer does each tier need to carry to move the operator from where they are to where the business could land?
+- **Prompt kernel:** Given the redesigned offer description from Value Equation, the operator's Q10d pricing snapshot, Q12 revenue stream split, and Q13 acquisition channels: design a four-tier offer canvas. Front-door (entry-point offer solving an urgent pain cheaply, sub-30-day cash recovery target). Core (the foundational offer the business is built on — the highest-margin volume play). Premium (deeper-pocket upsell after the core sale — fewer customers, larger basket). Subscription (recurring revenue layer maximizing lifetime value). For each tier produce: tier_name, target_audience, price_anchor, value_promise, gross_profit_estimate, time_to_deliver, section_5_anchor (name the Section 5 Proposed-Model revenue stream this tier maps to). Close with a sequencing_note (1-2 paragraphs) telling the operator which tier to design or sharpen first given their Q4 bottleneck.
+- **BCD boosts:** "pricing problem", "commoditization", "offer not converting", "low repeat rate", "cash flow tight", "revenue mix lopsided"
+
 ### Eisenhower Matrix
 - **Class:** Simplify
 - **Base relevance:** 2 | **Subtractive:** Y
@@ -340,6 +348,14 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Prompt kernel:** Audit current resource allocation. Categorize as: defensive (low risk, low return — preserves capital), speculative (high risk, high upside — asymmetric bet), or middle (medium risk, medium return). Middle is the trap. Propose reallocation: most resources to defensive, small portion to high-upside, eliminate the middle.
 - **BCD boosts:** "risk portfolio design"
 
+### Cash Conversion Check (30-day rule)
+- **Class:** Stress-Test
+- **Base relevance:** 2 | **Subtractive:** N
+- **Causal:** requires Money Model Architecture complete; consumes Phase 1B `CAC_BENCHMARK`
+- **Key question:** Does the offer architecture recoup customer-acquisition cost within ~30 days, or does the business need external capital to scale?
+- **Prompt kernel:** Estimate first-30-day cash recovered per new customer using: front-door tier price and gross profit estimate (from Money Model Architecture output), Q10b margin (BCD), and the typical share of customers who buy the front-door only vs. attach a premium upsell at first sale. Estimate CAC using Phase 1B `CAC_BENCHMARK` for the operator's top channel from Q13. Compare estimated_first_30d_cash against estimated_cac to produce a verdict: likely_passing (cash > CAC), likely_failing (cash < CAC), or indeterminate (confidence too low to call). Confidence is high when Phase 1B CAC band is tight AND Q10b margin is a number AND Q10d pricing is concrete; drops one tier per loose/missing input; verdict forced to indeterminate when confidence is low. Surface 2-4 recommended levers (reduce CAC by switching channels, raise front-door price, add a first-call premium upsell, accelerate cash collection, etc.). Voice precedent matches Section 2 CAC sub-block: probabilistic verdict, pilot-to-measure fallback.
+- **BCD boosts:** "cash flow tight", "can't afford to scale", "runway concern", "acquisition cost high"
+
 ---
 
 ## BCD Trigger → Multiplier Reference
@@ -348,7 +364,7 @@ Triggers detected in BCD content boost specific models' scores by 1.5× (capped 
 
 | BCD Signal | Models Boosted |
 |---|---|
-| Pricing problem | Pricing Strategy, Value Equation, Unit Economics |
+| Pricing problem | Pricing Strategy, Value Equation, Unit Economics, Money Model Architecture |
 | Operational complexity | Pareto, ToC, Eisenhower, Via Negativa |
 | Growth stall, cause unclear | Feedback Loops, Leverage Points, Unit Economics, ToC |
 | Commoditized market | Blue Ocean, Operator Edge, Moats |
@@ -359,7 +375,11 @@ Triggers detected in BCD content boost specific models' scores by 1.5× (capped 
 | Alignment / incentives failure | Incentives Analysis, Second-Order Thinking |
 | High-stakes irreversible commitment | Reversibility Test, Pre-Mortem, Asymmetric Risk |
 | Strategic uncertainty | Asymmetric Risk, Scenario Planning, MVE |
-| Offer not converting | Value Equation, Amazon Working Backwards, JTBD (deep) |
+| Offer not converting | Value Equation, Amazon Working Backwards, JTBD (deep), Money Model Architecture |
+| Cash flow tight / runway concern | Cash Conversion Check, Unit Economics, Money Model Architecture |
+| Low repeat rate | Money Model Architecture, Switching Costs, Value Equation |
+| Revenue mix lopsided (one stream dominates) | Money Model Architecture, Pareto, Via Negativa |
+| Acquisition cost high vs. price | Cash Conversion Check, Unit Economics, Pricing Strategy |
 | Resource allocation / outsource decision | Comparative Advantage, Opportunity Cost |
 | Platform / marketplace | Network Effects, Moats |
 | Operator wants to remove long-standing element | Chesterton's Fence |
@@ -387,3 +407,5 @@ Soft conventions (not enforced as hard rules, but score ordering naturally produ
 - Feedback Loops before Leverage Points (loops reveal where leverage lives)
 - 5 Whys before First Principles (root cause before stripping conventions)
 - Value Equation before Pricing Strategy (define value before pricing it)
+- Money Model Architecture between Value Equation and Pricing Strategy (Value Equation defines the value; Money Model Architecture maps the tiers; Pricing Strategy refines each tier's price)
+- Cash Conversion Check after Money Model Architecture (stress-tests the tier architecture's cash mechanics, must run after the architecture exists)

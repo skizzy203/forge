@@ -2,6 +2,48 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.9.0] — 2026-05-19
+
+### Added — Section 7.0c Money Model Architecture (new sub-block) + two new chain models
+
+The existing Value Equation chain model surfaces a single redesigned-offer description in Section 4.3. v1.9 adds a deeper treatment: a multi-tier offer architecture mapping the operator across four sequential tiers — **Front-door → Core → Premium → Subscription** — plus a probabilistic check on whether the offer mechanics recoup their own customer-acquisition cost within ~30 days. Renders as a new sub-block 7.0c inside Section 7 (Amplified Moves), alongside the existing 7.0 Automation Surface and 7.0b First-Hire Roadmap sub-blocks. No top-level renumbering; no `bg-num` visual rhythm break.
+
+### Added — `Money Model Architecture (Hormozi)` chain model (catalog #39)
+
+Design-class model that fires after Value Equation and soft-fires before Pricing Strategy. Consumes Q10d (pricing snapshot), Q12 (revenue stream split), Q13 (top acquisition channels), plus the Value Equation output. Produces a 4-tier offer canvas, each tier with name, target audience, price anchor, value promise, gross profit estimate, time to deliver, and a Section 5 revenue-stream anchor. Closes with a sequencing note telling the operator which tier to design or sharpen first given their primary bottleneck.
+
+### Added — `Cash Conversion Check (30-day rule)` chain model (catalog #40)
+
+Stress-Test-class model that fires after Money Model Architecture and consumes Phase 1B `CAC_BENCHMARK` for the operator's top channel. Probabilistically estimates whether first-30-day cash recovered per new customer exceeds estimated CAC, producing a verdict of `likely_passing` / `likely_failing` / `indeterminate` plus confidence (low/med/high). Confidence drops one tier per loose-or-missing input; low confidence forces an indeterminate verdict. Outputs 2-4 recommended levers (reduce CAC, raise prices, add upsell, accelerate cash collection) tuned to the operator's specific gap. Voice precedent matches Section 2 CAC sub-block — pilot-to-measure fallback when inputs are thin.
+
+### Added — Customer Ascension flowchart (Section 7.0c)
+
+4-node `flowchart LR` rendering the tier progression with semantic colors: Front-door → `--accent` (cyan), Core → `--info` (purple), Premium → `--warn` (amber), Subscription → `--success` (green). Edge labels carry typical conversion / attach rates from Phase 1B benchmarks where surfaced, otherwise `n/a`. Scoped via a new `.money-model-ascension` class on the `.diagram` container so the 4-tier color cycle applies only to this specific flowchart, not the AS-IS or PROPOSED diagrams. Inherits the outline-only Mermaid themeCSS from v1.6.4; re-themes on light/dark toggle via the CSS-variable cascade.
+
+### Brand attribution policy
+
+Operator-facing Sections 1–8 stay brand-neutral. Tier labels are universal vocabulary (Front-door / Core / Premium / Subscription), not framework-specific terms. Framework source is named only in two places:
+- `references/catalog.md` — model titles `Money Model Architecture (Hormozi)` and `Cash Conversion Check (30-day rule)`, following the existing `Value Equation (Hormozi)` precedent at line 94
+- Appendix lens list — two new entries with one-line definitions naming the source framework
+
+### No new questionnaire fields
+
+Cash Conversion Check uses existing v1.8 BCD fields: Q10a (revenue), Q10b (margin), Q10d (pricing snapshot), Q13 (top acquisition channels), plus Phase 1B `CAC_BENCHMARK`. If workshop data shows the verdict is consistently `indeterminate`, v1.10 can add Q10e (estimated CAC) and Q10f (first-transaction gross profit) for a hard pass/fail. Deferred until data justifies the intake friction.
+
+### Files changed
+- `references/catalog.md` — two new model entries (#39 Money Model Architecture, #40 Cash Conversion Check); BCD trigger table gains 5 new signal rows; soft conventions gain two new ordering rules
+- `references/report-structure.md` — new `### 7.0c — Money Model Architecture` sub-block spec; Section 7 source-chain mapping updated
+- `skills/optimize/SKILL.md` — Phase 4 gains `### Section 7.0c render` subsection with token list, verdict color-class mapping, Section 5 anchor enforcement rule, and the soft-signal Cash Conversion inference algorithm + confidence-tier rules
+- `skills/optimize/templates/report.html` — `{{money_model_block}}` token inserted between `{{first_hire_block}}` and the 7.1 heading; 4-tier semantic color CSS for `.money-model-ascension` flowcharts added to the document stylesheet
+- `examples/sample-report.html` — representative Section 7.0c rendered for Mechanical Magic (Quick Rinse Drop-By → Master Restoration Day → MRD + Carrier Pack → MM Membership); Customer Ascension flowchart; Cash Conversion verdict (likely_passing, med confidence); sequencing note pointing to Subscription tier as first move. Appendix gains two new lens entries. Footer + appendix version bumped.
+- `references/visual-primitives.md` — new `### Customer Ascension flowchart — Section 7.0c (added v1.9)` subsection documenting the source syntax, container class, and 4-tier semantic color cycle
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.9.0`. **No new questions.**
+- `.claude-plugin/plugin.json` — `1.8.0` → `1.9.0`
+- `PRD.md` — version header → 1.9; model count 38 → 40; Section 7 description in §7 mentions 7.0c
+
+### Pre-existing inconsistency flagged (out of scope)
+`catalog.md:10` documents scoring formula with 3 factors; `SKILL.md` Phase 2 and `PRD.md` §5 document it as 4 factors (adding `market_multiplier`). Not introduced by this work. Flag for a separate v1.x patch.
+
 ## [1.8.0] — 2026-05-13
 
 ### Added — five new questionnaire fields anchoring report sections previously inferred from prose
