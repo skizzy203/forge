@@ -2,6 +2,56 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.11.0] — 2026-05-21
+
+### Codename: Phase
+
+Opens the Phase codename arc. Two visible features ship in v1.11.0: a pre-questionnaire phase-selection modal that captures the operator's business stage before they begin (and tunes downstream surfaces around it), and a mobile-fit + expand-modal pattern for Mermaid diagrams so they no longer clip off-screen on narrow viewports.
+
+### Added — pre-questionnaire phase-selection modal
+
+The intake now opens with a full-screen modal asking "Where is your business right now?" with five tappable phase cards: **STARTUP** (pre-launch / early traction), **GROWTH** (operating but not yet repeatable), **SCALING** (removing yourself from execution), **MATURITY** (established, looking for next ceiling), **EXIT-READY** (building for handoff or sale). Each card opens dynamic guidance below — what to expect, encouragement to be honest about unknowns, the Wispr Flow dictation tip — and reveals a phase-specific CTA button: **Build the Foundation** / **Sharpen the Model** / **Engineer the System** / **Find the Next Ceiling** / **Build the Handoff**.
+
+**Modal flow rules:**
+- No close button, no ESC, no backdrop dismiss. Only the phase-specific CTA closes the modal.
+- Phase persists in `localStorage` under key `forge-phase`. Returning users skip the modal automatically.
+- Header gains a tappable phase pill (e.g., `P. STARTUP`) that reopens the modal for phase changes.
+- Switching phase preserves already-answered questions; only changes which questions appear in v1.11.1+.
+
+The Wispr Flow card on the welcome page is removed — its guidance now lives inside the phase modal, eliminating duplication.
+
+### Added — phase in BCD output
+
+The generated BCD markdown now includes a top-of-file `Phase: STARTUP — Build the Foundation` line when the operator has selected a phase. This becomes the upstream signal that v1.11.1's phase-conditional questions, v1.11.2's Netlify backend metadata, and v1.12's Builder Branding footer CTA all consume.
+
+### Added — Mermaid mobile fit + expand modal
+
+Diagrams previously had `min-width: 560px` on mobile viewports, forcing horizontal scroll on iPhone-class viewports (often the diagrams clipped past the right edge). Replaced with `max-width: 100%` so SVGs scale naturally to viewport width. Every diagram now carries a small `[ ⤢ ] EXPAND` button in the top-right corner — clicking opens the diagram in a fullscreen modal at natural resolution with native pinch-zoom (touch) and scroll (desktop) support.
+
+**Implementation notes:**
+- Modal lives at body level, hidden by default, opens via class toggle.
+- SVG is cloned at click-time so Mermaid render timing doesn't matter.
+- `touch-action: pan-x pan-y pinch-zoom` enables native iOS gestures with zero library dependency.
+- Close via X button, backdrop tap, or ESC key.
+- Print stylesheet hides both the expand button and modal.
+
+### Changed — welcome page copy tightening
+
+Page 1 paragraph trimmed from two sentences to one. Wispr Flow card removed (now in modal). The intake's first impression is now lighter; phase modal carries the orientation work.
+
+### Files changed
+
+- `skills/optimize/templates/report.html` — Mermaid mobile fit CSS, diagram expand button + modal markup, expand modal JS
+- `examples/sample-report.html` — same three changes
+- `skills/intake/templates/questionnaire.html` — phase modal markup + CSS + JS, BCD output gains phase line, welcome page Wispr card removed
+- `CODENAMES.md` — added v1.11.x → Phase row
+- `.claude-plugin/plugin.json` — `1.10.3` → `1.11.0`
+
+### What's planned for the Phase arc
+
+- **v1.11.1** — phase-conditional questionnaire rendering (~5–8 phase-specific questions per phase, shared 12-question core), phase multiplier in catalog scoring formula
+- **v1.11.2** — Netlify-hosted intake at `intake.builderbranding.co` with Forms-based submission, Resend confirmation email, GitHub private repo mirror for workshop analytics
+
 ## [1.10.3] — 2026-05-20
 
 ### Codename: Cohesion (inherited from v1.10.0)

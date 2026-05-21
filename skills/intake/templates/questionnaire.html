@@ -115,17 +115,107 @@ button.btn .arrow{margin-left:6px}
 .help-note .tag.hi{color:var(--warn);border-color:var(--warn)}
 /* Hairline rule */
 .hr{height:1px;background:var(--rule);margin:32px 0;border:0}
+
+/* v1.11: pre-questionnaire phase-selection modal.
+   Full-screen, gates the intake. No close button, no ESC, no backdrop dismiss — only the
+   phase-specific CTA button closes the modal. Selection persists in localStorage so returning
+   users skip it. Header pill (rendered post-close) reopens it for phase changes. */
+.phase-modal{position:fixed;inset:0;z-index:100;background:var(--bg-primary);display:none;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.phase-modal.open{display:block}
+.phase-modal__inner{max-width:880px;margin:0 auto;padding:64px 24px 80px;min-height:100vh}
+.phase-modal__eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:0.18em;color:var(--text-muted);text-transform:uppercase;margin-bottom:16px}
+.phase-modal__title{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,6vw,48px);line-height:1.05;letter-spacing:-0.01em;margin:0 0 12px;color:var(--text-primary)}
+.phase-modal__subtitle{font-family:var(--font-italic);font-style:italic;color:var(--text-muted);font-size:18px;margin-bottom:40px}
+.phase-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:32px}
+@media (max-width:640px){.phase-grid{grid-template-columns:1fr}}
+.phase-card{background:var(--bg-elevated);border:1px solid var(--rule);padding:20px 22px;cursor:pointer;text-align:left;font-family:inherit;color:var(--text-primary);transition:all 0.15s;position:relative;display:block;width:100%}
+.phase-card:hover,.phase-card:focus{border-color:var(--accent);outline:none}
+.phase-card.selected{border-color:var(--accent);background:rgba(34,224,255,0.06);box-shadow:inset 0 0 0 1px var(--accent)}
+[data-theme="light"] .phase-card.selected{background:rgba(15,184,214,0.06)}
+.phase-card__tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;font-weight:600;margin-bottom:6px;display:block}
+.phase-card__headline{font-family:var(--font-display);font-weight:700;font-size:18px;line-height:1.25;margin-bottom:6px;color:var(--text-primary)}
+.phase-card__sub{font-size:14px;line-height:1.5;color:var(--text-muted)}
+.phase-card.selected::after{content:"[ \2713 ]";position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:12px;color:var(--accent);letter-spacing:0.1em}
+.phase-guidance{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px;margin-bottom:24px;opacity:0;max-height:0;overflow:hidden;transition:opacity 0.3s ease,max-height 0.3s ease,padding 0.3s ease}
+.phase-guidance.visible{opacity:1;max-height:600px;padding:24px}
+.phase-guidance__label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;font-weight:600;margin-bottom:10px}
+.phase-guidance p{margin:0 0 10px;line-height:1.6;color:var(--text-primary)}
+.phase-guidance p:last-child{margin-bottom:0}
+.phase-cta{display:none;width:100%;padding:18px 24px;font-family:var(--font-mono);font-size:14px;letter-spacing:0.14em;text-transform:uppercase;background:transparent;color:var(--accent);border:1px solid var(--accent);cursor:pointer;transition:all 0.15s;font-weight:600}
+.phase-cta.visible{display:block}
+.phase-cta:hover,.phase-cta:focus{background:var(--accent);color:var(--bg-primary);outline:none}
+.phase-modal__not-sure{display:block;text-align:center;margin-top:24px;font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;color:var(--text-muted);text-transform:uppercase;background:none;border:none;cursor:pointer;padding:8px}
+.phase-modal__not-sure:hover{color:var(--accent)}
+.phase-modal__not-sure-hint{display:none;max-width:520px;margin:8px auto 0;font-size:13px;color:var(--text-muted);text-align:center;line-height:1.55}
+.phase-modal__not-sure-hint.visible{display:block}
+
+/* Header phase pill — appears after modal closes, tappable to reopen */
+.phase-pill{background:transparent;border:1px solid var(--rule);color:var(--accent);font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;padding:5px 11px;cursor:pointer;text-transform:uppercase;transition:all 0.15s}
+.phase-pill:hover,.phase-pill:focus{border-color:var(--accent);outline:none}
+.phase-pill[hidden]{display:none}
 </style>
 </head>
 <body>
 <div class="tick tl">+</div><div class="tick tr">+</div><div class="tick bl">+</div><div class="tick br">+</div>
+
+<!-- v1.11: pre-questionnaire phase modal. Open by default; closed only via phase CTA. -->
+<div id="phase-modal" class="phase-modal open" role="dialog" aria-modal="true" aria-labelledby="phase-modal-title">
+  <div class="phase-modal__inner">
+    <div class="phase-modal__eyebrow">[ → ] BEFORE YOU BEGIN</div>
+    <h1 id="phase-modal-title" class="phase-modal__title">Where is your business right now?</h1>
+    <p class="phase-modal__subtitle">Tap one. We'll tune the questionnaire so you only answer what's relevant to your stage.</p>
+
+    <div class="phase-grid" role="radiogroup" aria-label="Business phase">
+      <button type="button" class="phase-card" role="radio" aria-checked="false" data-phase="STARTUP">
+        <span class="phase-card__tag">[ 1 ] STARTUP</span>
+        <div class="phase-card__headline">Pre-launch or just getting started</div>
+        <div class="phase-card__sub">An idea, a vision, or early traction. The business model is still forming.</div>
+      </button>
+      <button type="button" class="phase-card" role="radio" aria-checked="false" data-phase="GROWTH">
+        <span class="phase-card__tag">[ 2 ] GROWTH</span>
+        <div class="phase-card__headline">Operating but not yet repeatable</div>
+        <div class="phase-card__sub">Revenue is happening but it depends on your hands. Clearer offers, sharper positioning, better process.</div>
+      </button>
+      <button type="button" class="phase-card" role="radio" aria-checked="false" data-phase="SCALING">
+        <span class="phase-card__tag">[ 3 ] SCALING</span>
+        <div class="phase-card__headline">Removing yourself from execution</div>
+        <div class="phase-card__sub">The business needs to work without you in every meeting. Systems, automation, delegation.</div>
+      </button>
+      <button type="button" class="phase-card" role="radio" aria-checked="false" data-phase="MATURITY">
+        <span class="phase-card__tag">[ 4 ] MATURITY</span>
+        <div class="phase-card__headline">Established and looking for the next ceiling</div>
+        <div class="phase-card__sub">Traction is real. The work now is strategic clarity, profitable bets, and long-term positioning.</div>
+      </button>
+      <button type="button" class="phase-card" role="radio" aria-checked="false" data-phase="EXIT_READY">
+        <span class="phase-card__tag">[ 5 ] EXIT-READY</span>
+        <div class="phase-card__headline">Building for sustainable handoff or sale</div>
+        <div class="phase-card__sub">Operations, leadership, brand equity, and finances are being shaped for handoff, scale-out, or exit.</div>
+      </button>
+    </div>
+
+    <button type="button" class="phase-modal__not-sure" id="phase-not-sure-btn">Not sure which phase fits?</button>
+    <div class="phase-modal__not-sure-hint" id="phase-not-sure-hint">
+      Pick the one closest to today, not where you want to be. You can change it later if it doesn't fit — your answers won't be lost.
+    </div>
+
+    <div class="phase-guidance" id="phase-guidance" aria-live="polite">
+      <div class="phase-guidance__label">[ → ] WHAT TO EXPECT</div>
+      <p id="phase-guidance-line1"></p>
+      <p>You don't need perfect answers. Honest "I don't know yet" beats a polished guess every time.</p>
+      <p><strong style="color:var(--accent)">Tip:</strong> dictate with <a href="https://wisprflow.ai/" target="_blank" rel="noopener" style="color:var(--accent);border-bottom:1px solid var(--accent);text-decoration:none">Wispr Flow</a> if you'd rather talk than type. Dictated answers run 3&ndash;4&times; more detailed.</p>
+    </div>
+
+    <button type="button" class="phase-cta" id="phase-cta">Select a phase to continue</button>
+  </div>
+</div>
 
 <div class="frame">
 
 <div class="header-mark">
   <div class="left">─ <span class="sec">FORGE / INTAKE</span></div>
   <div class="middle"><span id="page-mark">P. 01 / 07</span></div>
-  <div class="right">
+  <div class="right" style="display:flex;gap:8px;align-items:center">
+    <button type="button" class="phase-pill" id="phase-pill" hidden aria-label="Change business phase">P. <span id="phase-pill-label">—</span></button>
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">[ ◑ ] MODE</button>
   </div>
 </div>
@@ -139,16 +229,7 @@ button.btn .arrow{margin-left:6px}
     <span class="line2">WHERE IT COULD GO.</span>
   </h1>
   <p class="brand-line italic">A clear plan for your business, backed by market data.</p>
-  <p class="body-lg">This intake takes about 20 minutes. Honest answers in, sharp analysis out. The form runs locally in your browser and auto-saves between pages, so you can step away and come back.</p>
-
-  <!-- Wispr Flow recommendation — dictation tool for richer answers -->
-  <div class="callout wispr-card" style="margin:24px 0">
-    <div class="label" style="display:flex;align-items:center;gap:8px;color:var(--accent);font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">
-      <span>[ &#127908; ] PRO TIP &mdash; DICTATE YOUR ANSWERS</span>
-    </div>
-    <p style="margin-bottom:12px">Wispr Flow is a free dictation tool that turns your voice into text in any input field. Operators who dictate typically produce 3&ndash;4&times; more detail than typing alone, and the depth of your answers directly determines the sharpness of your report.</p>
-    <a href="https://wisprflow.ai/" target="_blank" rel="noopener" style="display:inline-block;font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:8px 18px;border:1px solid var(--accent);color:var(--accent);background:transparent;text-decoration:none;transition:all 0.15s">[ &rarr; ] Get Wispr Flow</a>
-  </div>
+  <p class="body-lg">Honest answers in, sharp analysis out. The form auto-saves between pages, so you can step away and come back.</p>
 
   <div class="hr"></div>
   <div class="field">
@@ -576,10 +657,130 @@ button.btn .arrow{margin-left:6px}
 // ─────────────────────────────────────────────────────────────
 const FACILITATOR_EMAIL = 'facilitator@distill.local';
 const FACILITATOR_LABEL = 'Forge Facilitator';
-const FORGE_VERSION = 'v1.10.3';
+const FORGE_VERSION = 'v1.11.0';
 
 const STORAGE_KEY = 'forge-intake-v1';
 const THEME_KEY = 'forge-theme';
+const PHASE_KEY = 'forge-phase';
+
+// v1.11: phase modal config + behavior
+const PHASES = {
+  STARTUP: {
+    label: 'STARTUP',
+    pillLabel: 'STARTUP',
+    cta: 'Build the Foundation',
+    expectLine: "You're pre-launch or just getting started. Expect about 12 questions over 10 minutes — most multi-line so you can think out loud."
+  },
+  GROWTH: {
+    label: 'GROWTH',
+    pillLabel: 'GROWTH',
+    cta: 'Sharpen the Model',
+    expectLine: "You're operating but not yet repeatable. Expect about 14 questions over 12 minutes — most multi-line so you can think out loud."
+  },
+  SCALING: {
+    label: 'SCALING',
+    pillLabel: 'SCALING',
+    cta: 'Engineer the System',
+    expectLine: "You're removing yourself from execution. Expect about 16 questions over 14 minutes — most multi-line so you can think out loud."
+  },
+  MATURITY: {
+    label: 'MATURITY',
+    pillLabel: 'MATURITY',
+    cta: 'Find the Next Ceiling',
+    expectLine: "You're established and looking for the next ceiling. Expect about 14 questions over 12 minutes — most multi-line so you can think out loud."
+  },
+  EXIT_READY: {
+    label: 'EXIT_READY',
+    pillLabel: 'EXIT-READY',
+    cta: 'Build the Handoff',
+    expectLine: "You're building for sustainable handoff or sale. Expect about 13 questions over 11 minutes — most multi-line so you can think out loud."
+  }
+};
+
+function initPhaseModal() {
+  const modal = document.getElementById('phase-modal');
+  const cards = document.querySelectorAll('.phase-card');
+  const guidance = document.getElementById('phase-guidance');
+  const line1 = document.getElementById('phase-guidance-line1');
+  const cta = document.getElementById('phase-cta');
+  const pill = document.getElementById('phase-pill');
+  const pillLabel = document.getElementById('phase-pill-label');
+  const notSureBtn = document.getElementById('phase-not-sure-btn');
+  const notSureHint = document.getElementById('phase-not-sure-hint');
+  let selected = null;
+
+  const stored = localStorage.getItem(PHASE_KEY);
+  if (stored && PHASES[stored]) {
+    // Returning user: skip modal, render pill
+    closeModal(stored, /*persist*/ false);
+    return;
+  }
+
+  function select(phase) {
+    if (!PHASES[phase]) return;
+    selected = phase;
+    cards.forEach(c => {
+      const isSelected = c.dataset.phase === phase;
+      c.classList.toggle('selected', isSelected);
+      c.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+    });
+    line1.textContent = PHASES[phase].expectLine;
+    guidance.classList.add('visible');
+    cta.textContent = PHASES[phase].cta;
+    cta.classList.add('visible');
+    cta.focus();
+  }
+
+  function closeModal(phase, persist) {
+    if (!phase || !PHASES[phase]) return;
+    if (persist) localStorage.setItem(PHASE_KEY, phase);
+    if (modal) {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    document.body.setAttribute('data-phase', phase);
+    if (pill) {
+      pill.hidden = false;
+      pillLabel.textContent = PHASES[phase].pillLabel;
+    }
+  }
+
+  cards.forEach(c => {
+    c.addEventListener('click', () => select(c.dataset.phase));
+    c.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        select(c.dataset.phase);
+      }
+    });
+  });
+
+  if (cta) {
+    cta.addEventListener('click', () => {
+      if (!selected) return;
+      closeModal(selected, /*persist*/ true);
+    });
+  }
+
+  if (notSureBtn) {
+    notSureBtn.addEventListener('click', () => {
+      notSureHint.classList.toggle('visible');
+    });
+  }
+
+  // Header pill reopens modal in change-mode (current selection preselected)
+  if (pill) {
+    pill.addEventListener('click', () => {
+      const current = localStorage.getItem(PHASE_KEY);
+      if (modal) {
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+      if (current && PHASES[current]) select(current);
+      window.scrollTo(0, 0);
+    });
+  }
+}
 
 // Theme toggle
 function initTheme() {
@@ -597,6 +798,7 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
   }
 });
 initTheme();
+initPhaseModal();
 
 // Page navigation
 let currentPage = 1;
@@ -709,9 +911,15 @@ function buildBCD() {
   const today = new Date().toISOString().slice(0,10);
   const slug = businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'business';
 
+  // v1.11: phase signal from pre-questionnaire modal
+  const phase = localStorage.getItem(PHASE_KEY);
+  const phaseLabel = phase && PHASES[phase] ? PHASES[phase].pillLabel : null;
+  const phaseCta = phase && PHASES[phase] ? PHASES[phase].cta : null;
+
   let md = '# Business Context Document\n';
   md += 'Generated by: Forge Intake ' + FORGE_VERSION + '\n';
   md += 'Date: ' + today + '\n';
+  if (phase) md += 'Phase: ' + phaseLabel + ' — ' + phaseCta + '\n';
   md += 'Operator name: ' + v('applicant_name') + '\n';
   md += 'Operator email: ' + v('email') + '\n';
   const businessUrl = v('business_url');

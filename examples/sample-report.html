@@ -283,20 +283,39 @@ a.move:hover .headline{color:var(--accent)}
   /* v1.6.1: PI highlight card stacks vertically so logo + text don't crush on phones */
   .pi-card{flex-direction:column !important;align-items:center !important;text-align:center;gap:16px !important}
   .pi-card img{max-width:140px !important}
-  /* Let wide diagrams (gantt, sankey) keep their natural width and scroll inside .diagram.
-     Container already has overflow-x:auto; we just disable the shrink-to-fit override. */
-  .diagram{padding:16px 12px;-webkit-overflow-scrolling:touch}
-  .diagram .mermaid{min-width:560px}
-  .diagram .mermaid svg{max-width:none;width:auto;height:auto}
-  /* Flowcharts and quadrants that fit naturally still center; wide ones become pannable. */
+  /* v1.11: diagrams fit viewport width on mobile; expand button opens full-size in modal.
+     Previous behavior (min-width:560px + overflow-x:auto) forced horizontal scroll — replaced
+     with scale-to-fit so the diagram is always fully visible. Full resolution available via
+     the [⤢] expand button on each diagram. */
+  .diagram{padding:16px 12px;overflow:hidden}
+  .diagram .mermaid{min-width:0}
+  .diagram .mermaid svg{max-width:100% !important;height:auto !important;width:auto}
   .frame{padding:20px 16px 48px}
   .moves{gap:14px}
   .grid{gap:12px}
 }
 
+/* v1.11: diagram expand button + modal viewer */
+.diagram{position:relative}
+.diagram-expand{position:absolute;top:8px;right:8px;background:var(--bg-primary);color:var(--text-muted);border:1px solid var(--rule);font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;padding:6px 10px;cursor:pointer;z-index:2;transition:all 0.15s;opacity:0.7}
+.diagram-expand:hover,.diagram-expand:focus{color:var(--accent);border-color:var(--accent);opacity:1;outline:none}
+.diagram-modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;padding:24px;overflow:auto;touch-action:pan-x pan-y pinch-zoom;-webkit-overflow-scrolling:touch}
+.diagram-modal.open{display:flex}
+.diagram-modal__panel{position:relative;background:var(--bg-primary);border:1px solid var(--rule);padding:48px 24px 24px;max-width:95vw;max-height:95vh;overflow:auto;-webkit-overflow-scrolling:touch}
+.diagram-modal__close{position:absolute;top:12px;right:12px;background:transparent;color:var(--text-muted);border:1px solid var(--rule);font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;padding:6px 12px;cursor:pointer;transition:all 0.15s}
+.diagram-modal__close:hover,.diagram-modal__close:focus{color:var(--accent);border-color:var(--accent);outline:none}
+.diagram-modal__svg{display:flex;align-items:center;justify-content:center}
+.diagram-modal__svg svg{max-width:none !important;height:auto !important;width:auto;min-width:280px}
+.diagram-modal__label{position:absolute;top:14px;left:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;color:var(--text-muted);text-transform:uppercase}
+@media (max-width:640px){
+  .diagram-modal{padding:8px}
+  .diagram-modal__panel{padding:42px 12px 16px;max-width:100vw;max-height:100vh}
+  .diagram-expand{font-size:10px;padding:5px 8px}
+}
+
 /* Print stylesheet */
 @media print{
-  .reading-progress,.theme-toggle,.tick,.bg-num{display:none !important}
+  .reading-progress,.theme-toggle,.tick,.bg-num,.diagram-expand,.diagram-modal{display:none !important}
   .header-mark{position:static !important;padding-top:0 !important;background:transparent !important}
   html,body{background:#fff !important;color:#111 !important}
   :root{--bg-primary:#fff;--bg-elevated:#f7f7f7;--text-primary:#111;--text-muted:#555;--text-faint:#999;--accent:#0a8ea8;--accent-deep:#077590;--accent-soft:rgba(10,142,168,0.10);--rule:#d6d6d6;--danger:#b22020;--success:#0a7a4a;--warn:#9a6a10;--info:#5a1aa0}
@@ -314,6 +333,15 @@ a.move:hover .headline{color:var(--accent)}
 </head>
 <body>
 <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+
+<!-- v1.11: diagram expand modal. Hidden by default. Click any [⤢] expand button on a diagram to open. -->
+<div id="diagram-modal" class="diagram-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Expanded diagram view">
+  <div class="diagram-modal__panel" role="document">
+    <div class="diagram-modal__label">[ &#10239; ] DIAGRAM &mdash; FULL SIZE</div>
+    <button class="diagram-modal__close" id="diagram-modal-close" aria-label="Close expanded diagram">[ &times; ] CLOSE</button>
+    <div class="diagram-modal__svg" id="diagram-modal-svg" aria-live="polite"></div>
+  </div>
+</div>
 <div class="tick tl">+</div><div class="tick tr">+</div><div class="tick bl">+</div><div class="tick br">+</div>
 
 <div class="frame">
@@ -1166,7 +1194,7 @@ quadrantChart
       <p>BCD file: <code># BUSINESS MODEL INTAKE-Mechanical Magic.md</code></p>
       <p>Web supplement source: <code>https://mechanicalmagicpressurewashing.com/</code></p>
       <p>Pruning log: <code>~/forge-runs/mechanical-magic-2026-05-11.models.json</code></p>
-      <p>Plugin version: forge v1.10.3</p>
+      <p>Plugin version: forge v1.11.0</p>
     </div>
   </details>
 </section>
@@ -1181,7 +1209,7 @@ quadrantChart
 <div class="footer-mark">
   <div>DISTILL</div>
   <div class="descriptor">A clear plan for your business, backed by market data.</div>
-  <div>FORGE v1.10</div>
+  <div>FORGE v1.11</div>
 </div>
 
 </div>
@@ -1331,6 +1359,51 @@ setTimeout(() => {
     });
   }
 }, 3000);
+</script>
+
+<!-- v1.11: diagram expand modal -->
+<script>
+(function(){
+  document.querySelectorAll('.diagram').forEach(d => {
+    if (d.querySelector('.diagram-expand')) return;
+    const btn = document.createElement('button');
+    btn.className = 'diagram-expand';
+    btn.setAttribute('aria-label', 'Expand diagram to full size');
+    btn.innerHTML = '[ &#10239; ] EXPAND';
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const svg = d.querySelector('.mermaid svg');
+      const modal = document.getElementById('diagram-modal');
+      const target = document.getElementById('diagram-modal-svg');
+      if (!svg || !modal || !target) return;
+      target.innerHTML = '';
+      const clone = svg.cloneNode(true);
+      clone.style.maxWidth = 'none';
+      clone.style.width = 'auto';
+      clone.style.height = 'auto';
+      target.appendChild(clone);
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      const closeBtn = document.getElementById('diagram-modal-close');
+      if (closeBtn) closeBtn.focus();
+    });
+    d.appendChild(btn);
+  });
+  const modal = document.getElementById('diagram-modal');
+  const closeBtn = document.getElementById('diagram-modal-close');
+  const closeModal = () => {
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) closeModal();
+  });
+})();
 </script>
 
 <!-- Effectiveness layer: reading progress + section fade-in + number count-up -->
