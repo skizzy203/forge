@@ -2,6 +2,61 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.11.5] — 2026-05-22
+
+### Codename: Phase (inherited from v1.11.0)
+
+Hotfix. v1.11.3's hidden Netlify Forms form-definition wasn't being detected by Netlify's HTML scanner. Form didn't appear in the Forms tab, and submission POSTs were silently dropped onto Netlify's 404 fallback. Operator-visible symptom: clicking SUBMIT only triggered the BCD download, with no confirmation email and no submission record.
+
+### Fixed — Netlify Forms detection of the hidden form-definition
+
+Four corrections to the hidden form in `questionnaire.html`:
+
+1. **Added `method="POST"`.** Netlify's scanner only registers POST forms. The default form method is GET, which Netlify Forms skips silently. This was the primary cause of detection failure.
+
+2. **Switched `netlify` attribute to `data-netlify="true"`.** Both should work per Netlify docs, but `data-netlify="true"` is the canonical detection attribute the scanner looks for first; the bare `netlify` attribute fails detection in some scanner versions.
+
+3. **Added explicit `<input type="hidden" name="form-name" value="forge-intake" />`.** Required for AJAX/fetch submissions so Netlify links the POST body to the static form definition. Even though the JS POST body includes `form-name` in URLSearchParams, the static form needs the matching hidden input.
+
+4. **Replaced `hidden` HTML attribute with `style="display:none"`.** Some Netlify scanner versions skip forms marked with the `hidden` attribute, treating them as inactive. CSS hiding is safer.
+
+### Added — submission status UI on confirmation page
+
+`submitToNetlifyForms()` now drives a visible status callout on Page 8:
+
+- **Pending:** `[ ⟳ ] SUBMITTING — Sending your context to the workshop queue. Hold on.`
+- **Success:** `[ ✓ ] RECEIVED — Your context is in the queue. A confirmation email is on its way to [email] with your BCD attached. Check your spam folder if it does not arrive within a few minutes.`
+- **HTTP error:** `[ ! ] SERVER REJECTED THE SUBMISSION — HTTP [status]. Your BCD is still downloadable... Please email it manually.`
+- **Network error:** `[ ! ] COULD NOT REACH SERVER — Network error: [message]. Please email manually.`
+
+Status callout only renders on Netlify-served hosts (`*.netlify.app`, `intake.builderbranding.co`, `localhost` for `netlify dev`). Local file:// runs see no status indicator because no submission happens — the existing `.md` download / email / clipboard paths cover that case.
+
+### Future direction (not in this release) — agent-autotrigger analysis
+
+A reminder of the broader architecture this release builds toward. Storage progression:
+
+| Layer | Where BCDs live | Status |
+|---|---|---|
+| **Now (v1.11.5)** | Netlify Forms submission storage | Active. Submissions visible in Netlify dashboard. |
+| **v1.11.6 (pending user setup)** | Private GitHub `forge-workshops` repo, committed by `submission-created` function | Function code already structured to add this. Blocks on user creating the private repo + a fine-grained PAT scoped to it. |
+| **v1.13+ (future)** | Same as above. New layer: scheduled / webhook-triggered agent watches the repo, runs `/forge:optimize` on each new BCD, commits the generated report back, emails the operator. | Architecture design pending; v1.12 dashboard work happens first. |
+
+### Files changed
+
+- `skills/intake/templates/questionnaire.html` — form definition fixes (4 changes); submission status UI markup + JS
+- `.claude-plugin/plugin.json` — `1.11.4` → `1.11.5`
+- `examples/sample-report.html` — version stamp bump
+
+### How to verify after deploy
+
+1. Netlify Deploys tab → new green build
+2. Site → view source → confirm hidden form has `method="POST"` and `data-netlify="true"` and explicit `<input type="hidden" name="form-name">`
+3. Netlify Forms tab → `forge-intake` form now appears (may take ~1 minute after first successful deploy)
+4. Submit a test form → Page 8 shows the `[ ⟳ ] SUBMITTING` callout, then transitions to `[ ✓ ] RECEIVED`
+5. Netlify Forms dashboard shows the new submission with all field values
+6. Function logs (Functions → submission-created) show `confirmation sent to [email]`
+7. Inbox (the email you used to create the Resend account, since sandbox restriction is still active) receives confirmation with .md attached
+
 ## [1.11.4] — 2026-05-22
 
 ### Codename: Phase (inherited from v1.11.0)
