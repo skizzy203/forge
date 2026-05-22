@@ -64,13 +64,14 @@ The catalog is kept full to provide edge-case coverage. Pruning happens empirica
 ### Scoring formula
 
 ```
-score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier
+score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier × phase_multiplier
 ```
 
 - **base_relevance** (1–3) — how universally applicable to business optimization
 - **subtractive_weight** — 1.5 if model's primary mechanism is removing elements (Via Negativa, Pareto, ToC, First Principles, Occam's Razor, Eisenhower, Comparative Advantage, Musk's 5-Step); 1.0 otherwise
 - **bcd_multiplier** — 1.0 baseline; boosted by 1.5× per BCD trigger detected (capped at 2.0× total)
 - **market_multiplier** — adjustments applied during Phase 1 based on web-sourced market signals (e.g., commoditization signal boosts Via Negativa)
+- **phase_multiplier** (added v1.11.2) — read from the BCD's `Phase:` metadata line (STARTUP / GROWTH / SCALING / MATURITY / EXIT_READY). Default 1.0 for every (model, phase) pair. Per-model `phase_boosts:` fields in `catalog.md` override the default for specific phases. Boosts cap at 1.5×; deprioritizations floor at 0.7×.
 
 The subtractive weight encodes the Musk principle ("best part is no part") structurally — removal-class models lead chains by default, only ceding the slot when an additive model has a strong BCD trigger justifying it.
 

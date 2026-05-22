@@ -2,6 +2,91 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.11.2] — 2026-05-22
+
+### Codename: Phase (inherited from v1.11.0)
+
+Content-heavy patch under Phase codename. Two substantial additions: 24 new phase-specific questions across all 5 phases, and a 5th scoring factor (`phase_multiplier`) wired into the catalog scoring formula with phase boosts applied to 14 high-signal models. Closes the Phase arc's intake + scoring layer.
+
+### Added — `phase_multiplier` 5th scoring factor
+
+Scoring formula evolves from 4 factors to 5:
+
+**Before (v1.10.1+):** `score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier`
+
+**After (v1.11.2+):** `score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier × phase_multiplier`
+
+`phase_multiplier` reads from the BCD's `Phase:` metadata line (set by the v1.11.0 intake modal). Default 1.0 for every (model, phase) pair. Per-model `phase_boosts:` field in `catalog.md` overrides the default for specific phases. Boosts cap at 1.5×; deprioritizations floor at 0.7×. Phase is stable across a chain run — read once on Phase 2 startup, applied uniformly to the initial scoring pass.
+
+Updated across `catalog.md` (scoring intro + per-model `Phase boosts:` lines), `skills/optimize/SKILL.md` Phase 2 (formula + pruning-log JSON schema gains `phase_multiplier` field), `PRD.md` §5 (formula + factor definition).
+
+### Added — `phase_boosts:` field on 14 high-signal catalog models
+
+Conservative authoring — only the models where phase signal is strongest carry explicit boosts. Unlisted models default to 1.0 across all five phases (no scoring change). Annotated reasoning per boost.
+
+**STARTUP boosts (validation / pre-revenue focus):**
+- Jobs to Be Done — STARTUP=1.5 (validation core)
+- First Principles Thinking — STARTUP=1.5, MATURITY=1.2
+- Minimum Viable Experiment — STARTUP=1.5 (the literal STARTUP unlock)
+- Ikigai (Operator Fit) — STARTUP=1.3
+
+**STARTUP deprioritizations (premature optimization):**
+- Pareto Principle (80/20) — STARTUP=0.8 (premature without data)
+- Theory of Constraints — STARTUP=0.7 (system doesn't exist yet)
+- Unit Economics — STARTUP=0.8 (no data yet)
+- Pricing Strategy — STARTUP=0.8 (premature optimization)
+- Money Model Architecture — STARTUP=0.8 (premature without a proven Core)
+- Cash Conversion Check — STARTUP=0.7 (no real channels)
+
+**GROWTH boosts (sharpening offer / repeatability):**
+- Operator Edge — GROWTH=1.5, EXIT_READY=1.2
+- Value Equation — GROWTH=1.5
+- Money Model Architecture — GROWTH=1.5, EXIT_READY=1.3
+- Pricing Strategy — GROWTH=1.3
+- Unit Economics — GROWTH=1.3, EXIT_READY=1.3
+- Cash Conversion Check — GROWTH=1.3, SCALING=1.3
+
+**SCALING boosts (systems / delegation):**
+- Theory of Constraints — SCALING=1.5 (binding-constraint identification is the scaling unlock)
+- Leverage Points — SCALING=1.5
+- Comparative Advantage — SCALING=1.3, EXIT_READY=1.3
+- Eisenhower Matrix — SCALING=1.3
+- Pareto Principle — SCALING=1.2, MATURITY=1.2
+
+**MATURITY boosts (strategic / next ceiling):**
+- Second-Order Thinking — MATURITY=1.5, EXIT_READY=1.3
+- Asymmetric Risk (Convexity) — MATURITY=1.5
+- Moats / Competitive Advantage — MATURITY=1.5, EXIT_READY=1.3
+
+**EXIT_READY boosts (post-exit / handoff):**
+- Pre-Mortem Analysis — EXIT_READY=1.5 (post-exit failure modes), MATURITY=1.3
+
+### Added — 24 phase-specific intake questions
+
+5–5 questions per phase added inline to existing pages with `data-phase-show` tags from v1.11.1. Each question carries a phase-prefixed storage key (`q_startup_*`, `q_growth_*`, etc.) and a thematic page placement.
+
+**STARTUP (4):** First ten customers by name, months of runway, validation threshold, smallest 60-day shippable version
+**GROWTH (5):** Last-5-customers repeatability split, pricing-power test (20%/20%), delivery surface that breaks without operator, easiest-vs-hardest customer types, first task to systematize
+**SCALING (5):** Documented-vs-tribal knowledge state, founder time split (doing/managing/deciding), second-crew capacity, high-frequency manual task candidates, next 3 hires in priority order
+**MATURITY (5):** Bench strength if operator stepped back tomorrow, moat status (unkillable vs eroding), three different 3-year futures, cash-today vs compound-5-year orientation, next structural ceiling after success
+**EXIT_READY (5):** Financial cleanup state, owner-dependency surfaces (buyer risk inventory), IP/brand asset that survives ownership change, most-likely buyer thesis, sale/scale/handoff/hold-and-extract orientation
+
+### Added — Phase-Specific Context section in BCD output
+
+`buildBCD()` now writes a new `## Phase-Specific Context (PHASE)` section into the generated markdown, populated with the operator's answers to their phase's questions. Empty fields render as `_(not provided)_` so chain runners can detect skips. Other phases' questions don't appear in the BCD — only the operator's selected phase's questions are included.
+
+### Files changed
+
+- `references/catalog.md` — 5-factor scoring formula + per-model `Phase boosts:` field convention + 14 high-signal models tagged
+- `skills/optimize/SKILL.md` — Phase 2 scoring formula updated to 5 factors; pruning-log JSON schema gains `phase_multiplier` field
+- `PRD.md` §5 — 5-factor scoring formula + factor definition
+- `skills/intake/templates/questionnaire.html` — 24 new phase-specific questions added inline to pages 3/4/5/6/7 with `data-phase-show` tags; `buildBCD()` writes Phase-Specific Context section
+- `.claude-plugin/plugin.json` — `1.11.1` → `1.11.2`
+
+### What's planned for the next release
+
+v1.11.3 — Netlify-hosted intake at `intake.builderbranding.co` with Forms-based submission, Resend confirmation email, GitHub private repo mirror for workshop analytics. Blocks on external account setup (Netlify, Resend, DNS, private repo + PAT).
+
 ## [1.11.1] — 2026-05-21
 
 ### Codename: Phase (inherited from v1.11.0)

@@ -7,13 +7,16 @@ The 40 models the optimize skill draws from. Each entry includes the prompt kern
 For each model, the optimize skill computes a runtime score:
 
 ```
-score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier
+score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier × phase_multiplier
 ```
 
 - **base_relevance** (1–3) — how universally applicable to business optimization
 - **subtractive_weight** — 1.5 if model is subtractive class (its primary mechanism is removing elements), else 1.0
 - **bcd_multiplier** — 1.0 baseline; boosted by 1.5× per BCD trigger detected, capped at 2.0× total
 - **market_multiplier** — adjustments applied during Phase 1B based on web-sourced market signals (e.g., commoditization signal boosts Via Negativa). 1.0 when no signal applies.
+- **phase_multiplier** (added v1.11.2) — boost from the operator's selected business phase (STARTUP / GROWTH / SCALING / MATURITY / EXIT_READY), read from the BCD's `Phase:` metadata line. Default 1.0 for every (model, phase) pair. Models with a `phase_boosts:` field in their catalog entry override the default for specific phases. Boosts cap at 1.5×; deprioritizations floor at 0.7×.
+
+**Phase boosts field convention (added v1.11.2).** Models that benefit strongly from a specific business phase carry an explicit `- **Phase boosts:**` line listing per-phase multipliers in compact form, e.g., `STARTUP=1.5, MATURITY=1.3`. Unlisted (model, phase) pairs default to 1.0. Boosts cap at 1.5×; deprioritizations floor at 0.7×. Models without a `Phase boosts:` line use 1.0 across all five phases — no effect on scoring. Only the ~15 models with strong phase signal carry overrides.
 
 Models are selected in descending score order, with five hard causal anchors enforced as ordering rules:
 1. JTBD opens every chain
@@ -35,6 +38,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** What job is the customer actually hiring this product/service to do?
 - **Prompt kernel:** Identify the functional job (what they're trying to accomplish), emotional job (how they want to feel), and social job (how they want to be perceived). Describe the full hiring context: when does the job arise, what's the trigger, what have they tried before, why did it fall short? Write a one-sentence job statement: "When [situation], I want to [motivation], so I can [expected outcome]." This becomes the constraint all Design decisions must satisfy.
 - **BCD boosts:** none (always runs first regardless)
+- **Phase boosts:** STARTUP=1.5 (validation core)
 
 ### First Principles Thinking
 - **Class:** Diagnose + Simplify (recursive — runs in Diagnose, again post-Design)
@@ -42,6 +46,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Causal:** requires JTBD complete; required before any Design-class model
 - **Key question:** What is actually true here if we remove all conventions, industry norms, and inherited assumptions?
 - **Prompt kernel:** Break this down to irreducible truths. List every assumption baked into the current model. For each: is this a physical/logical constraint, or a convention we chose? Keep only the former. Rebuild from what survives.
+- **Phase boosts:** STARTUP=1.5 (strip assumptions before commit), MATURITY=1.2
 - **BCD boosts:** Any (universal); +0.3 if "inherited approach" or "industry convention" surfaces in intake
 
 ### Via Negativa (Subtraction)
@@ -67,6 +72,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Which 20% of activities, customers, or inputs produce 80% of the value?
 - **Prompt kernel:** Map inputs to outputs across: customers (revenue by segment), activities (time spent vs. value), products/services (margin by offering), problems (source of complaints/churn). Identify top 20% in each category. Flag anything in bottom 80% that consumes disproportionate resource — these are elimination candidates.
 - **BCD boosts:** "operational complexity", "growth stall", "declining margin"
+- **Phase boosts:** STARTUP=0.8 (premature without data), SCALING=1.2, MATURITY=1.2
 
 ### Theory of Constraints
 - **Class:** Diagnose
@@ -75,6 +81,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** What single constraint, if removed, would allow the entire system to improve?
 - **Prompt kernel:** Map the current business as inputs/processes/outputs. Identify throughput. Find the bottleneck — the one step or resource that limits throughput. This is the constraint. Do not optimize anything that isn't the constraint — it's waste. Propose minimum intervention to relieve only the constraint.
 - **BCD boosts:** "operational complexity", "growth stall", "system performance"
+- **Phase boosts:** STARTUP=0.7 (system doesn't exist yet), SCALING=1.5 (binding-constraint identification is the scaling unlock)
 
 ### Inversion
 - **Class:** Diagnose (first pass) + Stress-Test (second pass)
@@ -91,6 +98,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Assume this plan fails in 12 months. Top three reasons?
 - **Prompt kernel:** It is 12 months from now. The plan failed. Generate 5–7 specific failure modes ranked by likelihood × impact. For each high-priority mode: is it detectable early, preventable by design change, or an irreducible risk to accept?
 - **BCD boosts:** "high-stakes commitment", "strategic uncertainty"
+- **Phase boosts:** EXIT_READY=1.5 (post-exit failure modes most consequential), MATURITY=1.3
 
 ### Value Equation (Hormozi)
 - **Class:** Design
@@ -99,6 +107,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Dream outcome, likelihood, time delay, effort?
 - **Prompt kernel:** Apply Value = (Dream Outcome × Perceived Likelihood) / (Time Delay × Effort). For current offer: name the dream outcome in customer language. What makes achievement feel likely or unlikely? How fast do results show? What effort is required? For each variable: how can we improve perceived value? Produce a redesigned offer description maximizing all four.
 - **BCD boosts:** "pricing problem", "offer not converting", "commoditization"
+- **Phase boosts:** GROWTH=1.5 (sharpening the offer is the GROWTH unlock)
 
 ### Operator Edge
 - **Class:** Opportunity
@@ -107,6 +116,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Where does the operator's background create a credible position competitors cannot replicate?
 - **Prompt kernel:** Using operator's background data: (1) List all domains where operator has deep knowledge — industries, disciplines, hobbies, communities, roles. (2) Map against current market whitespace: what do customers want that providers don't offer or understand well? (3) Find intersections where operator expertise meets underserved need. (4) Surface 2–3 niche positions only someone with this exact background could credibly occupy. (5) Score each by defensibility and market size. Flag the highest-potential for Design phase input.
 - **BCD boosts:** "operator cross-domain background", "no differentiator", "commoditized market"
+- **Phase boosts:** GROWTH=1.5 (defensible niche is the GROWTH-stage move), EXIT_READY=1.2 (what survives without the operator)
 - *(Replaces "Idea Sex" — same mechanism, sharper name.)*
 
 ---
@@ -120,6 +130,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Where in the system does a small change produce the largest downstream effect?
 - **Prompt kernel:** Map the business as interconnected feedback loops. Identify: parameters (low leverage), feedback loops (medium), goals and paradigms (high). Find the intervention point with highest expected leverage. Propose one change at that point.
 - **BCD boosts:** "growth stall", "system not responding"
+- **Phase boosts:** SCALING=1.5 (highest-leverage intervention is the scaling unlock)
 
 ### Unit Economics (LTV:CAC)
 - **Class:** Diagnose
@@ -128,6 +139,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** For every dollar to acquire a customer, how much do they generate over their lifetime?
 - **Prompt kernel:** Compute CAC, LTV, LTV:CAC ratio. Benchmark: SaaS ≥ 3:1 healthy, <1:1 fatal. What drives CAC up? What drives LTV down? Highest-leverage intervention to improve the ratio?
 - **BCD boosts:** "pricing problem", "growth constrained by economics", "scaling concern"
+- **Phase boosts:** STARTUP=0.8 (no data yet), GROWTH=1.3, EXIT_READY=1.3 (LTV:CAC is a primary buyer-due-diligence metric)
 
 ### Golden Circle (Why/How/What)
 - **Class:** Orient
@@ -144,6 +156,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Smallest, fastest, cheapest experiment to prove or disprove the core assumption?
 - **Prompt kernel:** Identify the single riskiest assumption — the one that, if wrong, makes everything else irrelevant. Design the minimum experiment: what action, by whom, in what timeframe, at what cost, generates evidence? Define thresholds: what confirms it, what kills it.
 - **BCD boosts:** "high uncertainty", "early stage", "resource constraint"
+- **Phase boosts:** STARTUP=1.5 (MVE is the literal STARTUP unlock)
 
 ### 5 Whys (Root Cause)
 - **Class:** Diagnose
@@ -168,6 +181,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** If this works, what happens next? And then what?
 - **Prompt kernel:** For the proposed plan: (1) list immediate first-order effects. (2) For each, ask "and then what?" — list second-order effects. (3) For the most significant, ask again — third order. Flag any second/third-order effect that undermines the plan or creates a worse problem.
 - **BCD boosts:** "significant market implications", "competitive side effects"
+- **Phase boosts:** MATURITY=1.5 (strategic compounding effects matter most), EXIT_READY=1.3
 
 ### Blue Ocean Strategy
 - **Class:** Opportunity
@@ -184,6 +198,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** What makes this business structurally harder to compete with over time?
 - **Prompt kernel:** Assess against five moat types: (1) Network effects, (2) Switching costs, (3) Cost advantages, (4) Intangible assets — brand/patents/data, (5) Efficient scale. Rate current strength 1–5 each. Identify which moat to build and the next concrete step.
 - **BCD boosts:** "competition problem", "pricing pressure", "acquisition strategy"
+- **Phase boosts:** MATURITY=1.5 (moat depth determines next ceiling), EXIT_READY=1.3 (moat is a primary valuation driver)
 
 ### Comparative Advantage
 - **Class:** Orient
@@ -192,6 +207,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** What does this business do better than anyone else relative to opportunity cost?
 - **Prompt kernel:** List key activities. For each, how does performance compare to alternatives (outsourcing, partners, competitors)? Identify activities where there's highest relative advantage. All others are outsource/eliminate candidates. The business should be doing only what it does relatively best.
 - **BCD boosts:** "resource allocation", "what to focus on vs. outsource", "partnership evaluation"
+- **Phase boosts:** SCALING=1.3 (delegation surface), EXIT_READY=1.3 (clean separation of operator-only vs delegable reveals saleable systems)
 
 ### Asymmetric Risk (Convexity)
 - **Class:** Design
@@ -200,6 +216,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Which options have limited downside but uncapped upside?
 - **Prompt kernel:** Evaluate each option through asymmetric payoff: (1) worst-case cost if fails? (2) best-case value if succeeds? (3) ratio better than 1:3? Flag asymmetric positive bets — highest expected-value even under uncertainty. Flag asymmetric negative — avoid regardless of confidence.
 - **BCD boosts:** "strategic uncertainty", "high-stakes decision", "resource-constrained"
+- **Phase boosts:** MATURITY=1.5 (largest strategic bets with longest time horizons)
 
 ### Occam's Razor
 - **Class:** Simplify
@@ -224,6 +241,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Does this business sit at the intersection of what the operator loves, is good at, world needs, world pays for?
 - **Prompt kernel:** Map operator against four dimensions. Identify which quadrants the current business covers and which are missing. Missing "love" = burnout. Missing "needed" = no mission. Missing "good at" = can't deliver. Missing "pays" = can't survive. Flag any missing quadrant and its risk.
 - **BCD boosts:** "founder misalignment", "pivot decisions", "sustainability question"
+- **Phase boosts:** STARTUP=1.3 (operator fit matters most when nothing is built yet)
 
 ### Amazon Working Backwards
 - **Class:** Design
@@ -240,6 +258,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Is current price capturing the value being delivered?
 - **Prompt kernel:** Compare price against three anchors: (1) Cost-plus (margin structure), (2) Competitive (positioning vs. survival), (3) Value-based (customer ROI at current price). Identify type: underpriced (value > price), overpriced (price > perceived value), or mismatch (right number, wrong structure). Propose minimum change that captures more of the value being delivered.
 - **BCD boosts:** "pricing problem", "underpriced", "offer not converting"
+- **Phase boosts:** STARTUP=0.8 (premature optimization), GROWTH=1.3 (moving off floor pricing is a primary GROWTH lever)
 
 ### Money Model Architecture (Hormozi)
 - **Class:** Design
@@ -248,6 +267,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Across four tiers (Front-door, Core, Premium, Subscription), what offer does each tier need to carry to move the operator from where they are to where the business could land?
 - **Prompt kernel:** Given the redesigned offer description from Value Equation, the operator's Q10d pricing snapshot, Q12 revenue stream split, and Q13 acquisition channels: design a four-tier offer canvas. Front-door (entry-point offer solving an urgent pain cheaply, sub-30-day cash recovery target). Core (the foundational offer the business is built on — the highest-margin volume play). Premium (deeper-pocket upsell after the core sale — fewer customers, larger basket). Subscription (recurring revenue layer maximizing lifetime value). For each tier produce: tier_name, target_audience, price_anchor, value_promise, gross_profit_estimate, time_to_deliver, section_5_anchor (name the Section 5 Proposed-Model revenue stream this tier maps to). Close with a sequencing_note (1-2 paragraphs) telling the operator which tier to design or sharpen first given their Q4 bottleneck.
 - **BCD boosts:** "pricing problem", "commoditization", "offer not converting", "low repeat rate", "cash flow tight", "revenue mix lopsided"
+- **Phase boosts:** STARTUP=0.8 (premature without a proven Core tier), GROWTH=1.5 (the ladder is the GROWTH unlock), EXIT_READY=1.3 (clean revenue layers improve sale story)
 
 ### Eisenhower Matrix
 - **Class:** Simplify
@@ -256,6 +276,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Urgent, important, both, or neither?
 - **Prompt kernel:** List all current activities, initiatives, obligations. Sort by Urgent (time-sensitive) × Important (drives primary goal). Q1 urgent+important: do now. Q2 important not urgent: schedule. Q3 urgent not important: delegate or eliminate. Q4 neither: eliminate. Q3/Q4 items are the complexity to remove.
 - **BCD boosts:** "operational complexity", "too many priorities", "resource overextension"
+- **Phase boosts:** SCALING=1.3 (delegate/eliminate is the founder-time leverage point)
 
 ### Network Effects
 - **Class:** Orient
@@ -356,6 +377,7 @@ Chain stops when 2 consecutive picks score below the relevance threshold (typica
 - **Key question:** Does the offer architecture recoup customer-acquisition cost within ~30 days, or does the business need external capital to scale?
 - **Prompt kernel:** Estimate first-30-day cash recovered per new customer using: front-door tier price and gross profit estimate (from Money Model Architecture output), Q10b margin (BCD), and the typical share of customers who buy the front-door only vs. attach a premium upsell at first sale. Estimate CAC using Phase 1B `CAC_BENCHMARK` for the operator's top channel from Q13. Compare estimated_first_30d_cash against estimated_cac to produce a verdict: likely_passing (cash > CAC), likely_failing (cash < CAC), or indeterminate (confidence too low to call). Confidence is high when Phase 1B CAC band is tight AND Q10b margin is a number AND Q10d pricing is concrete; drops one tier per loose/missing input; verdict forced to indeterminate when confidence is low. Surface 2-4 recommended levers (reduce CAC by switching channels, raise front-door price, add a first-call premium upsell, accelerate cash collection, etc.). Voice precedent matches Section 2 CAC sub-block: probabilistic verdict, pilot-to-measure fallback.
 - **BCD boosts:** "cash flow tight", "can't afford to scale", "runway concern", "acquisition cost high"
+- **Phase boosts:** STARTUP=0.7 (no real channels yet), GROWTH=1.3 (capital efficiency matters most), SCALING=1.3
 
 ---
 

@@ -223,8 +223,10 @@ Runs after Phase 1C, before Phase 2. Same epistemic posture as Phase 1B/1C: cite
 Load `references/catalog.md`. For each candidate model, compute:
 
 ```
-score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier
+score = base_relevance × subtractive_weight × bcd_multiplier × market_multiplier × phase_multiplier
 ```
+
+The `phase_multiplier` (added v1.11.2) is read from the BCD's `Phase:` metadata line (set by the intake modal). Default 1.0 for every (model, phase) pair. Per-model `phase_boosts:` fields in `catalog.md` override the default for specific phases. The chain runner reads the phase from the BCD on Phase 2 startup and applies the multiplier as part of the initial scoring pass. Re-scoring during chain execution doesn't change the phase multiplier (phase is stable across a single run).
 
 Pick the highest-scoring causally-available model. Run its prompt kernel against the BCD + market research + accumulated outputs. Capture the labeled output. Re-score. Continue.
 
@@ -501,6 +503,7 @@ Phase 2 already tracks the score and order of every chain pick. Phase 4 persists
       "subtractive_weight": 1.0,
       "bcd_multiplier": 1.5,
       "market_multiplier": 1.0,
+      "phase_multiplier": 1.5,
       "fired": true,
       "output_chars": 1842
     }
