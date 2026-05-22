@@ -22,9 +22,21 @@ BCD output format overhaul. The generated `.bcd.md` file is now self-explanatory
 
 - **Fixed spurious businessUrl line.** The original `v('business_url')` call returned `_(not provided)_` for empty inputs, making the `if (businessUrl)` guard always true. Changed to direct DOM access so the Website line is suppressed when the field is blank.
 
+### Added — facilitator notification email
+
+`submission-created.js` now sends a second email to the facilitator on every submission, replacing the Netlify Pro form-notification feature (which requires a paid plan). Fires after the applicant confirmation; failure is non-blocking and logged but does not affect the 200 response or the applicant's email.
+
+- **To:** `FACILITATOR_EMAIL` env var, defaulting to `wisedesign.live@gmail.com`
+- **Subject:** `[Forge intake] BusinessName — PHASE`
+- **Body:** operator name, email, phase, date, version — copy-ready for `/forge:optimize`
+- **Attachment:** same `.bcd.md` file the applicant receives
+
+To override the default facilitator address, add a `FACILITATOR_EMAIL` env var in Netlify.
+
 ### Files changed
 
 - `skills/intake/templates/questionnaire.html` — `buildBCD()` rewrite; `FORGE_VERSION` → `v1.11.6`
+- `netlify/functions/submission-created.js` — facilitator notification email; updated header comment
 - `.claude-plugin/plugin.json` — `1.11.5` → `1.11.6`
 
 ## [1.11.5] — 2026-05-22
