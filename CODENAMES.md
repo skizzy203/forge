@@ -15,7 +15,7 @@ Release titles are stamped automatically by `.github/workflows/auto-tag-release.
 | v1.8.x  | Intake       | Questionnaire deepened — five new fields, Page 4 deep-dive  |
 | v1.9.x  | Ladder       | Section 7.0c Money Model Architecture + Cash Conversion     |
 | v1.10.x | Cohesion     | Order-of-Ops tightening + release codename system           |
-| v1.11.x | Phase        | Pre-questionnaire phase modal + Mermaid mobile fit + Netlify backend |
+| v1.11.x | Phase        | Pre-questionnaire phase modal + Netlify Forms backend + BCD format overhaul |
 
 ## Reserved
 
