@@ -1,22 +1,62 @@
 // netlify/functions/submission-created.js
 //
 // Fires automatically on every successful Netlify Forms submission.
-// Sends two emails via Resend:
+// Sends two emails via Resend and commits the BCD to a private GitHub repo:
 //   1. Applicant confirmation — BCD attached, report timeline set.
 //   2. Facilitator notification — same BCD attached, ready to drop into /forge:optimize.
+//   3. GitHub mirror — BCD committed to forge-workshops repo as submissions/TIMESTAMP-SLUG.md.
 //
 // Required environment variables (set in Netlify dashboard):
 //   RESEND_API_KEY  — API key from resend.com
 //
 // Optional:
-//   FROM_ADDRESS      — defaults to onboarding@resend.dev. Set to a verified domain address
-//                       once builderbranding.co is verified in Resend.
-//   FACILITATOR_EMAIL — defaults to wisedesign.live@gmail.com.
+//   FROM_ADDRESS           — defaults to onboarding@resend.dev. Set to a verified domain address
+//                            once builderbranding.co is verified in Resend.
+//   FACILITATOR_EMAIL      — defaults to wisedesign.live@gmail.com.
+//   GITHUB_TOKEN           — fine-grained PAT with Contents R/W on the workshops repo.
+//                            Without this, the GitHub mirror step is silently skipped.
+//   GITHUB_WORKSHOPS_REPO  — owner/repo slug, defaults to skizzy203/forge-workshops.
 
 const { Resend } = require('resend');
 
-const FROM_ADDRESS      = process.env.FROM_ADDRESS      || 'Forge Intake <onboarding@resend.dev>';
-const FACILITATOR_EMAIL = process.env.FACILITATOR_EMAIL || 'wisedesign.live@gmail.com';
+const FROM_ADDRESS           = process.env.FROM_ADDRESS           || 'Forge Intake <onboarding@resend.dev>';
+const FACILITATOR_EMAIL      = process.env.FACILITATOR_EMAIL      || 'wisedesign.live@gmail.com';
+const GITHUB_WORKSHOPS_REPO  = process.env.GITHUB_WORKSHOPS_REPO  || 'skizzy203/forge-workshops';
+
+async function commitBCDToGitHub(slug, bcdMarkdown, businessName, submittedAt) {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    console.log('[submission-created] GITHUB_TOKEN not set — skipping GitHub mirror');
+    return;
+  }
+
+  const date = submittedAt.toISOString().slice(0, 10);
+  const timeCompact = submittedAt.toISOString().replace(/:/g, '-').replace(/\..+/, '');
+  const path = `submissions/${timeCompact}-${slug}.md`;
+
+  const resp = await fetch(`https://api.github.com/repos/${GITHUB_WORKSHOPS_REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      Authorization:        `Bearer ${token}`,
+      'Content-Type':       'application/json',
+      Accept:               'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify({
+      message:   `intake: ${businessName} — ${date}`,
+      content:   Buffer.from(bcdMarkdown, 'utf-8').toString('base64'),
+      committer: { name: 'Forge Intake', email: 'intake@builderbranding.co' },
+    }),
+  });
+
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => '');
+    console.error('[submission-created] GitHub mirror failed:', resp.status, body.slice(0, 200));
+    return;
+  }
+  const result = await resp.json().catch(() => ({}));
+  console.log('[submission-created] BCD mirrored to GitHub:', result.content?.html_url || path);
+}
 
 exports.handler = async function (event) {
   // Netlify Forms POSTs the submission payload as JSON to this function on every
@@ -124,6 +164,14 @@ exports.handler = async function (event) {
       }
     } catch (fErr) {
       console.error('[submission-created] facilitator notification error:', fErr.message);
+    }
+
+    // GitHub mirror — non-blocking. Failure logs but does not affect the 200 response.
+    try {
+      const slug = (businessName || 'business').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'business';
+      await commitBCDToGitHub(slug, bcdMarkdown, businessName, new Date());
+    } catch (gErr) {
+      console.error('[submission-created] GitHub mirror error:', gErr.message);
     }
 
     return {

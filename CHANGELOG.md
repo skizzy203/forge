@@ -2,6 +2,25 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.11.7] — 2026-05-22
+
+### Codename: Phase (inherited from v1.11.0)
+
+Adds a private GitHub repository mirror for every intake submission. On each successful form POST, `submission-created.js` commits the BCD markdown to `forge-workshops` (or a configurable target repo) as `submissions/TIMESTAMP-SLUG.md`. Non-blocking: a GitHub mirror failure logs to the function console but does not affect the applicant confirmation email or the Netlify 200 response.
+
+### Added — GitHub BCD mirror
+
+- **`commitBCDToGitHub(slug, bcdMarkdown, businessName, submittedAt)`** — new helper in `submission-created.js`. Uses the GitHub REST API (`PUT /repos/{owner}/{repo}/contents/{path}`) with global `fetch` (Node 18+; no new dependency). Commit message: `intake: BusinessName — YYYY-MM-DD`. Committer: `Forge Intake <intake@builderbranding.co>`.
+
+- **`GITHUB_TOKEN`** env var (Netlify dashboard) — fine-grained PAT scoped to the workshops repo with Contents read+write and Metadata read. Without this env var, the step is silently skipped.
+
+- **`GITHUB_WORKSHOPS_REPO`** env var (optional) — `owner/repo` slug, defaults to `skizzy203/forge-workshops`.
+
+### Files changed
+
+- `netlify/functions/submission-created.js` — `commitBCDToGitHub` helper + call after facilitator email; updated header comment; `GITHUB_WORKSHOPS_REPO` constant
+- `.claude-plugin/plugin.json` — `1.11.6` → `1.11.7`
+
 ## [1.11.6] — 2026-05-22
 
 ### Codename: Phase (inherited from v1.11.0)
