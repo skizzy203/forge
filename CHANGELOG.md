@@ -2,6 +2,38 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.11.4] — 2026-05-22
+
+### Codename: Phase (inherited from v1.11.0)
+
+Hotfix. v1.11.3's first Netlify deploy failed at the function-bundling stage with `Cannot find module 'resend'`. Root cause: Netlify's function bundler does not auto-install dependencies declared in per-function `package.json` files — it only installs from the project's top-level `package.json`. The v1.11.3 PR put the `resend` dependency in `netlify/functions/package.json`, which Netlify ignores during bundling. Fix follows Netlify's own recommended path from the error message (https://docs.netlify.com/functions/dependencies/).
+
+### Fixed — function dependency installation
+
+- **Removed** `netlify/functions/package.json` (Netlify doesn't read it during bundling)
+- **Added** top-level `package.json` at repo root declaring `resend ^4.0.0` as a dependency
+- **Added** `node_modules/` and `package-lock.json` to `.gitignore` (generated at Netlify build time, never committed)
+
+The root `package.json` carries a doc-string description making clear that the file exists purely for Netlify Functions dependency installation, not because Forge itself is a Node project. The plugin source remains language-agnostic; the only Node code in the repo is the single `submission-created.js` function.
+
+### Files changed
+
+- `netlify/functions/package.json` — deleted
+- `package.json` — new file at repo root
+- `.gitignore` — adds `node_modules/` and `package-lock.json`
+- `.claude-plugin/plugin.json` — `1.11.3` → `1.11.4`
+- `skills/intake/templates/questionnaire.html` — `FORGE_VERSION` → `v1.11.4`
+- `examples/sample-report.html` — version stamp bump
+
+### How to verify
+
+On Netlify after this PR merges:
+1. Deploys tab shows a new build kicked off automatically
+2. Build log shows `npm install` running and pulling `resend` from npm
+3. `Functions bundling` step succeeds (no `Cannot find module 'resend'` error)
+4. `submission-created` function appears in Functions tab
+5. `forge-intake` form appears in Forms tab (Netlify scans HTML after build succeeds)
+
 ## [1.11.3] — 2026-05-22
 
 ### Codename: Phase (inherited from v1.11.0)
