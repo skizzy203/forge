@@ -1,6 +1,7 @@
 <img width="1774" height="887" alt="forge-product-card" src="https://github.com/user-attachments/assets/8f8fa87c-158a-4fa4-9e06-8f2ab7511553" />
 # Forge
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7e43ad03-2f97-4b8b-91c4-c9c2f436afcf/deploy-status)](https://app.netlify.com/projects/forge-intake/deploys)
 [![Release](https://img.shields.io/github/v/release/skizzy203/forge?label=release&color=10B981&style=flat-square)](https://github.com/skizzy203/forge/releases)
 [![License: MIT](https://img.shields.io/github/license/skizzy203/forge?color=22E0FF&style=flat-square)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-22E0FF?logo=anthropic&logoColor=white&style=flat-square)](https://claude.com/claude-code)
@@ -28,7 +29,7 @@ There's one command. It routes by intent.
 
 ### To get a report on your business
 
-1. Fill out the intake form: **https://skizzy203.github.io/forge/**
+1. Fill out the intake form: **https://intake.builderbranding.co**
    The form takes about ten minutes. It's email-gated, multipage, and auto-saves between pages.
 2. Submit. You'll get three paths:
    - **Email** the BCD to your facilitator (mailto, with the file attached)
@@ -95,7 +96,7 @@ forge/
 
 ## Try the intake form
 
-**[Open the live intake form →](https://skizzy203.github.io/forge/)** (opens the rendered questionnaire in your browser, no clone required)
+**[Open the live intake form →](https://intake.builderbranding.co)** (opens the rendered questionnaire in your browser, no clone required)
 
 About ten minutes to fill. Email-gated, multipage, auto-saves between pages. On submit you get three delivery paths — email to facilitator, download locally, or copy to clipboard. The raw HTML source lives at [skills/intake/templates/questionnaire.html](skills/intake/templates/questionnaire.html).
 
