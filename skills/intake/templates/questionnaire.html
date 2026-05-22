@@ -153,6 +153,21 @@ button.btn .arrow{margin-left:6px}
 .phase-pill{background:transparent;border:1px solid var(--rule);color:var(--accent);font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;padding:5px 11px;cursor:pointer;text-transform:uppercase;transition:all 0.15s}
 .phase-pill:hover,.phase-pill:focus{border-color:var(--accent);outline:none}
 .phase-pill[hidden]{display:none}
+
+/* v1.11.1: phase-conditional question rendering.
+   Any element with data-phase-show="STARTUP GROWTH" only renders when the document's
+   data-phase attribute matches one of the listed phases. Hidden via display:none so
+   the question doesn't occupy space and isn't tabbable. Phase pill on the header reopens
+   the modal so users can change phase mid-intake; existing answers are preserved. */
+[data-phase-show]{display:none}
+body[data-phase="STARTUP"]    [data-phase-show~="STARTUP"]   ,
+body[data-phase="GROWTH"]     [data-phase-show~="GROWTH"]    ,
+body[data-phase="SCALING"]    [data-phase-show~="SCALING"]   ,
+body[data-phase="MATURITY"]   [data-phase-show~="MATURITY"]  ,
+body[data-phase="EXIT_READY"] [data-phase-show~="EXIT_READY"]{display:block}
+/* Body without a phase selected (no data-phase yet) → hide all conditional questions.
+   The pre-questionnaire modal must close before the questionnaire becomes interactive. */
+body:not([data-phase]) [data-phase-show]{display:none}
 </style>
 </head>
 <body>
@@ -316,43 +331,43 @@ button.btn .arrow{margin-left:6px}
   <p class="body-lg">We need rough magnitudes, not audited financials. "I don't track this" is a valid answer and itself a diagnosis.</p>
   <div class="hr"></div>
 
-  <div class="field">
+  <div class="field" data-phase-show="GROWTH SCALING MATURITY EXIT_READY">
     <label class="field-label" for="q10_revenue"><span class="qn">Q10a</span>ANNUAL REVENUE</label>
     <span class="field-probe">Or monthly recurring × 12. Approximate.</span>
     <input type="text" id="q10_revenue" name="q10_revenue" placeholder="e.g. $250K, $2.4M, untracked">
   </div>
 
-  <div class="field">
+  <div class="field" data-phase-show="GROWTH SCALING MATURITY EXIT_READY">
     <label class="field-label" for="q10_margin"><span class="qn">Q10b</span>GROSS MARGIN %</label>
     <span class="field-probe">Revenue minus direct cost of delivery, as a percentage. Best guess.</span>
     <input type="text" id="q10_margin" name="q10_margin" placeholder="e.g. 60%, untracked">
   </div>
 
-  <div class="field">
+  <div class="field" data-phase-show="GROWTH SCALING MATURITY EXIT_READY">
     <label class="field-label" for="q10_customers"><span class="qn">Q10c</span>ACTIVE CUSTOMER COUNT</label>
     <span class="field-probe">Or monthly active users, or active clients. Whatever maps to "people currently paying."</span>
     <input type="text" id="q10_customers" name="q10_customers" placeholder="e.g. 47, ~200, 12K">
   </div>
 
-  <div class="field">
+  <div class="field" data-phase-show="STARTUP GROWTH SCALING MATURITY EXIT_READY">
     <label class="field-label" for="q10_pricing"><span class="qn">Q10d</span>PRICING SNAPSHOT &mdash; WHAT DOES IT COST TODAY?</label>
-    <span class="field-probe">Real price points. Per-unit, per-job, per-month — however you sell. This anchors the Pricing Power Audit to where you actually sit, not where the chain guesses you sit.</span>
+    <span class="field-probe">Real price points. Per-unit, per-job, per-month — however you sell. For STARTUP: planned price, even rough. For others: anchors the Pricing Power Audit to where you actually sit.</span>
     <textarea id="q10_pricing" name="q10_pricing" rows="2" placeholder="e.g. $150–$300 per driveway, $1,800 per restoration day, $79/month subscription" required></textarea>
   </div>
 
-  <div class="field">
+  <div class="field" data-phase-show="GROWTH SCALING MATURITY EXIT_READY">
     <label class="field-label" for="q12"><span class="qn">Q12</span>REVENUE STREAM SPLIT &mdash; % BY LINE ITEM</label>
     <span class="field-probe">Roughly what percentage of revenue comes from each line item today? Sum to ~100. Sharpens the AS-IS → PROPOSED revenue rewiring diagram instead of having the chain invent the proportions.</span>
     <textarea id="q12" name="q12" rows="2" placeholder="e.g. 40% house washing, 30% driveway, 15% gutters, 10% roof, 5% drone work" required></textarea>
   </div>
 
-  <div class="field">
+  <div class="field" data-phase-show="STARTUP GROWTH SCALING MATURITY EXIT_READY">
     <label class="field-label" for="q13"><span class="qn">Q13</span>TOP ACQUISITION CHANNELS &mdash; RANK YOUR TOP 3</label>
-    <span class="field-probe">Where do new customers actually come from? Anchors the CAC Benchmark and channel-related recommendations.</span>
+    <span class="field-probe">Where do new customers actually come from? For STARTUP: where you expect them to come from. Anchors the CAC Benchmark and channel recommendations.</span>
     <textarea id="q13" name="q13" rows="2" placeholder="e.g. 1. Referrals, 2. Angi, 3. Google search / SEO" required></textarea>
   </div>
 
-  <div class="field">
+  <div class="field" data-phase-show="GROWTH SCALING MATURITY EXIT_READY">
     <label class="field-label" for="q14"><span class="qn">Q14</span>WHERE DOES YOUR WEEK GO? (OPTIONAL)</label>
     <span class="field-probe">Top 3 categories of work that consume your weekly hours, with rough %. Helps the Automation Surface and First-Hire Roadmap recommend what to delegate first.</span>
     <textarea id="q14" name="q14" rows="2" placeholder="e.g. 50% on-site delivery, 20% quoting/admin, 15% marketing, 15% errands"></textarea>
@@ -657,7 +672,7 @@ button.btn .arrow{margin-left:6px}
 // ─────────────────────────────────────────────────────────────
 const FACILITATOR_EMAIL = 'facilitator@distill.local';
 const FACILITATOR_LABEL = 'Forge Facilitator';
-const FORGE_VERSION = 'v1.11.0';
+const FORGE_VERSION = 'v1.11.1';
 
 const STORAGE_KEY = 'forge-intake-v1';
 const THEME_KEY = 'forge-theme';
@@ -743,6 +758,28 @@ function initPhaseModal() {
       pill.hidden = false;
       pillLabel.textContent = PHASES[phase].pillLabel;
     }
+    syncRequiredAttributes(phase);
+  }
+
+  // v1.11.1: when phase-hidden fields carry the `required` attribute, browsers still
+  // validate them on submit even though display:none makes them invisible. We strip `required`
+  // off any input/textarea/select inside a hidden .field and restore it on visible ones.
+  // The original `required` state is stashed in data-was-required so we can put it back.
+  function syncRequiredAttributes(phase) {
+    document.querySelectorAll('[data-phase-show]').forEach(wrapper => {
+      const visiblePhases = (wrapper.getAttribute('data-phase-show') || '').split(/\s+/);
+      const isVisible = visiblePhases.includes(phase);
+      wrapper.querySelectorAll('input, textarea, select').forEach(field => {
+        if (field.hasAttribute('required') || field.dataset.wasRequired === 'true') {
+          if (!field.dataset.wasRequired) field.dataset.wasRequired = 'true';
+          if (isVisible) {
+            field.setAttribute('required', '');
+          } else {
+            field.removeAttribute('required');
+          }
+        }
+      });
+    });
   }
 
   cards.forEach(c => {
