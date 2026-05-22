@@ -313,9 +313,28 @@ a.move:hover .headline{color:var(--accent)}
   .diagram-expand{font-size:10px;padding:5px 8px}
 }
 
+/* v1.12.0 — INDEX nav drawer */
+.nav-toggle{background:transparent;border:1px solid var(--rule);color:var(--text-muted);font-family:var(--font-mono);font-size:12px;padding:6px 12px;cursor:pointer;letter-spacing:0.1em;transition:all 0.15s;margin-right:8px}
+.nav-toggle:hover,.nav-toggle.active{color:var(--accent);border-color:var(--accent)}
+.nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:99}
+.nav-overlay.open{display:block}
+.nav-drawer{position:fixed;top:0;right:-300px;width:280px;height:100vh;background:var(--bg-elevated);border-left:1px solid var(--rule);z-index:100;transition:right 0.25s ease;display:flex;flex-direction:column;overflow:hidden}
+.nav-drawer.open{right:0}
+.nav-drawer__header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--rule);flex-shrink:0}
+.nav-drawer__title{font-family:var(--font-mono);font-size:11px;letter-spacing:0.18em;color:var(--accent);font-weight:600;text-transform:uppercase}
+.nav-drawer__close{background:transparent;border:1px solid var(--rule);color:var(--text-muted);font-family:var(--font-mono);font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:0.1em;transition:all 0.15s}
+.nav-drawer__close:hover{color:var(--accent);border-color:var(--accent)}
+.nav-drawer__list{list-style:none;padding:12px 0;flex:1;overflow-y:auto;margin:0}
+.nav-link{display:flex;align-items:center;gap:10px;padding:10px 20px;text-decoration:none;color:var(--text-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;transition:all 0.15s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--text-primary);background:var(--accent-soft)}
+.nav-link.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-soft)}
+.nav-num{min-width:20px;color:var(--text-faint);font-size:10px}
+.nav-link.active .nav-num{color:var(--accent)}
+@media(max-width:480px){.nav-drawer{width:100%}}
+
 /* Print stylesheet */
 @media print{
-  .reading-progress,.theme-toggle,.tick,.bg-num,.diagram-expand,.diagram-modal{display:none !important}
+  .reading-progress,.theme-toggle,.nav-toggle,.nav-drawer,.nav-overlay,.tick,.bg-num,.diagram-expand,.diagram-modal{display:none !important}
   .header-mark{position:static !important;padding-top:0 !important;background:transparent !important}
   html,body{background:#fff !important;color:#111 !important}
   :root{--bg-primary:#fff;--bg-elevated:#f7f7f7;--text-primary:#111;--text-muted:#555;--text-faint:#999;--accent:#0a8ea8;--accent-deep:#077590;--accent-soft:rgba(10,142,168,0.10);--rule:#d6d6d6;--danger:#b22020;--success:#0a7a4a;--warn:#9a6a10;--info:#5a1aa0}
@@ -344,13 +363,33 @@ a.move:hover .headline{color:var(--accent)}
 </div>
 <div class="tick tl">+</div><div class="tick tr">+</div><div class="tick bl">+</div><div class="tick br">+</div>
 
+<div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-hidden="true" aria-label="Report section index">
+  <div class="nav-drawer__header">
+    <span class="nav-drawer__title">─ INDEX</span>
+    <button class="nav-drawer__close" id="nav-drawer-close" aria-label="Close index">[ &times; ] CLOSE</button>
+  </div>
+  <ol class="nav-drawer__list">
+    <li><a href="#sec1"    class="nav-link" data-sec="sec1">    <span class="nav-num">01</span>Executive Summary</a></li>
+    <li><a href="#sec2"    class="nav-link" data-sec="sec2">    <span class="nav-num">02</span>Market Intelligence</a></li>
+    <li><a href="#sec3"    class="nav-link" data-sec="sec3">    <span class="nav-num">03</span>Where You Are Today</a></li>
+    <li><a href="#sec4"    class="nav-link" data-sec="sec4">    <span class="nav-num">04</span>Optimization Analysis</a></li>
+    <li><a href="#sec5"    class="nav-link" data-sec="sec5">    <span class="nav-num">05</span>The Proposed Model</a></li>
+    <li><a href="#sec6"    class="nav-link" data-sec="sec6">    <span class="nav-num">06</span>Implementation Plan</a></li>
+    <li><a href="#sec7"    class="nav-link" data-sec="sec7">    <span class="nav-num">07</span>Amplified Moves</a></li>
+    <li><a href="#sec8"    class="nav-link" data-sec="sec8">    <span class="nav-num">08</span>Pressure Test</a></li>
+    <li><a href="#appendix" class="nav-link" data-sec="appendix"><span class="nav-num">⊕</span>Appendix</a></li>
+  </ol>
+</nav>
+
 <div class="frame">
 
 <div class="header-mark">
   <div class="left">─ <span class="sec">FORGE INTELLIGENCE REPORT</span></div>
   <div class="middle">Mechanical Magic LLC</div>
   <div class="right">
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">[ ◑ ] MODE</button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle section index" aria-expanded="false" aria-controls="nav-drawer">[ &#8801; ] INDEX</button>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">[ &#9681; ] MODE</button>
   </div>
 </div>
 
@@ -1199,11 +1238,19 @@ quadrantChart
   </details>
 </section>
 
-<div class="callout" style="margin:64px 0 32px">
+<div class="callout" style="margin:64px 0 24px;border-color:var(--accent)">
+  <div class="label">[ $ ] $1,500 &mdash; BRAND EXCAVATION &mdash; BUILDER BRANDING CO.</div>
+  <div class="headline">Know exactly what you're selling and who you're selling it to.</div>
+  <p style="margin-bottom:8px">You're past product-market fit but losing deals to competitors with cleaner positioning. Brand Excavation finds your message.</p>
+  <p style="margin-bottom:20px;color:var(--text-muted);font-size:14px">One session. Clear positioning. Done.</p>
+  <a href="https://builderbranding.co" target="_blank" rel="noopener" style="display:inline-block;font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:10px 20px;border:1px solid var(--accent);color:var(--accent);background:transparent;transition:all 0.15s">[ &rarr; ] Book the session</a>
+</div>
+
+<div class="callout" style="margin:0 0 32px;border-color:var(--rule)">
   <div class="label">[ &#9655; ] LIVE WORKSHOP &mdash; THURSDAYS 7PM</div>
   <div class="headline">Apply for the next Business Model Strip Down</div>
   <p style="margin-bottom:16px">Live every Thursday at 7pm. Bring one business, leave with a redesign drafted in real time. Limited seats per session.</p>
-  <a href="https://tally.so/r/aQj7dy" target="_blank" rel="noopener" style="display:inline-block;font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:10px 20px;border:1px solid var(--accent);color:var(--accent);background:transparent;transition:all 0.15s">[ &rarr; ] Apply now</a>
+  <a href="https://tally.so/r/aQj7dy" target="_blank" rel="noopener" style="display:inline-block;font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:10px 20px;border:1px solid var(--rule);color:var(--text-muted);background:transparent;transition:all 0.15s">[ &rarr; ] Apply now</a>
 </div>
 
 <div class="footer-mark">
@@ -1233,6 +1280,39 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
   document.dispatchEvent(new CustomEvent('forge-theme-change'));
   setTimeout(() => { if (window.mermaid) reRenderMermaid(); }, 50);
 });
+</script>
+
+<script>
+(function () {
+  const toggle  = document.getElementById('nav-toggle');
+  const drawer  = document.getElementById('nav-drawer');
+  const overlay = document.getElementById('nav-overlay');
+  const closeBtn = document.getElementById('nav-drawer-close');
+  function openNav() {
+    drawer.classList.add('open'); overlay.classList.add('open');
+    drawer.setAttribute('aria-hidden','false'); overlay.setAttribute('aria-hidden','false');
+    toggle.setAttribute('aria-expanded','true'); toggle.classList.add('active');
+  }
+  function closeNav() {
+    drawer.classList.remove('open'); overlay.classList.remove('open');
+    drawer.setAttribute('aria-hidden','true'); overlay.setAttribute('aria-hidden','true');
+    toggle.setAttribute('aria-expanded','false'); toggle.classList.remove('active');
+  }
+  toggle.addEventListener('click', () => drawer.classList.contains('open') ? closeNav() : openNav());
+  closeBtn.addEventListener('click', closeNav);
+  overlay.addEventListener('click', closeNav);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNav(); });
+  drawer.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => setTimeout(closeNav, 120)));
+  if ('IntersectionObserver' in window) {
+    const links = drawer.querySelectorAll('.nav-link');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) links.forEach(l => l.classList.toggle('active', l.dataset.sec === e.target.id));
+      });
+    }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+    document.querySelectorAll('section.section[id], section[id="appendix"]').forEach(s => obs.observe(s));
+  }
+}());
 </script>
 
 <!-- Mermaid -->
