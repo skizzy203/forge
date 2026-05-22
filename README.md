@@ -102,9 +102,9 @@ About ten minutes to fill. Email-gated, multipage, auto-saves between pages. On 
 
 ## Sample output
 
-**[View the rendered sample report →](https://skizzy203.github.io/forge/examples/sample-report.html)** (opens in your browser, no clone required)
+**[View the rendered sample report →](https://intake.builderbranding.co/examples/mechanical-magic.html)** (opens in your browser, no clone required)
 
-Real workshop output for a Cherokee County pressure-washing operator (Mechanical Magic LLC) showing all eight sections, six Mermaid diagrams (AS-IS flowchart, PROPOSED flowchart, Revenue Diff Sankey, Implementation Gantt, Pre-Mortem Quadrant, Revenue Trajectory), the sticky theme-toggle header, the reading progress bar, the count-up number animations, and the hover-expand Appendix glossary. The raw HTML source lives at [examples/sample-report.html](examples/sample-report.html).
+Real workshop output for a Cherokee County pressure-washing operator (Mechanical Magic LLC) showing all eight sections, six Mermaid diagrams (AS-IS flowchart, PROPOSED flowchart, Revenue Diff Sankey, Implementation Gantt, Pre-Mortem Quadrant, Revenue Trajectory), the sticky theme-toggle header, the reading progress bar, the count-up number animations, and the hover-expand Appendix glossary. The raw HTML source lives at [examples/mechanical-magic.html](examples/mechanical-magic.html).
 
 ## License
 

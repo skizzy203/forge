@@ -1,21 +1,16 @@
 # Forge — Netlify configuration
 # Site: forge-intake.netlify.app (custom domain target: intake.builderbranding.co)
-# Hosts the intake questionnaire. Functions handle submission webhooks.
+# Hosts the intake questionnaire and sample reports. Functions handle submission webhooks.
+#
+# Build assembles dist/ from two sources:
+#   dist/index.html                        ← skills/intake/templates/questionnaire.html
+#   dist/examples/mechanical-magic.html   ← examples/mechanical-magic.html
+# Adding a new sample report: drop the HTML into examples/ and add a cp line below.
 
 [build]
-  # The questionnaire is the only file we publish to the live site.
-  publish = "skills/intake/templates"
-  # No build step — questionnaire.html is committed static HTML.
-  command = ""
-  # Serverless functions for the submission-created webhook (Resend confirmation email).
+  publish = "dist"
+  command = "mkdir -p dist/examples && cp skills/intake/templates/questionnaire.html dist/index.html && cp examples/mechanical-magic.html dist/examples/mechanical-magic.html"
   functions = "netlify/functions"
-
-# Rewrite root URL to the questionnaire so visitors hit the form directly.
-# Status 200 = rewrite (URL stays as /), not 301 redirect.
-[[redirects]]
-  from = "/"
-  to = "/questionnaire.html"
-  status = 200
 
 # Custom security headers for the hosted form.
 [[headers]]
