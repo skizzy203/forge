@@ -74,6 +74,22 @@ h1 span{color:var(--accent);display:block}
 .phase-bar-fill[data-phase="EXIT_READY"] { background: var(--danger); }
 .phase-bar-fill[data-phase="unknown"]    { background: var(--text-faint); }
 
+/* Model frequency chart */
+.model-bars{display:flex;flex-direction:column;gap:8px;margin-bottom:48px}
+.model-row{display:grid;grid-template-columns:200px 1fr 32px;align-items:center;gap:12px}
+.model-name{font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;color:var(--text-muted);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.model-bar-track{background:var(--rule);height:6px;overflow:hidden}
+.model-bar-fill{height:100%;background:var(--accent);opacity:0.7;transition:width 0.6s ease}
+.model-count{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-align:right}
+.no-sessions{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);letter-spacing:0.1em;text-transform:uppercase;padding:20px 0}
+
+/* Revenue tally */
+.revenue-tally{background:var(--bg-elevated);border:1px solid var(--accent);padding:24px 28px;margin-bottom:48px;display:flex;gap:48px;flex-wrap:wrap}
+.revenue-figure{display:flex;flex-direction:column;gap:4px}
+.revenue-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;color:var(--text-muted);text-transform:uppercase}
+.revenue-value{font-family:var(--font-display);font-weight:800;font-size:36px;color:var(--accent);line-height:1}
+.revenue-note{font-size:12px;color:var(--text-faint);margin-top:2px}
+
 /* Submissions table */
 .table-wrap{overflow-x:auto;margin-bottom:48px}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -130,8 +146,14 @@ tr:last-child td{border-bottom:none}
 
   <div class="stats" id="stats-row"></div>
 
+  <div class="section-head">Revenue Potential Identified</div>
+  <div class="revenue-tally" id="revenue-tally" style="display:none"></div>
+
   <div class="section-head">Phase Distribution</div>
   <div class="phase-bars" id="phase-bars"></div>
+
+  <div class="section-head">Top Mental Models Fired</div>
+  <div class="model-bars" id="model-bars"><div class="no-sessions">[ — ] No session data yet. Run /forge:optimize to populate.</div></div>
 
   <div class="section-head">Recent Submissions</div>
   <div class="table-wrap">
@@ -226,7 +248,9 @@ async function loadDashboard() {
   document.getElementById('content').style.display = '';
 
   renderStats(data);
+  renderRevenueTally(data.sessions || []);
   renderPhaseBars(data.submissions);
+  renderModelBars(data.sessions || []);
   renderTable(data.submissions);
 }
 
@@ -294,6 +318,71 @@ function renderTable(subs) {
       <td><span class="phase-tag ${phase}">${phaseLabel}</span></td>
       <td class="td-date">${esc(s.forge_version || '—')}</td>
     </tr>`;
+  }).join('');
+}
+
+function formatRevenue(n) {
+  if (!n || n === 0) return '$0';
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1000) return '$' + Math.round(n / 1000) + 'K';
+  return '$' + n;
+}
+
+function renderRevenueTally(sessions) {
+  const el = document.getElementById('revenue-tally');
+  if (!sessions.length) { el.style.display = 'none'; return; }
+
+  const withRevenue = sessions.filter(s => s.revenue_y3_high > 0);
+  if (!withRevenue.length) { el.style.display = 'none'; return; }
+
+  const totalPotential = withRevenue.reduce((sum, s) => sum + Math.round((s.revenue_y3_low + s.revenue_y3_high) / 2), 0);
+  const totalLift = withRevenue.reduce((sum, s) => {
+    const avg = Math.round((s.revenue_y3_low + s.revenue_y3_high) / 2);
+    return sum + Math.max(0, avg - (s.revenue_current_midpoint || 0));
+  }, 0);
+  const avgLift = Math.round(totalLift / withRevenue.length);
+
+  el.style.display = 'flex';
+  el.innerHTML = `
+    <div class="revenue-figure">
+      <div class="revenue-label">Total Revenue Potential Identified</div>
+      <div class="revenue-value">${formatRevenue(totalPotential)}</div>
+      <div class="revenue-note">Projected Year-3 across ${withRevenue.length} session${withRevenue.length !== 1 ? 's' : ''}</div>
+    </div>
+    <div class="revenue-figure">
+      <div class="revenue-label">Total Revenue Lift Modelled</div>
+      <div class="revenue-value">${formatRevenue(totalLift)}</div>
+      <div class="revenue-note">Y3 projection minus current baseline</div>
+    </div>
+    <div class="revenue-figure">
+      <div class="revenue-label">Avg Lift Per Client</div>
+      <div class="revenue-value">${formatRevenue(avgLift)}</div>
+      <div class="revenue-note">Across ${withRevenue.length} session${withRevenue.length !== 1 ? 's' : ''} with revenue data</div>
+    </div>`;
+}
+
+function renderModelBars(sessions) {
+  const el = document.getElementById('model-bars');
+  if (!sessions.length) return;
+
+  const withModels = sessions.filter(s => s.models_fired && s.models_fired.length > 0);
+  if (!withModels.length) return;
+
+  const counts = {};
+  withModels.forEach(s => s.models_fired.forEach(m => { counts[m] = (counts[m] || 0) + 1; }));
+
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  const max = sorted[0][1];
+
+  el.innerHTML = sorted.map(([model, count]) => {
+    const pct = Math.round(count / max * 100);
+    return `<div class="model-row">
+      <div class="model-name" title="${esc(model)}">${esc(model)}</div>
+      <div class="model-bar-track">
+        <div class="model-bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="model-count">${count}</div>
+    </div>`;
   }).join('');
 }
 

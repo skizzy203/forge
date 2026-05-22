@@ -2,6 +2,52 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.13.0] — 2026-05-22
+
+### Codename: Signal
+
+Session metrics telemetry — mental model frequency tracking and revenue tally dashboard.
+
+### Added — `log-session` Netlify function
+
+New `netlify/functions/log-session.js` endpoint receives a POST from the optimize skill after each report is generated. Authenticates via `x-session-key` header vs `LOG_SESSION_KEY` env var. Reads `sessions/index.json` from the private `forge-workshops` GitHub repo, appends one session record, and writes it back via the GitHub Contents API.
+
+Each session record carries:
+
+| Field | Description |
+|---|---|
+| `session_id` | Timestamp-based unique ID from the skill |
+| `logged_at` | UTC timestamp of the POST |
+| `business_name` | From BCD intake data |
+| `phase` | Phase letter (A–E), uppercased |
+| `models_fired` | Array of model names where `fired: true` in the run |
+| `revenue_current_midpoint` | Midpoint of the current annual revenue bucket |
+| `revenue_y3_low` | Low end of the Year-3 trajectory range (Section 7) |
+| `revenue_y3_high` | High end of the Year-3 trajectory range |
+
+New env vars:
+
+| Key | Notes |
+|---|---|
+| `LOG_SESSION_KEY` | Shared secret; set same value in Netlify env and `LOG_SESSION_KEY` in skill environment |
+| `GITHUB_TOKEN` | Fine-grained PAT with Contents R/W on `forge-workshops` only |
+| `GITHUB_WORKSHOPS_REPO` | Defaults to `skizzy203/forge-workshops` — override only if repo moves |
+
+### Added — Dashboard revenue tally + mental model frequency chart
+
+`skills/intake/templates/dashboard.html` gains two new sections between Phase Distribution and Recent Submissions:
+
+- **Revenue Potential Identified** — three figures: total pipeline (sum of all Y3 high estimates), total lift (Y3 high − current midpoint, summed), and average lift per client. Displayed only when at least one session has been logged.
+- **Top Mental Models Fired** — horizontal bar chart of the 12 most-frequently-fired models across all sessions, with fire count annotation. Sourced from `sessions` array returned by `dashboard-data`.
+
+### Changed — `dashboard-data` returns sessions
+
+`netlify/functions/dashboard-data.js` now fetches `sessions/index.json` from the `forge-workshops` repo (using the same `GITHUB_TOKEN` env var) and includes the full sessions array in its response alongside the existing submissions data. Gracefully returns `[]` if `GITHUB_TOKEN` is not set or the sessions file doesn't exist yet.
+
+### Changed — Phase 5 metrics emission in SKILL.md
+
+`skills/optimize/SKILL.md` gains a **Phase 5 — Metrics Emission** section. After writing the HTML report to disk, the skill POSTs a session payload to `/.netlify/functions/log-session`. Revenue bucket midpoints are mapped from the free-text intake answer; Y3 revenue bounds are extracted from the Section 7 trajectory chart data already generated. Non-blocking: if `LOG_SESSION_KEY` is not set or the POST fails, the skill logs a warning and exits without blocking report delivery.
+
 ## [1.12.1] — 2026-05-22
 
 ### Codename: Surface (polish)

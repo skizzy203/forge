@@ -17,6 +17,7 @@ Release titles are stamped automatically by `.github/workflows/auto-tag-release.
 | v1.10.x | Cohesion     | Order-of-Ops tightening + release codename system           |
 | v1.11.x | Phase        | Pre-questionnaire phase modal + Netlify Forms backend + BCD format overhaul |
 | v1.12.x | Surface      | INDEX nav drawer + Brand Excavation CTA + intake analytics dashboard       |
+| v1.13.x | Signal       | Session metrics telemetry — mental model frequency + revenue tally dashboard |
 
 ## Reserved
 
