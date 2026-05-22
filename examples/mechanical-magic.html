@@ -305,8 +305,8 @@ a.move:hover .headline{color:var(--accent)}
 .diagram-modal__panel{position:relative;background:var(--bg-primary);border:1px solid var(--rule);padding:48px 24px 24px;max-width:95vw;max-height:95vh;overflow:auto;-webkit-overflow-scrolling:touch}
 .diagram-modal__close{position:absolute;top:12px;right:12px;background:transparent;color:var(--text-muted);border:1px solid var(--rule);font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;padding:6px 12px;cursor:pointer;transition:all 0.15s}
 .diagram-modal__close:hover,.diagram-modal__close:focus{color:var(--accent);border-color:var(--accent);outline:none}
-.diagram-modal__svg{display:flex;align-items:center;justify-content:center}
-.diagram-modal__svg svg{max-width:none !important;height:auto !important;width:auto;min-width:280px}
+.diagram-modal__svg{display:block;width:100%}
+.diagram-modal__svg svg{width:100% !important;height:auto !important;max-width:none !important;min-width:280px}
 .diagram-modal__label{position:absolute;top:14px;left:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;color:var(--text-muted);text-transform:uppercase}
 @media (max-width:640px){
   .diagram-modal{padding:8px}
@@ -331,7 +331,7 @@ a.move:hover .headline{color:var(--accent)}
 .nav-link.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-soft)}
 .nav-num{min-width:20px;color:var(--text-faint);font-size:10px}
 .nav-link.active .nav-num{color:var(--accent)}
-@media(max-width:480px){.nav-drawer{width:100%}}
+@media(max-width:480px){.nav-drawer{width:min(280px,85vw)}.nav-drawer__close{min-height:44px;min-width:44px;padding:8px 14px}}
 
 /* Print stylesheet */
 @media print{
@@ -1246,7 +1246,7 @@ quadrantChart
   <div class="headline">Know exactly what you're selling and who you're selling it to.</div>
   <p style="margin-bottom:8px">You're past product-market fit but losing deals to competitors with cleaner positioning. Brand Excavation finds your message.</p>
   <p style="margin-bottom:20px;color:var(--text-muted);font-size:14px">One session. Clear positioning. Done.</p>
-  <a href="https://builderbranding.co" target="_blank" rel="noopener" style="display:inline-block;font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:10px 20px;border:1px solid var(--accent);color:var(--accent);background:transparent;transition:all 0.15s">[ &rarr; ] Book the session</a>
+  <a href="https://clients.builderbranding.co/brandexcavation" target="_blank" rel="noopener" style="display:inline-block;font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:10px 20px;border:1px solid var(--accent);color:var(--accent);background:transparent;transition:all 0.15s">[ &rarr; ] Book the session</a>
 </div>
 
 <div class="callout" style="margin:0 0 32px;border-color:var(--rule)">
@@ -1461,8 +1461,10 @@ setTimeout(() => {
       if (!svg || !modal || !target) return;
       target.innerHTML = '';
       const clone = svg.cloneNode(true);
+      clone.removeAttribute('width');
+      clone.removeAttribute('height');
       clone.style.maxWidth = 'none';
-      clone.style.width = 'auto';
+      clone.style.width = '100%';
       clone.style.height = 'auto';
       target.appendChild(clone);
       modal.classList.add('open');
