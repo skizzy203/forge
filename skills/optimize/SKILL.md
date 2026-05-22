@@ -398,7 +398,32 @@ If `DEATH_ZONE_BAND` from Phase 1B is non-null AND the Year 3 amplified projecti
 
 ### Dynamic Appendix lens list
 
-Emit `{{lenses_applied_list}}` as `<li>` items for *only* the models that actually fired during Phase 2 chain execution. Do not list models that scored below threshold or were skipped. Each `<li>` carries the model's name (in `.lens-name`) and the one-line key question from `catalog.md` (in `.lens-def`). The Appendix hover-expand CSS handles the rest.
+Emit `{{lenses_applied_list}}` as `<li>` items for *only* the models that actually fired during Phase 2 chain execution. Do not list models that scored below threshold or were skipped.
+
+**Each `<li>` carries two parts in the `.lens-def` span** (separated by a period or em-dash, in a single short paragraph):
+
+1. **Model description** — one sentence stating what the model is (drawn from `catalog.md`'s key question or a concise definition of its mechanism). Universal, not business-specific.
+2. **What this model surfaced for this business** — one sentence stating what the model actually produced when applied to this operator's BCD: the root cause it found, the constraint it located, the candidate it flagged, the verdict it returned, etc. Business-specific, drawn from this run's chain output.
+
+Both parts are required. Generic-only entries (model definition with no surfacing) and surfacing-only entries (finding without naming what the model is) both fail the spec. Combined length is two sentences maximum — terse, dense, no filler.
+
+**Example (right):**
+```
+PARETO 80/20 — A demand-side lens identifying which inputs produce most of the output.
+Surfaced that whole-property days produce most of the revenue and most of the joy.
+```
+
+**Example (wrong — generic only):**
+```
+PARETO 80/20 — Which 20% of activities, customers, or inputs produce 80% of the value?
+```
+
+**Example (wrong — surfacing only):**
+```
+PARETO 80/20 — Whole-property days produce most of the revenue and most of the joy.
+```
+
+The Appendix hover-expand CSS handles visual display. Markup: `<li><span class="lens-name">MODEL NAME</span><span class="lens-def">— [description]. [surfacing for this business].</span></li>`.
 
 ### Source-Chain to Section Mapping (Sections 7–8)
 

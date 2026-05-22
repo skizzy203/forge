@@ -2,6 +2,49 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.11.1] — 2026-05-21
+
+### Codename: Phase (inherited from v1.11.0)
+
+Patch release. Two improvements: tightens the Appendix lens-list spec so every entry shows both the model's universal description AND what it surfaced for the specific business, and adds phase-conditional rendering infrastructure to the intake questionnaire (the foundation for v1.11.2's phase-specific question content).
+
+### Fixed — Appendix lens list now requires both description + business-specific surfacing
+
+Previous spec (SKILL.md §Dynamic Appendix lens list) said each `<li>` carried "the model's name and the one-line key question from `catalog.md`." That produced generic-only entries (model definition with no finding). Some entries in the Mechanical Magic sample also went the other way — surfacing-only with no model description — making the appendix inconsistent across reports.
+
+**New spec.** Every lens-def entry MUST carry two parts in a single short paragraph (two sentences max):
+1. **Model description** — one sentence on what the model is (drawn from `catalog.md`'s key question or a concise mechanism statement). Universal, not business-specific.
+2. **What this model surfaced for this business** — one sentence on what the model produced when applied to this operator's BCD: the root cause it found, the constraint it located, the candidate it flagged, the verdict it returned, etc.
+
+The SKILL.md spec now includes worked examples of right (both parts) vs wrong (description-only, surfacing-only) entries. All 17 lens entries in `examples/sample-report.html` have been rewritten to the new spec — every entry now reads like a short footnote pairing what-the-model-is with what-the-model-did. The appendix becomes genuinely informative for readers who don't recognize a model name.
+
+### Added — Phase-conditional question rendering infrastructure
+
+The intake questionnaire now supports `data-phase-show` attributes on `<div class="field">` wrappers. Questions tagged with a phase list only render when the body's `data-phase` attribute matches one of the listed phases. Browsers' built-in `required`-field validation is honored — when a phase change makes a `required` field invisible, the JS strips the `required` attribute and restores it when the field becomes visible again. The original required-state is preserved across phase changes via `data-was-required`.
+
+**Tagged in v1.11.1 (conservative, demonstration of the pattern):**
+- Q10a Annual Revenue → hidden for STARTUP (pre-revenue)
+- Q10b Gross Margin → hidden for STARTUP (pre-revenue)
+- Q10c Active Customer Count → hidden for STARTUP
+- Q10d Pricing Snapshot → visible for all phases (STARTUP answers projected price)
+- Q12 Revenue Stream Split → hidden for STARTUP (no streams yet)
+- Q13 Top Acquisition Channels → visible for all phases (STARTUP answers expected channels)
+- Q14 Where does your week go → hidden for STARTUP (founder-time only relevant once operating)
+
+Five questions become STARTUP-invisible. Other phases see the full v1.11.0 question set unchanged.
+
+### Files changed
+
+- `skills/optimize/SKILL.md` — §Dynamic Appendix lens list rewritten with new two-part spec + worked examples
+- `examples/sample-report.html` — all 17 appendix lens-def entries rewritten to new spec; demonstrates the pattern for chain authors and operators
+- `skills/intake/templates/questionnaire.html` — `data-phase-show` CSS rules + `syncRequiredAttributes()` JS that toggles `required` on phase change; 7 existing questions tagged conservatively (5 STARTUP-hidden, 2 universal)
+- `.claude-plugin/plugin.json` — `1.11.0` → `1.11.1`
+
+### What's deferred to v1.11.2
+
+- 5–8 new phase-specific questions per phase (~30 new questions total). v1.11.1 ships infrastructure; v1.11.2 ships content.
+- `phase_multiplier` in catalog scoring formula. Will become the 5th factor: `base_relevance × subtractive_weight × bcd_multiplier × market_multiplier × phase_multiplier`. Per-model `phase_boosts` field authored across the 40 catalog entries.
+
 ## [1.11.0] — 2026-05-21
 
 ### Codename: Phase
