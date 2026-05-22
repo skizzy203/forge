@@ -1,6 +1,6 @@
 ---
 name: optimize
-description: The single entry point for Forge. Routes by intent. (A) When a Business Context Document (BCD) is detected — pasted in chat, attached as a file, or sitting in ~/forge-intake/ — runs the full optimization pipeline (web supplement → market research → industry automation surface → adaptive 40-model mental-model chain → 8-section terminal-noir HTML intelligence report). (B) When no BCD is present and the operator wants to start, points them to the hosted intake form at https://skizzy203.github.io/forge/. (C) When a facilitator needs a customized version of the form (per-workshop email, branding, offline use), invokes the internal intake skill to emit a customized HTML file.
+description: The single entry point for Forge. Routes by intent. (A) When a Business Context Document (BCD) is detected — pasted in chat, attached as a file, or sitting in ~/forge-intake/ — runs the full optimization pipeline (web supplement → market research → industry automation surface → adaptive 40-model mental-model chain → 8-section terminal-noir HTML intelligence report). (B) When no BCD is present and the operator wants to start, points them to the hosted intake form at https://intake.builderbranding.co. (C) When a facilitator needs a customized version of the form (per-workshop email, branding, offline use), invokes the internal intake skill to emit a customized HTML file.
 when_to_use: >
   Use whenever the operator interacts with Forge. The skill routes by intent.
   Mode A (BCD pipeline): triggered by a BCD attached/pasted, by the auto-detect hook surfacing
@@ -311,7 +311,7 @@ Phase variants for `{{brand_excavation_hook}}`:
 - **EXIT_READY:** `Acquirers pay premiums for businesses with clear positioning. Brand Excavation sharpens your story before diligence.`
 - **Default (no phase):** `You have a business. Brand Excavation gives it a message.`
 
-**Secondary — Business Model Strip Down workshop.** Fixed block — hardcoded into the template. Workshop time (Thursdays 7pm), form URL (`https://tally.so/r/aQj7dy`), and copy are stable across runs. No substitution required. Document any future workshop-time or URL change by editing the template directly.
+**Secondary — Brand Excavation CTA.** Fixed block — `{{brand_excavation_hook}}` token substituted with phase-aware copy (see Phase 4 token table). URL `https://clients.builderbranding.co/brandexcavation` is stable across runs. The Builder Branding Co. logo renders from an inlined base64 data URI (dark/light mode paired). No URL substitution required.
 
 ### Automation Surface (Section 7.0) render
 

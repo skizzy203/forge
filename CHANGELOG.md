@@ -2,6 +2,24 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.12.1] — 2026-05-22
+
+### Codename: Surface (polish)
+
+Polish pass on the v1.12.0 Surface release.
+
+### Changed
+
+- **Footer branding** — "DISTILL" replaced with "BUILDER BRANDING CO." in all three rendered surfaces: report template, sample report, and dashboard.
+- **Sample report version tag** — `mechanical-magic.html` footer now reads `FORGE v1.12.0` (was `v1.11`).
+- **License badge** — Switched from API-backed `shields.io/github/license` to a static badge to eliminate GitHub token pool errors.
+- **SKILL.md** — Mode B intake URL updated from `https://skizzy203.github.io/forge/` to `https://intake.builderbranding.co`. Secondary footer CTA reference updated from stale workshop block to current Brand Excavation CTA spec.
+- **Diagram expand button** — Replaced text `[ ⤢ ] EXPAND` with a compact 32 × 32 px magnifying glass SVG icon; no more label overlap on diagrams.
+- **Diagram close button** — `[ × ] CLOSE` replaced with a bare `×` at 36 px touch target.
+- **Mobile diagram modal** — Expands edge-to-edge (`100 vw × 100 vh`) on phones for maximum readability.
+- **Mobile INDEX drawer** — Width capped at `min(280px, 85vw)` so the overlay is always partially visible and tappable to close; close button minimum touch target raised to 44 px.
+- **Brand Excavation button URL** — Corrected from `builderbranding.co` to `clients.builderbranding.co/brandexcavation` in both report template and sample report.
+
 ## [1.12.0] — 2026-05-22
 
 ### Codename: Surface
