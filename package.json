@@ -1,0 +1,9 @@
+{
+  "name": "forge",
+  "version": "1.11.4",
+  "private": true,
+  "description": "Root manifest for Netlify Functions dependency installation. The Forge plugin itself is not a Node project — this file exists so Netlify's build system installs the resend dependency for netlify/functions/submission-created.js. Per Netlify's recommendation (https://docs.netlify.com/functions/dependencies/), function dependencies live in the project's top-level package.json, not in a per-function package.json.",
+  "dependencies": {
+    "resend": "^4.0.0"
+  }
+}
