@@ -391,6 +391,31 @@ body:not([data-phase]) [data-phase-show]{display:none}
     <input type="text" id="q11_capital" name="q11_capital" placeholder="e.g. $5K, $50K, none">
   </div>
 
+  <!-- v1.11.2: phase-specific questions for Page 3 (The Numbers) -->
+  <div class="field" data-phase-show="STARTUP">
+    <label class="field-label" for="q_startup_first_customers"><span class="qn">QS-A</span>FIRST TEN CUSTOMERS &mdash; WHO, BY NAME?</label>
+    <span class="field-probe">Not a market segment. Specific people, companies, or names you can already picture. If you cannot name them, that itself is a finding.</span>
+    <textarea id="q_startup_first_customers" name="q_startup_first_customers" rows="3" placeholder="e.g. Jane R. (LinkedIn connection, runs a Cherokee County practice), Maria L. (yoga studio owner I worked with), the local Rotary group..."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="GROWTH">
+    <label class="field-label" for="q_growth_repeatability"><span class="qn">QG-A</span>OF YOUR LAST 5 CUSTOMERS, HOW MANY CAME FROM A REPEATABLE CHANNEL?</label>
+    <span class="field-probe">Repeatable = you could buy 100 more this way if you wanted (paid ads, partner referrals, SEO). One-off = lucky meeting, viral post, family connection. Honest count.</span>
+    <textarea id="q_growth_repeatability" name="q_growth_repeatability" rows="2" placeholder="e.g. 2 from Google Ads (repeatable), 3 from word-of-mouth referrals I cannot scale (one-off)"></textarea>
+  </div>
+
+  <div class="field" data-phase-show="GROWTH">
+    <label class="field-label" for="q_growth_pricing_test"><span class="qn">QG-B</span>COULD YOU RAISE PRICES 20% WITHOUT LOSING MORE THAN 20% OF CUSTOMERS?</label>
+    <span class="field-probe">Be honest about why or why not. If yes, why have you not? If no, what is the binding constraint &mdash; price sensitivity, weak positioning, undifferentiated offer, race to the bottom in the category?</span>
+    <textarea id="q_growth_pricing_test" name="q_growth_pricing_test" rows="3" placeholder="e.g. Probably yes for the top 30%, no for the rest. Bottom segment is anchored on price; haven't built a story for why they should pay more."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="EXIT_READY">
+    <label class="field-label" for="q_exit_financials"><span class="qn">QE-A</span>FINANCIAL CLEANUP STATE &mdash; BOOKS CLEAN? ADD-BACKS READY?</label>
+    <span class="field-probe">How close to sale-ready are the books? Owner perks separated from operating expense? Add-backs documented? Three years of clean P&amp;L? Or significant work to do?</span>
+    <textarea id="q_exit_financials" name="q_exit_financials" rows="3" placeholder="e.g. QuickBooks reasonably clean but no separation of owner perks. No formal add-back doc. P&L is reliable for the last 18 months only."></textarea>
+  </div>
+
   <div class="nav">
     <div class="progress">
       <span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -453,6 +478,49 @@ body:not([data-phase]) [data-phase-show]{display:none}
         <span><strong>Team alignment &amp; incentives</strong> &mdash; partners, contractors, or stakeholders pulling different directions</span>
       </label>
     </div>
+  </div>
+
+  <!-- v1.11.2: phase-specific questions for Page 4 (Problem & History) -->
+  <div class="field" data-phase-show="GROWTH">
+    <label class="field-label" for="q_growth_founder_bound"><span class="qn">QG-C</span>WHAT BREAKS IF YOU TAKE A 2-WEEK VACATION?</label>
+    <span class="field-probe">Not "sales will slow." What specifically cannot happen without you in the room or on the keyboard? Naming this is the constraint diagnosis.</span>
+    <textarea id="q_growth_founder_bound" name="q_growth_founder_bound" rows="3" placeholder="e.g. Quotes don't get sent (only I know the pricing logic). Initial calls don't happen (clients want me, not my assistant). Project oversight stops (we have no documented quality bar)."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="GROWTH">
+    <label class="field-label" for="q_growth_success_pattern"><span class="qn">QG-D</span>WHICH CUSTOMERS ARE EASIEST TO DELIVER VALUE TO?</label>
+    <span class="field-probe">Name the type &mdash; industry, size, situation, attitude. Then the opposite: which customers drain disproportionate effort? The gap between these is positioning data.</span>
+    <textarea id="q_growth_success_pattern" name="q_growth_success_pattern" rows="3" placeholder="e.g. Easiest: established practitioners who already trust the modality, just want the work done. Hardest: skeptics who need to be convinced before they'll commit to the protocol."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="SCALING">
+    <label class="field-label" for="q_scaling_sops"><span class="qn">QS-A</span>WHAT'S DOCUMENTED IN WRITING vs TRIBAL KNOWLEDGE?</label>
+    <span class="field-probe">If you got hit by a bus tomorrow, what would a replacement actually have to work with? Be brutal &mdash; what only lives in your head?</span>
+    <textarea id="q_scaling_sops" name="q_scaling_sops" rows="3" placeholder="e.g. Written: client onboarding email, quote template, invoice flow. Tribal: how to read a property to estimate effort, when to push back on scope, how to handle a difficult call. The middle layer is mostly tribal."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="SCALING">
+    <label class="field-label" for="q_scaling_founder_time"><span class="qn">QS-B</span>HOW MUCH OF YOUR WEEK IS DOING vs MANAGING vs DECIDING?</label>
+    <span class="field-probe">Rough percentages. Doing = hands on a tool (delivery, sales calls, fixes). Managing = checking in on others. Deciding = strategic decisions, planning, hiring. Honest snapshot of last week.</span>
+    <textarea id="q_scaling_founder_time" name="q_scaling_founder_time" rows="2" placeholder="e.g. 70% doing, 20% managing, 10% deciding"></textarea>
+  </div>
+
+  <div class="field" data-phase-show="SCALING">
+    <label class="field-label" for="q_scaling_second_crew"><span class="qn">QS-C</span>COULD A COMPETENT STRANGER RUN A DELIVERY WITHOUT YOU?</label>
+    <span class="field-probe">If yes, what's the documentation they'd use? If no, what specifically breaks &mdash; knowledge, judgment, relationship, quality bar, customer trust?</span>
+    <textarea id="q_scaling_second_crew" name="q_scaling_second_crew" rows="3" placeholder="e.g. Half the delivery, yes. The half that requires reading the customer's actual goal vs stated goal, no &mdash; that's currently me-only."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="SCALING">
+    <label class="field-label" for="q_scaling_automation_obvious"><span class="qn">QS-D</span>WHAT MANUAL TASK HAPPENS 20+ TIMES PER WEEK?</label>
+    <span class="field-probe">Anything you do over and over by hand. Often this is the cheapest automation win &mdash; name the candidate and how long each instance takes.</span>
+    <textarea id="q_scaling_automation_obvious" name="q_scaling_automation_obvious" rows="2" placeholder="e.g. Manually creating invoices in Stripe (~5 min × 30 per week). Following up on quote-not-yet-decided emails (~3 min × 20 per week)."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="EXIT_READY">
+    <label class="field-label" for="q_exit_owner_dependency"><span class="qn">QE-B</span>WHERE ARE YOU THE LOAD-BEARING WALL?</label>
+    <span class="field-probe">Customer relationships, product knowledge, key decisions, vendor relationships, brand voice. Name every place your absence would break operations &mdash; this is the buyer's risk inventory.</span>
+    <textarea id="q_exit_owner_dependency" name="q_exit_owner_dependency" rows="3" placeholder="e.g. Top 3 enterprise customers know me personally. Vendor pricing depends on relationships I built. Brand voice on social is recognizably mine. New-hire training has no documented curriculum."></textarea>
   </div>
 
   <div class="nav">
@@ -529,6 +597,25 @@ body:not([data-phase]) [data-phase-show]{display:none}
     </div>
   </div>
 
+  <!-- v1.11.2: phase-specific questions for Page 5 (Position & Constraints) -->
+  <div class="field" data-phase-show="STARTUP">
+    <label class="field-label" for="q_startup_runway"><span class="qn">QS-B</span>MONTHS OF RUNWAY BEFORE THIS NEEDS TO PAY</label>
+    <span class="field-probe">Personal savings, side income, partner support &mdash; whatever covers life expenses while this is unprofitable. Be honest. This calibrates aggressiveness.</span>
+    <input type="text" id="q_startup_runway" name="q_startup_runway" placeholder="e.g. 9 months, 18 months, indefinite">
+  </div>
+
+  <div class="field" data-phase-show="SCALING">
+    <label class="field-label" for="q_scaling_hires"><span class="qn">QS-E</span>NEXT 3 HIRES IN ORDER OF PRIORITY</label>
+    <span class="field-probe">Role, what they would own, what level. Not "an assistant" &mdash; be specific. Why this order? Helps the First-Hire Roadmap recommend specific role design.</span>
+    <textarea id="q_scaling_hires" name="q_scaling_hires" rows="3" placeholder="e.g. 1. Operations manager (owns scheduling, vendor mgmt). 2. Junior delivery (handles smaller jobs solo). 3. Sales closer (takes initial calls, frees me from quoting). Ops first because admin is what's drowning me."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="MATURITY">
+    <label class="field-label" for="q_maturity_leadership"><span class="qn">QM-A</span>WHO COULD RUN THIS IF YOU STEPPED BACK TOMORROW?</label>
+    <span class="field-probe">Name them or note the absence. If nobody could, what would they need that they don't have? This is the bench-strength audit.</span>
+    <textarea id="q_maturity_leadership" name="q_maturity_leadership" rows="3" placeholder="e.g. Jane (head of ops) could run delivery and team management. Nobody currently owns strategy or new-business decisions &mdash; that's me-only. We'd need to either build that or accept a leadership gap."></textarea>
+  </div>
+
   <div class="nav">
     <div class="progress">
       <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span>
@@ -591,6 +678,19 @@ body:not([data-phase]) [data-phase-show]{display:none}
     <textarea id="q30" name="q30" rows="3"></textarea>
   </div>
 
+  <!-- v1.11.2: phase-specific questions for Page 6 (Operator Edge) -->
+  <div class="field" data-phase-show="MATURITY">
+    <label class="field-label" for="q_maturity_moat"><span class="qn">QM-B</span>WHAT MAKES YOU UNKILLABLE? WHAT'S ERODING?</label>
+    <span class="field-probe">Two parts. Name what's structurally protecting you (brand, network effects, switching cost, scale, IP). Then name what was once a moat that's getting eaten by market shifts.</span>
+    <textarea id="q_maturity_moat" name="q_maturity_moat" rows="3" placeholder="e.g. Unkillable: 15-year client relationships, proprietary methodology. Eroding: distribution advantage (used to be only one in market, now three competitors), price floor (AI tools are commoditizing the bottom tier of our work)."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="EXIT_READY">
+    <label class="field-label" for="q_exit_ip_brand_equity"><span class="qn">QE-C</span>WHAT UNIQUE IP OR BRAND ASSET SURVIVES OWNERSHIP CHANGE?</label>
+    <span class="field-probe">Patents, trademarks, customer database, proprietary process, brand recognition, exclusive contracts. The thing a buyer would actually pay for that isn't you. If nothing transfers, that's a buyer-thesis problem.</span>
+    <textarea id="q_exit_ip_brand_equity" name="q_exit_ip_brand_equity" rows="3" placeholder="e.g. Customer database (1200 active relationships), proprietary methodology (documented + trademarked), brand recognition in the niche. Exclusive vendor contract is operator-dependent and would not transfer."></textarea>
+  </div>
+
   <div class="nav">
     <div class="progress">
       <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span>
@@ -617,6 +717,55 @@ body:not([data-phase]) [data-phase-show]{display:none}
     <label class="field-label" for="q9"><span class="qn">Q9</span>WHERE WOULD HIGHER MARGIN OR MARKET SHARE COME FROM?</label>
     <span class="field-probe">One sentence: "If we [did X], margin/share would improve because [reason]."</span>
     <textarea id="q9" name="q9" rows="4" placeholder="If we _________, margin/share would improve because _________."></textarea>
+  </div>
+
+  <!-- v1.11.2: phase-specific questions for Page 7 (Hypothesis) -->
+  <div class="field" data-phase-show="STARTUP">
+    <label class="field-label" for="q_startup_validation"><span class="qn">QS-C</span>WHAT WOULD MAKE THIS WORTH BUILDING?</label>
+    <span class="field-probe">Name one piece of evidence that, if you had it, would convince you to commit full resources. A specific signal, not a feeling. This is your validation threshold.</span>
+    <textarea id="q_startup_validation" name="q_startup_validation" rows="3" placeholder="e.g. Ten paying pilot customers at $500/mo who stay for 3 months. Or three corporate buyers signing a letter of intent. Or a single feature shipped that converts 30% of free trials."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="STARTUP">
+    <label class="field-label" for="q_startup_mvp"><span class="qn">QS-D</span>SMALLEST VERSION YOU COULD SHIP IN 60 DAYS</label>
+    <span class="field-probe">The leanest, fastest, cheapest version that would still test the core idea. Not the polished version &mdash; the test version. What's the minimum that proves or disproves the hypothesis?</span>
+    <textarea id="q_startup_mvp" name="q_startup_mvp" rows="3" placeholder="e.g. A 5-page landing site + Calendly + manual delivery for the first 10 customers. No app, no automation, no backend. Just enough to prove people will pay and the work delivers value."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="GROWTH">
+    <label class="field-label" for="q_growth_systematize_first"><span class="qn">QG-E</span>IF YOU COULD ONLY SYSTEMATIZE ONE THING, WHAT?</label>
+    <span class="field-probe">The one task that consumes the most of your week, drives the most quality variance, or breaks most often. Pick one &mdash; this becomes the highest-leverage operational fix.</span>
+    <textarea id="q_growth_systematize_first" name="q_growth_systematize_first" rows="2" placeholder="e.g. Quote generation. Currently bespoke per inquiry, takes 2 hours each, and inconsistency is leaking sales. A templated quote builder with conditional logic would save 8 hours/week and improve close rate."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="MATURITY">
+    <label class="field-label" for="q_maturity_alternatives"><span class="qn">QM-C</span>THREE DIFFERENT FUTURES FOR THIS BUSINESS IN 3 YEARS</label>
+    <span class="field-probe">Three genuinely different paths &mdash; not three flavors of the same. What does each look like? Which one are you actually betting on, and why?</span>
+    <textarea id="q_maturity_alternatives" name="q_maturity_alternatives" rows="4" placeholder="e.g. (1) Same business, 3x revenue. (2) Productize: turn services into SaaS. (3) Roll-up: acquire 2-3 smaller competitors, take cash off the table. Currently betting on (1) because it preserves optionality."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="MATURITY">
+    <label class="field-label" for="q_maturity_profit_growth"><span class="qn">QM-D</span>OPTIMIZE FOR CASH TODAY OR COMPOUND FOR 5-YEAR VALUE?</label>
+    <span class="field-probe">Profit-extracted vs profit-reinvested. You can't fully do both. Which way are you leaning, and what would have to be true for you to switch?</span>
+    <textarea id="q_maturity_profit_growth" name="q_maturity_profit_growth" rows="3" placeholder="e.g. Leaning extract right now &mdash; family priorities mean cash flow matters more than long-game compounding. Would switch to compound if a clear 5x opportunity surfaced or partner came in with growth capital."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="MATURITY">
+    <label class="field-label" for="q_maturity_ceiling"><span class="qn">QM-E</span>WHAT'S THE NEXT CEILING YOU'D HIT IF YOU SUCCEEDED?</label>
+    <span class="field-probe">Revenue ceiling, capacity ceiling, market ceiling, energy ceiling. The structural one &mdash; not the next quarter target. Naming the ceiling shapes how to design around it.</span>
+    <textarea id="q_maturity_ceiling" name="q_maturity_ceiling" rows="3" placeholder="e.g. Total addressable market for our niche caps around $50M ARR. We're at $8M. Real ceiling shows up around $20M when we'd have to either expand category or accept solo-segment dominance at half the growth rate."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="EXIT_READY">
+    <label class="field-label" for="q_exit_buyer_thesis"><span class="qn">QE-D</span>WHO'S THE MOST LIKELY BUYER?</label>
+    <span class="field-probe">Strategic acquirer (rolled-up by a competitor)? PE (financial engineering)? Internal succession (key employee or family)? Cash-out without sale (extract via dividends)? Be specific about the buyer thesis.</span>
+    <textarea id="q_exit_buyer_thesis" name="q_exit_buyer_thesis" rows="3" placeholder="e.g. Most likely a strategic in the adjacent vertical &mdash; we'd be a tuck-in. PE is conceivable but EBITDA is below their floor. Internal succession is unlikely; no second-generation candidate."></textarea>
+  </div>
+
+  <div class="field" data-phase-show="EXIT_READY">
+    <label class="field-label" for="q_exit_succession"><span class="qn">QE-E</span>SALE vs SCALE vs HANDOFF vs HOLD-AND-EXTRACT &mdash; WHICH?</label>
+    <span class="field-probe">Four endings. Sale (full exit). Scale (grow then exit later). Handoff (internal succession). Hold-and-extract (keep ownership, harvest cash). Which are you actually building toward?</span>
+    <textarea id="q_exit_succession" name="q_exit_succession" rows="3" placeholder="e.g. Hybrid: scale for 2-3 years to lift valuation 2x, then sale. Hold-and-extract is the fallback if buyer interest doesn't materialize at the price target."></textarea>
   </div>
 
   <div class="nav">
@@ -672,7 +821,7 @@ body:not([data-phase]) [data-phase-show]{display:none}
 // ─────────────────────────────────────────────────────────────
 const FACILITATOR_EMAIL = 'facilitator@distill.local';
 const FACILITATOR_LABEL = 'Forge Facilitator';
-const FORGE_VERSION = 'v1.11.1';
+const FORGE_VERSION = 'v1.11.2';
 
 const STORAGE_KEY = 'forge-intake-v1';
 const THEME_KEY = 'forge-theme';
@@ -1014,6 +1163,53 @@ function buildBCD() {
   md += '- Cross-domain import opportunity: ' + v('q28') + '\n';
   md += '- Unique credibility target: ' + v('q29') + '\n';
   md += '- Contrarian market belief: ' + v('q30') + '\n';
+
+  // v1.11.2: phase-specific context section. Renders only the questions for the operator's
+  // selected phase. Each phase has its own subsection in the BCD. Empty values render as
+  // "_(not provided)_" so chain runners can detect skipped fields.
+  const phaseFieldsByPhase = {
+    STARTUP: [
+      { id: 'q_startup_first_customers', label: 'First ten customers (named)' },
+      { id: 'q_startup_runway',          label: 'Months of runway' },
+      { id: 'q_startup_validation',      label: 'Validation threshold (what makes this worth building)' },
+      { id: 'q_startup_mvp',             label: 'Smallest 60-day shippable version' }
+    ],
+    GROWTH: [
+      { id: 'q_growth_repeatability',     label: 'Last-5-customers repeatability split' },
+      { id: 'q_growth_pricing_test',      label: 'Pricing power test (20%/20%)' },
+      { id: 'q_growth_founder_bound',     label: 'Delivery surface that breaks without operator' },
+      { id: 'q_growth_success_pattern',   label: 'Easiest vs hardest customer types' },
+      { id: 'q_growth_systematize_first', label: 'First task to systematize' }
+    ],
+    SCALING: [
+      { id: 'q_scaling_sops',                label: 'Documented vs tribal knowledge state' },
+      { id: 'q_scaling_founder_time',        label: 'Founder time split (doing/managing/deciding)' },
+      { id: 'q_scaling_second_crew',         label: 'Second-crew capacity' },
+      { id: 'q_scaling_automation_obvious',  label: 'High-frequency manual task candidates' },
+      { id: 'q_scaling_hires',               label: 'Next 3 hires in priority order' }
+    ],
+    MATURITY: [
+      { id: 'q_maturity_leadership',    label: 'Bench strength if operator stepped back tomorrow' },
+      { id: 'q_maturity_moat',          label: 'Moat status (unkillable vs eroding)' },
+      { id: 'q_maturity_alternatives',  label: 'Three different 3-year futures' },
+      { id: 'q_maturity_profit_growth', label: 'Cash-today vs compound-5-year orientation' },
+      { id: 'q_maturity_ceiling',       label: 'Next structural ceiling after success' }
+    ],
+    EXIT_READY: [
+      { id: 'q_exit_financials',       label: 'Financial cleanup state' },
+      { id: 'q_exit_owner_dependency', label: 'Owner-dependency surfaces (buyer risk inventory)' },
+      { id: 'q_exit_ip_brand_equity',  label: 'IP / brand asset that survives ownership change' },
+      { id: 'q_exit_buyer_thesis',     label: 'Most-likely buyer thesis' },
+      { id: 'q_exit_succession',       label: 'Sale / scale / handoff / hold-and-extract orientation' }
+    ]
+  };
+  if (phase && phaseFieldsByPhase[phase]) {
+    md += '\n## Phase-Specific Context (' + phaseLabel + ')\n';
+    phaseFieldsByPhase[phase].forEach(({ id, label }) => {
+      md += '- ' + label + ': ' + v(id) + '\n';
+    });
+  }
+
   return { md, slug, today };
 }
 
