@@ -43,7 +43,7 @@ Before doing anything else, classify the operator's situation from the conversat
 
 **Action**: respond with the hosted intake form pointer. Adapt the wording to the specific operator; do not paste the example verbatim, but cover the same content:
 
-> Forge needs a Business Context Document (BCD) to run. Fill this out first: **https://skizzy203.github.io/forge/**
+> Forge needs a Business Context Document (BCD) to run. Fill this out first: **https://intake.builderbranding.co**
 >
 > Takes about ten minutes. When you submit, the form gives you three paths:
 > 1. **Email** the BCD to your workshop facilitator (mailto, with the file auto-downloaded)
@@ -293,9 +293,25 @@ Read `.claude-plugin/plugin.json` once at render time and parse the `version` fi
 
 If `plugin.json` is unreadable, fall back to `{{plugin_version_full}} = v?.?.?` and `{{plugin_version_short}} = v?.?` rather than failing the render. Log to Appendix as a run note.
 
-### Tally CTA (fixed footer block)
+### Footer CTA blocks (added v1.12.0)
 
-Between the Appendix and the brand `footer-mark` line, the template carries a fixed `.callout` pointing recipients at the weekly live Business Model Strip Down workshop at `https://tally.so/r/aQj7dy`. This is **not** a token — the block is hardcoded into the template because the workshop time (Thursdays 7pm), the form URL, and the copy are stable across runs. No substitution required; the block ships with every report. Document any future workshop-time or URL change by editing the template directly.
+Two `.callout` blocks appear between the Appendix and the brand `footer-mark` line.
+
+**Primary — Brand Excavation (`$1,500`).** Uses one token:
+
+| Token | Source | Notes |
+|---|---|---|
+| `{{brand_excavation_hook}}` | Phase 4 — read from BCD `Phase:` metadata line | 1–2 sentences. Phase-specific hook tying the operator's current situation to the Brand Excavation offer. Use the phase variants below. If no phase is present in the BCD, use the default. |
+
+Phase variants for `{{brand_excavation_hook}}`:
+- **STARTUP:** `You're building the offer. Brand Excavation maps your positioning before you spend a dollar on marketing.`
+- **GROWTH:** `You're past product-market fit but losing deals to competitors with cleaner positioning. Brand Excavation finds your message.`
+- **SCALING:** `Systemizing a business without a brand OS creates inconsistency at every hire. Brand Excavation builds the foundation that scales.`
+- **MATURITY:** `Your market knows you but doesn't know why they should pay more. Brand Excavation reframes the value.`
+- **EXIT_READY:** `Acquirers pay premiums for businesses with clear positioning. Brand Excavation sharpens your story before diligence.`
+- **Default (no phase):** `You have a business. Brand Excavation gives it a message.`
+
+**Secondary — Business Model Strip Down workshop.** Fixed block — hardcoded into the template. Workshop time (Thursdays 7pm), form URL (`https://tally.so/r/aQj7dy`), and copy are stable across runs. No substitution required. Document any future workshop-time or URL change by editing the template directly.
 
 ### Automation Surface (Section 7.0) render
 
