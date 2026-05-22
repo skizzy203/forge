@@ -79,6 +79,7 @@ html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var
 .callout .label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;font-weight:600}
 .callout .headline{font-family:var(--font-display);font-weight:700;font-size:22px;line-height:1.2;color:var(--text-primary);margin-bottom:8px}
 .callout p{font-size:15px;line-height:1.55;color:var(--text-primary)}
+.be-logo{display:block;max-width:160px;height:auto;margin-bottom:16px}.be-logo-light{display:none}.be-logo-dark{display:block}[data-theme="light"] .be-logo-light{display:block}[data-theme="light"] .be-logo-dark{display:none}
 .grid{display:grid;gap:16px;margin:24px 0}
 .grid.cols-2{grid-template-columns:1fr 1fr}
 .grid.cols-3{grid-template-columns:repeat(3,1fr)}
@@ -1245,6 +1246,8 @@ quadrantChart
 </section>
 
 <div class="callout" style="margin:64px 0 24px;border-color:var(--accent)">
+  <img src="../assets/bldr-logo-dark.svg" alt="Builder Branding Co." class="be-logo be-logo-dark">
+  <img src="../assets/bldr-logo-light.svg" alt="Builder Branding Co." class="be-logo be-logo-light">
   <div class="label">[ $ ] $1,500 &mdash; BRAND EXCAVATION &mdash; BUILDER BRANDING CO.</div>
   <div class="headline">Know exactly what you're selling and who you're selling it to.</div>
   <p style="margin-bottom:8px">You're past product-market fit but losing deals to competitors with cleaner positioning. Brand Excavation finds your message.</p>
