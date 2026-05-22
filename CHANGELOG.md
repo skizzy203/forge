@@ -2,6 +2,60 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.11.3] — 2026-05-22
+
+### Codename: Phase (inherited from v1.11.0)
+
+Backend release under Phase codename. Wires the hosted intake form into Netlify Forms + a serverless Resend confirmation email. Closes the Phase arc's submission infrastructure. The questionnaire is now hostable at `forge-intake.netlify.app` (target: `intake.builderbranding.co` once DNS lands).
+
+### Added — `netlify.toml` at repo root
+
+Single-file Netlify configuration. Publishes `skills/intake/templates/` as the site (just `questionnaire.html` lives there), functions from `netlify/functions/`, and a 200-rewrite from `/` to `/questionnaire.html` so visitors hit the form at the bare domain instead of a `.html` path. Security headers added (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) to harden the hosted form.
+
+### Added — hidden Netlify Forms form-definition in `questionnaire.html`
+
+Netlify Forms registers a form by scanning HTML at deploy time for `<form name="..." netlify>`. Added a hidden, aria-hidden form with `name="forge-intake"` + `netlify-honeypot="bot-field"` listing every field name the JS submission will POST: `applicant_name`, `email`, `business_name`, `business_url`, `phase`, `phase_label`, `bcd_markdown`, `forge_version`, plus the `bot-field` honeypot. This is the registration; the actual submission uses fetch (next section).
+
+### Added — `submitToNetlifyForms()` fetch-based submission
+
+`submitForm()` now also POSTs to Netlify Forms via `fetch('/', { method: 'POST', body: URLSearchParams })`. Submission is **non-blocking**: the existing `.md` download, email-to-facilitator, and copy-to-clipboard paths still work regardless of network outcome. Submission fails silently on non-Netlify hosts (file://, GitHub Pages, etc.) — the existing fallback paths remain operational.
+
+### Added — `netlify/functions/submission-created.js` serverless function
+
+Netlify fires the `submission-created` webhook automatically on every successful form submission. The function:
+
+1. Parses the submission payload
+2. Sends a confirmation email to the applicant via Resend with the BCD attached as a `.md` file
+3. Email body confirms receipt, names the selected phase, sets expectations for what comes next, links to the sample report
+
+Env vars: `RESEND_API_KEY` (required). `FROM_ADDRESS` (optional override, defaults to `Forge Intake <onboarding@resend.dev>` — Resend's sandbox sender).
+
+### Added — `netlify/functions/package.json`
+
+Declares the `resend` npm package as the function's dependency. Netlify auto-installs on first deploy.
+
+### Operator-side configuration required for production
+
+After v1.11.3 ships, these dashboard-only steps remain:
+
+1. **Confirm `RESEND_API_KEY` is set** in Netlify env vars (already done in your account).
+2. **Enable Netlify Forms notification** to `wisedesign.live@gmail.com` (Site configuration → Forms → Form notifications → Add notification → Email — Netlify handles the facilitator notification natively, separate from the applicant Resend confirmation).
+3. **Verify `builderbranding.co` in Resend** (Resend dashboard → Domains → Add Domain → add the DKIM/SPF DNS records to builderbranding.co). Required before switching `FROM_ADDRESS` away from Resend's sandbox sender. Until verified, the applicant confirmation email comes from `onboarding@resend.dev` and Resend's sandbox restriction means it can only reach the email address you used to create the Resend account.
+4. **DNS CNAME on builderbranding.co**: `intake` → Netlify's site address (Netlify gives the exact target in Site configuration → Domain management → Custom domains). Then the URL becomes `intake.builderbranding.co`.
+
+### Deferred to v1.11.4 (or v1.12 if bundled)
+
+- **GitHub mirror commits**: function pushes BCD to a private `forge-workshops` repo on each submission, creating a structured workshop record. Blocks on user setting up the private repo + a fine-grained PAT scoped to it. v1.12 dashboard analytics work either way (Netlify Forms storage is a viable source until the git mirror exists).
+
+### Files changed
+
+- `netlify.toml` — new file at repo root
+- `netlify/functions/submission-created.js` — new function
+- `netlify/functions/package.json` — new (declares Resend dependency)
+- `skills/intake/templates/questionnaire.html` — hidden form-definition for Netlify Forms detection; `submitToNetlifyForms()` JS function; `submitForm()` invokes it
+- `examples/sample-report.html` — version bump
+- `.claude-plugin/plugin.json` — `1.11.2` → `1.11.3`
+
 ## [1.11.2] — 2026-05-22
 
 ### Codename: Phase (inherited from v1.11.0)
