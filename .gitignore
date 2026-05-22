@@ -18,6 +18,9 @@ forge-report-*.html
 # BCD intake files (workshop-private; should never be in the plugin repo).
 *.bcd.md
 
+# Local env file — never commit secrets.
+.env
+
 # Netlify Functions dependency install artifacts.
 # Root package.json declares the function dependency (resend); Netlify runs `npm install`
 # on each deploy. node_modules is generated at build time, never committed.
