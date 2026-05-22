@@ -3,7 +3,7 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/7e43ad03-2f97-4b8b-91c4-c9c2f436afcf/deploy-status)](https://app.netlify.com/projects/forge-intake/deploys)
 [![Release](https://img.shields.io/github/v/release/skizzy203/forge?label=release&color=10B981&style=flat-square)](https://github.com/skizzy203/forge/releases)
-[![License: MIT](https://img.shields.io/github/license/skizzy203/forge?color=22E0FF&style=flat-square)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-22E0FF?style=flat-square)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-22E0FF?logo=anthropic&logoColor=white&style=flat-square)](https://claude.com/claude-code)
 [![Claude Cowork](https://img.shields.io/badge/Claude_Cowork-compatible-22E0FF?logo=anthropic&logoColor=white&style=flat-square)](https://claude.ai)
 [![Last commit](https://img.shields.io/github/last-commit/skizzy203/forge?color=A855F7&style=flat-square)](https://github.com/skizzy203/forge/commits/main)
