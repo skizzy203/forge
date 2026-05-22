@@ -1,0 +1,30 @@
+# Forge — Netlify configuration
+# Site: forge-intake.netlify.app (custom domain target: intake.builderbranding.co)
+# Hosts the intake questionnaire. Functions handle submission webhooks.
+
+[build]
+  # The questionnaire is the only file we publish to the live site.
+  publish = "skills/intake/templates"
+  # No build step — questionnaire.html is committed static HTML.
+  command = ""
+  # Serverless functions for the submission-created webhook (Resend confirmation email).
+  functions = "netlify/functions"
+
+# Rewrite root URL to the questionnaire so visitors hit the form directly.
+# Status 200 = rewrite (URL stays as /), not 301 redirect.
+[[redirects]]
+  from = "/"
+  to = "/questionnaire.html"
+  status = 200
+
+# Custom security headers for the hosted form.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Forms detection runs on every deploy. The hidden form definition in
+# questionnaire.html (with name="forge-intake" and netlify attribute) gets registered.

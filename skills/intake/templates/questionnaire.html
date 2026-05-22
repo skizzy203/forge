@@ -173,6 +173,23 @@ body:not([data-phase]) [data-phase-show]{display:none}
 <body>
 <div class="tick tl">+</div><div class="tick tr">+</div><div class="tick bl">+</div><div class="tick br">+</div>
 
+<!-- v1.11.3: Netlify Forms detection.
+     Netlify's build-time scanner finds this hidden form and registers `forge-intake` as a
+     submission target. The submitForm() JS POSTs to / with form-name=forge-intake.
+     Each input declared here corresponds to a field name our JS will send.
+     netlify-honeypot="bot-field" enables honeypot spam protection. -->
+<form name="forge-intake" netlify netlify-honeypot="bot-field" hidden aria-hidden="true">
+  <input type="text"  name="applicant_name" />
+  <input type="email" name="email" />
+  <input type="text"  name="business_name" />
+  <input type="url"   name="business_url" />
+  <input type="text"  name="phase" />
+  <input type="text"  name="phase_label" />
+  <input type="text"  name="bot-field" />
+  <textarea name="bcd_markdown"></textarea>
+  <input type="text"  name="forge_version" />
+</form>
+
 <!-- v1.11: pre-questionnaire phase modal. Open by default; closed only via phase CTA. -->
 <div id="phase-modal" class="phase-modal open" role="dialog" aria-modal="true" aria-labelledby="phase-modal-title">
   <div class="phase-modal__inner">
@@ -821,7 +838,7 @@ body:not([data-phase]) [data-phase-show]{display:none}
 // ─────────────────────────────────────────────────────────────
 const FACILITATOR_EMAIL = 'facilitator@distill.local';
 const FACILITATOR_LABEL = 'Forge Facilitator';
-const FORGE_VERSION = 'v1.11.2';
+const FORGE_VERSION = 'v1.11.3';
 
 const STORAGE_KEY = 'forge-intake-v1';
 const THEME_KEY = 'forge-theme';
@@ -1221,6 +1238,50 @@ function submitForm() {
   // Store the generated BCD for download
   window._bcdContent = md;
   window._bcdFilename = slug + '-' + today + '.bcd.md';
+
+  // v1.11.3: also POST to Netlify Forms when the form is hosted at intake.builderbranding.co
+  // (or any Netlify-served URL). On local file:// or non-Netlify hosts the fetch fails silently —
+  // the existing download / email / clipboard paths remain functional regardless.
+  submitToNetlifyForms(md);
+}
+
+// v1.11.3: silently POST the form to Netlify Forms.
+// Failure is non-blocking: the user has already seen the confirmation page + still has the
+// download / email / clipboard paths to send the BCD to the facilitator manually.
+async function submitToNetlifyForms(bcdMarkdown) {
+  // Only attempt on Netlify-served pages (skip when running locally from file:// or any
+  // non-HTTPS host). Netlify Forms POST endpoint is always the site root.
+  if (location.protocol !== 'https:' && location.protocol !== 'http:') return;
+
+  const phase = localStorage.getItem(PHASE_KEY) || '';
+  const phaseLabel = phase && PHASES[phase] ? PHASES[phase].pillLabel : '';
+
+  const fd = new URLSearchParams();
+  fd.append('form-name', 'forge-intake');
+  fd.append('applicant_name',  (document.getElementById('applicant_name')?.value || '').trim());
+  fd.append('email',           (document.getElementById('email')?.value           || '').trim());
+  fd.append('business_name',   (document.getElementById('business_name')?.value   || '').trim());
+  fd.append('business_url',    (document.getElementById('business_url')?.value    || '').trim());
+  fd.append('phase',           phase);
+  fd.append('phase_label',     phaseLabel);
+  fd.append('bcd_markdown',    bcdMarkdown);
+  fd.append('forge_version',   FORGE_VERSION);
+  fd.append('bot-field',       ''); // honeypot — empty = real human
+
+  try {
+    const response = await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: fd.toString()
+    });
+    if (!response.ok) {
+      console.warn('[Forge] Netlify Forms submission returned', response.status);
+    }
+  } catch (err) {
+    // Network failure (offline, CORS on a non-Netlify host, etc.) — silent. The user has
+    // their downloadable .md and the facilitator-email button as fallbacks.
+    console.warn('[Forge] Netlify Forms submission failed (non-blocking):', err.message);
+  }
 }
 
 function downloadBCD() {
