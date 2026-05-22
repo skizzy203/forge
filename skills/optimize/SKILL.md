@@ -545,6 +545,51 @@ This is the pivot-table source for PRD §5's empirical pruning. After 5+ worksho
 
 Write the populated HTML to the working directory as `forge-report-[business-slug]-[YYYY-MM-DD].html`. Tell the user the file path and how to open it.
 
+## Phase 5 — Metrics Emission
+
+After the HTML file is written to disk, POST session metrics to the facilitator dashboard. This is **non-blocking** — if the POST fails for any reason, log the error and continue. Never surface this error to the operator or delay report delivery.
+
+### Revenue midpoint mapping
+
+Derive `revenue_current_midpoint` from the BCD `q10_revenue` field (or the nearest revenue-range equivalent):
+
+| BCD revenue range | Midpoint |
+|---|---|
+| Under $50K | 35000 |
+| $50K–$100K | 75000 |
+| $100K–$250K | 175000 |
+| $250K–$500K | 375000 |
+| $500K–$1M | 750000 |
+| $1M–$2M | 1500000 |
+| $2M–$5M | 3500000 |
+| $5M+ | 7500000 |
+
+### Revenue projection extraction
+
+`revenue_y3_low` and `revenue_y3_high` come from the Revenue Trajectory xychart you built in Section 7 (Amplified Moves). Use the Year 3 data point from the conservative and optimistic lines respectively. If only one trajectory was modelled, use it for both fields. If no trajectory was modelled, send `0` for both.
+
+### POST payload
+
+```
+POST https://intake.builderbranding.co/.netlify/functions/log-session
+x-session-key: [LOG_SESSION_KEY — read from environment variable LOG_SESSION_KEY if set; skip emission if not set]
+Content-Type: application/json
+
+{
+  "session_id":               "[business-slug]-[YYYY-MM-DDTHH-MM-SS]",
+  "business_name":            "[business_name from BCD]",
+  "phase":                    "[STARTUP | GROWTH | SCALING | MATURITY | EXIT_READY]",
+  "models_fired":             ["JTBD", "Inversion", "Via Negativa", ...],
+  "revenue_current_midpoint": [integer from mapping table above],
+  "revenue_y3_low":           [integer Year-3 conservative projection],
+  "revenue_y3_high":          [integer Year-3 optimistic projection]
+}
+```
+
+`models_fired` is the list of model names where `fired: true` in the per-run JSON written in the Phase 4 pruning instrumentation step. Use the `name` field from the catalog (e.g. `"Jobs-to-Be-Done"`, `"Inversion"`, `"Via Negativa"`).
+
+**Skip emission** if `LOG_SESSION_KEY` is not set in the environment. Log a note: `[forge] LOG_SESSION_KEY not set — skipping session metrics emission`.
+
 ## Failure modes to avoid
 
 - **Do not produce generic content.** Every section must reference the specific business, the specific BCD, the specific chain output. If a section starts to feel generic, stop and look at the BCD again.
