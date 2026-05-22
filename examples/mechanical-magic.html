@@ -298,20 +298,20 @@ a.move:hover .headline{color:var(--accent)}
 
 /* v1.11: diagram expand button + modal viewer */
 .diagram{position:relative}
-.diagram-expand{position:absolute;top:8px;right:8px;background:var(--bg-primary);color:var(--text-muted);border:1px solid var(--rule);font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;padding:6px 10px;cursor:pointer;z-index:2;transition:all 0.15s;opacity:0.7}
+.diagram-expand{position:absolute;top:8px;right:8px;background:var(--bg-primary);color:var(--text-muted);border:1px solid var(--rule);width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:all 0.15s;opacity:0.7}
 .diagram-expand:hover,.diagram-expand:focus{color:var(--accent);border-color:var(--accent);opacity:1;outline:none}
 .diagram-modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;padding:24px;overflow:auto;touch-action:pan-x pan-y pinch-zoom;-webkit-overflow-scrolling:touch}
 .diagram-modal.open{display:flex}
 .diagram-modal__panel{position:relative;background:var(--bg-primary);border:1px solid var(--rule);padding:48px 24px 24px;max-width:95vw;max-height:95vh;overflow:auto;-webkit-overflow-scrolling:touch}
-.diagram-modal__close{position:absolute;top:12px;right:12px;background:transparent;color:var(--text-muted);border:1px solid var(--rule);font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;padding:6px 12px;cursor:pointer;transition:all 0.15s}
+.diagram-modal__close{position:absolute;top:12px;right:12px;background:transparent;color:var(--text-muted);border:1px solid var(--rule);width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;cursor:pointer;transition:all 0.15s}
 .diagram-modal__close:hover,.diagram-modal__close:focus{color:var(--accent);border-color:var(--accent);outline:none}
 .diagram-modal__svg{display:block;width:100%}
 .diagram-modal__svg svg{width:100% !important;height:auto !important;max-width:none !important;min-width:280px}
 .diagram-modal__label{position:absolute;top:14px;left:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;color:var(--text-muted);text-transform:uppercase}
 @media (max-width:640px){
-  .diagram-modal{padding:8px}
-  .diagram-modal__panel{padding:42px 12px 16px;max-width:100vw;max-height:100vh}
-  .diagram-expand{font-size:10px;padding:5px 8px}
+  .diagram-modal{padding:0}
+  .diagram-modal__panel{padding:52px 8px 8px;width:100vw;max-width:100vw;height:100vh;max-height:100vh;border:none;border-radius:0}
+  .diagram-expand{width:28px;height:28px}
 }
 
 /* v1.12.0 — INDEX nav drawer */
@@ -358,7 +358,7 @@ a.move:hover .headline{color:var(--accent)}
 <div id="diagram-modal" class="diagram-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Expanded diagram view">
   <div class="diagram-modal__panel" role="document">
     <div class="diagram-modal__label">[ &#10239; ] DIAGRAM &mdash; FULL SIZE</div>
-    <button class="diagram-modal__close" id="diagram-modal-close" aria-label="Close expanded diagram">[ &times; ] CLOSE</button>
+    <button class="diagram-modal__close" id="diagram-modal-close" aria-label="Close expanded diagram">&times;</button>
     <div class="diagram-modal__svg" id="diagram-modal-svg" aria-live="polite"></div>
   </div>
 </div>
@@ -1452,7 +1452,7 @@ setTimeout(() => {
     const btn = document.createElement('button');
     btn.className = 'diagram-expand';
     btn.setAttribute('aria-label', 'Expand diagram to full size');
-    btn.innerHTML = '[ &#10239; ] EXPAND';
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false" style="display:block"><circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.5"/><line x1="8.5" y1="8.5" x2="13" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="5.5" y1="3.5" x2="5.5" y2="7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="5.5" x2="7.5" y2="5.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const svg = d.querySelector('.mermaid svg');
