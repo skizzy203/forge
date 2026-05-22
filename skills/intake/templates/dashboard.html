@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge Intake Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary:  #0A0E11;
+  --bg-elevated: #11161A;
+  --accent:      #22E0FF;
+  --accent-soft: rgba(34,224,255,0.10);
+  --text-primary:#E8ECEE;
+  --text-muted:  #8A949A;
+  --text-faint:  #4A535A;
+  --rule:        #1F2629;
+  --success:     #10B981;
+  --warn:        #E8B33A;
+  --danger:      #EF4444;
+  --info:        #A855F7;
+  --font-display:"Inter Tight", system-ui, sans-serif;
+  --font-body:   "Inter", system-ui, sans-serif;
+  --font-mono:   "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);line-height:1.6;min-height:100vh}
+.frame{max-width:1100px;margin:0 auto;padding:32px 48px 96px}
+@media(max-width:768px){.frame{padding:24px 20px 64px}}
+
+.header-mark{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase;padding:12px 0;border-bottom:1px solid var(--rule);margin-bottom:48px}
+.header-mark .sec{color:var(--accent);font-weight:500}
+
+h1{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,4vw,42px);letter-spacing:-0.02em;line-height:0.98;margin-bottom:8px}
+h1 span{color:var(--accent);display:block}
+.subtitle{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase;margin-bottom:48px}
+
+/* Auth gate */
+.auth-gate{max-width:400px;margin:80px auto;text-align:center}
+.auth-gate h2{font-family:var(--font-display);font-weight:800;font-size:28px;margin-bottom:8px}
+.auth-gate p{color:var(--text-muted);font-size:14px;margin-bottom:32px}
+.auth-form{display:flex;flex-direction:column;gap:12px}
+.auth-input{background:var(--bg-elevated);border:1px solid var(--rule);color:var(--text-primary);font-family:var(--font-mono);font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.15s;width:100%}
+.auth-input:focus{border-color:var(--accent)}
+.auth-input::placeholder{color:var(--text-faint)}
+.auth-btn{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:12px 20px;border:1px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;transition:all 0.15s}
+.auth-btn:hover{background:var(--accent-soft)}
+.auth-error{color:var(--danger);font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;margin-top:4px;display:none}
+.auth-error.show{display:block}
+
+/* Stats row */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:48px}
+.stat{background:var(--bg-elevated);border:1px solid var(--rule);padding:20px 24px}
+.stat-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px}
+.stat-value{font-family:var(--font-display);font-weight:800;font-size:32px;color:var(--accent);line-height:1}
+.stat-note{font-size:12px;color:var(--text-faint);margin-top:4px}
+
+/* Phase bar chart */
+.section-head{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;color:var(--accent);text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.phase-bars{display:flex;flex-direction:column;gap:10px;margin-bottom:48px}
+.phase-row{display:grid;grid-template-columns:140px 1fr 40px;align-items:center;gap:12px}
+.phase-name{font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;color:var(--text-muted);text-transform:uppercase}
+.phase-bar-track{background:var(--rule);height:6px;border-radius:0;overflow:hidden}
+.phase-bar-fill{height:100%;background:var(--accent);transition:width 0.6s ease}
+.phase-count{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);text-align:right}
+
+/* Phase color mapping */
+.phase-bar-fill[data-phase="STARTUP"]    { background: var(--accent); }
+.phase-bar-fill[data-phase="GROWTH"]     { background: var(--success); }
+.phase-bar-fill[data-phase="SCALING"]    { background: var(--warn); }
+.phase-bar-fill[data-phase="MATURITY"]   { background: var(--info); }
+.phase-bar-fill[data-phase="EXIT_READY"] { background: var(--danger); }
+.phase-bar-fill[data-phase="unknown"]    { background: var(--text-faint); }
+
+/* Submissions table */
+.table-wrap{overflow-x:auto;margin-bottom:48px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;color:var(--text-muted);text-transform:uppercase;text-align:left;padding:8px 16px 8px 0;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:12px 16px 12px 0;border-bottom:1px solid var(--rule);color:var(--text-primary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.td-date{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);white-space:nowrap}
+.td-business{font-weight:600}
+.td-email{color:var(--text-muted);font-size:12px}
+.phase-tag{display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;padding:2px 8px;text-transform:uppercase;border:1px solid;white-space:nowrap}
+.phase-tag.STARTUP    {color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.phase-tag.GROWTH     {color:var(--success);border-color:var(--success);background:rgba(16,185,129,0.08)}
+.phase-tag.SCALING    {color:var(--warn);border-color:var(--warn);background:rgba(232,179,58,0.08)}
+.phase-tag.MATURITY   {color:var(--info);border-color:var(--info);background:rgba(168,85,247,0.08)}
+.phase-tag.EXIT_READY {color:var(--danger);border-color:var(--danger);background:rgba(239,68,68,0.08)}
+.phase-tag.unknown    {color:var(--text-muted);border-color:var(--text-faint)}
+
+.loading{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase;padding:48px 0;text-align:center}
+.error-msg{font-family:var(--font-mono);font-size:12px;color:var(--danger);padding:24px;background:rgba(239,68,68,0.08);border:1px solid var(--danger);margin-bottom:32px;display:none}
+.error-msg.show{display:block}
+
+.footer-mark{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase;padding-top:12px;border-top:1px solid var(--rule);margin-top:64px}
+</style>
+</head>
+<body>
+
+<!-- Auth gate — shown until passphrase is validated -->
+<div id="auth-gate" class="auth-gate">
+  <h2>INTAKE<br><span style="color:var(--accent)">DASHBOARD</span></h2>
+  <p>Forge workshop submissions. Enter your dashboard passphrase to continue.</p>
+  <div class="auth-form">
+    <input type="password" id="auth-input" class="auth-input" placeholder="Passphrase" autocomplete="current-password" />
+    <button class="auth-btn" id="auth-btn">[ → ] UNLOCK</button>
+    <div class="auth-error" id="auth-error">Incorrect passphrase</div>
+  </div>
+</div>
+
+<!-- Dashboard — hidden until auth passes -->
+<div id="dashboard" style="display:none">
+<div class="frame">
+
+<div class="header-mark">
+  <div>─ <span class="sec">FORGE INTAKE DASHBOARD</span></div>
+  <div id="header-date"></div>
+</div>
+
+<h1>Workshop<span>Submissions</span></h1>
+<p class="subtitle">Live data from Netlify Forms / forge-intake</p>
+
+<div class="error-msg" id="error-msg"></div>
+<div class="loading" id="loading">[ … ] Loading submissions</div>
+
+<div id="content" style="display:none">
+
+  <div class="stats" id="stats-row"></div>
+
+  <div class="section-head">Phase Distribution</div>
+  <div class="phase-bars" id="phase-bars"></div>
+
+  <div class="section-head">Recent Submissions</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Business</th>
+          <th>Operator</th>
+          <th>Email</th>
+          <th>Phase</th>
+          <th>Version</th>
+        </tr>
+      </thead>
+      <tbody id="submissions-tbody"></tbody>
+    </table>
+  </div>
+
+</div><!-- /content -->
+
+<div class="footer-mark">
+  <div>DISTILL</div>
+  <div>FORGE DASHBOARD</div>
+</div>
+
+</div><!-- /frame -->
+</div><!-- /dashboard -->
+
+<script>
+const PHASE_ORDER = ['STARTUP', 'GROWTH', 'SCALING', 'MATURITY', 'EXIT_READY'];
+const PHASE_LABELS = {
+  STARTUP: 'Startup', GROWTH: 'Growth', SCALING: 'Scaling',
+  MATURITY: 'Maturity', EXIT_READY: 'Exit-ready', unknown: 'No phase'
+};
+
+let passphrase = '';
+
+document.getElementById('header-date').textContent = new Date().toISOString().slice(0, 10);
+
+// Auth
+const authInput = document.getElementById('auth-input');
+const authBtn   = document.getElementById('auth-btn');
+const authError = document.getElementById('auth-error');
+
+function unlock() {
+  const val = authInput.value.trim();
+  if (!val) return;
+  passphrase = val;
+  authError.classList.remove('show');
+  loadDashboard();
+}
+
+authBtn.addEventListener('click', unlock);
+authInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+
+async function loadDashboard() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('content').style.display = 'none';
+
+  let data;
+  try {
+    const resp = await fetch('/.netlify/functions/dashboard-data', {
+      headers: { 'x-dashboard-key': passphrase }
+    });
+
+    if (resp.status === 401) {
+      passphrase = '';
+      authError.classList.add('show');
+      document.getElementById('loading').style.display = 'none';
+      return;
+    }
+
+    if (!resp.ok) {
+      throw new Error('API returned ' + resp.status);
+    }
+
+    data = await resp.json();
+  } catch (err) {
+    document.getElementById('loading').style.display = 'none';
+    const em = document.getElementById('error-msg');
+    em.textContent = 'Failed to load data: ' + err.message;
+    em.classList.add('show');
+    // Show dashboard shell even on error
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = '';
+    return;
+  }
+
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('dashboard').style.display = '';
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('content').style.display = '';
+
+  renderStats(data);
+  renderPhaseBars(data.submissions);
+  renderTable(data.submissions);
+}
+
+function renderStats(data) {
+  const subs = data.submissions || [];
+  const today = new Date().toISOString().slice(0, 10);
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const todayCount = subs.filter(s => (s.created_at || '').slice(0, 10) === today).length;
+  const monthCount = subs.filter(s => (s.created_at || '').slice(0, 7) === thisMonth).length;
+  const phased = subs.filter(s => s.phase && s.phase !== '').length;
+
+  const stats = [
+    { label: 'Total Submissions', value: data.count, note: 'all time' },
+    { label: 'This Month', value: monthCount, note: thisMonth },
+    { label: 'Today', value: todayCount, note: today },
+    { label: 'Phase Selected', value: phased, note: Math.round(phased / (data.count || 1) * 100) + '% of total' },
+  ];
+
+  document.getElementById('stats-row').innerHTML = stats.map(s =>
+    `<div class="stat">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-note">${s.note}</div>
+    </div>`
+  ).join('');
+}
+
+function renderPhaseBars(subs) {
+  const counts = {};
+  subs.forEach(s => {
+    const p = (s.phase || 'unknown').toUpperCase();
+    counts[p] = (counts[p] || 0) + 1;
+  });
+
+  const order = [...PHASE_ORDER, 'unknown'];
+  const max = Math.max(...Object.values(counts), 1);
+
+  document.getElementById('phase-bars').innerHTML = order
+    .filter(p => counts[p])
+    .map(p => {
+      const pct = Math.round(counts[p] / max * 100);
+      return `<div class="phase-row">
+        <div class="phase-name">${PHASE_LABELS[p] || p}</div>
+        <div class="phase-bar-track">
+          <div class="phase-bar-fill" data-phase="${p}" style="width:${pct}%"></div>
+        </div>
+        <div class="phase-count">${counts[p]}</div>
+      </div>`;
+    }).join('');
+}
+
+function renderTable(subs) {
+  const sorted = [...subs].sort((a, b) => (b.created_at || '') > (a.created_at || '') ? 1 : -1);
+  const rows = sorted.slice(0, 50);
+
+  document.getElementById('submissions-tbody').innerHTML = rows.map(s => {
+    const date = (s.created_at || '').slice(0, 10);
+    const phase = (s.phase || 'unknown').toUpperCase();
+    const phaseLabel = s.phase_label || PHASE_LABELS[phase] || phase;
+    return `<tr>
+      <td class="td-date">${date}</td>
+      <td class="td-business">${esc(s.business_name || '—')}</td>
+      <td>${esc(s.applicant_name || '—')}</td>
+      <td class="td-email">${esc(s.email || '—')}</td>
+      <td><span class="phase-tag ${phase}">${phaseLabel}</span></td>
+      <td class="td-date">${esc(s.forge_version || '—')}</td>
+    </tr>`;
+  }).join('');
+}
+
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

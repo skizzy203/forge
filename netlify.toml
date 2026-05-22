@@ -2,14 +2,15 @@
 # Site: forge-intake.netlify.app (custom domain target: intake.builderbranding.co)
 # Hosts the intake questionnaire and sample reports. Functions handle submission webhooks.
 #
-# Build assembles dist/ from two sources:
+# Build assembles dist/ from three sources:
 #   dist/index.html                        ← skills/intake/templates/questionnaire.html
 #   dist/examples/mechanical-magic.html   ← examples/mechanical-magic.html
+#   dist/dashboard.html                   ← skills/intake/templates/dashboard.html
 # Adding a new sample report: drop the HTML into examples/ and add a cp line below.
 
 [build]
   publish = "dist"
-  command = "mkdir -p dist/examples && cp skills/intake/templates/questionnaire.html dist/index.html && cp examples/mechanical-magic.html dist/examples/mechanical-magic.html"
+  command = "mkdir -p dist/examples && cp skills/intake/templates/questionnaire.html dist/index.html && cp examples/mechanical-magic.html dist/examples/mechanical-magic.html && cp skills/intake/templates/dashboard.html dist/dashboard.html"
   functions = "netlify/functions"
 
 # Custom security headers for the hosted form.

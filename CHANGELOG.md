@@ -2,6 +2,57 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.12.0] — 2026-05-22
+
+### Codename: Surface
+
+Three workstreams shipped as a single minor release: in-report navigation, a phase-aware commercial CTA, and a facilitator analytics dashboard.
+
+### Added — INDEX nav drawer (report)
+
+Every rendered report now carries a `[ ≡ ] INDEX` button in the sticky header alongside the existing `[ ◑ ] MODE` toggle. Clicking opens a 280px slide-in drawer listing all nine navigable sections (01 Executive Summary through Appendix) with anchor links. The active section is highlighted as the reader scrolls via `IntersectionObserver`. Accessible: Escape key closes, overlay click closes, `aria-expanded` / `aria-hidden` maintained throughout. Print stylesheet hides the drawer.
+
+- **`nav-toggle`** button in `.header-mark .right`
+- **`.nav-drawer`** + **`.nav-overlay`** elements rendered before `.frame` at body level (z-index 99/100, below the existing `.diagram-modal` at z-index 100)
+- Active-section highlighting via a dedicated `IntersectionObserver` (separate from the existing fade-in observer)
+
+### Added — Brand Excavation footer CTA (report)
+
+A primary `.callout` block (accent border) appears between the Appendix and the existing Business Model Strip Down block. It carries a phase-aware hook line via `{{brand_excavation_hook}}` — filled by the optimize skill at render time using the BCD `Phase:` metadata. The existing workshop callout is retained as a secondary CTA with a muted rule border.
+
+- **`{{brand_excavation_hook}}`** — new token documented in `SKILL.md` with five phase variants + a default. Reads from the BCD `Phase:` metadata line set by the intake modal.
+- Placeholder URL targets `https://builderbranding.co` — update when the Brand Excavation package page is live.
+
+### Added — Intake analytics dashboard (`/dashboard`)
+
+`intake.builderbranding.co/dashboard` is a passphrase-protected single-page analytics view for workshop submissions.
+
+- **`netlify/functions/dashboard-data.js`** — proxies Netlify Forms submission data (up to 200 records). Validates `x-dashboard-key` request header against `DASHBOARD_PASSPHRASE` env var. Returns only the fields needed by the dashboard (no raw form payload).
+- **`skills/intake/templates/dashboard.html`** — client-side dashboard in terminal-noir style. Shows total / this-month / today submission counts, phase distribution bar chart, and a 50-row recent submissions table with phase tags.
+- **`netlify.toml`** — build command now copies `dashboard.html` to `dist/dashboard.html`.
+
+New env vars to add in Netlify dashboard after deploying:
+
+| Key | Notes |
+|---|---|
+| `NETLIFY_ACCESS_TOKEN` | Personal access token from app.netlify.com/user/applications (read:sites, read:forms scopes) |
+| `NETLIFY_SITE_ID` | Site ID from forge-intake Project settings → General |
+| `DASHBOARD_PASSPHRASE` | Arbitrary passphrase — the dashboard page prompts for it before making any API calls |
+
+### Changed
+
+- `skills/optimize/SKILL.md` — Mode B intake URL updated from `https://skizzy203.github.io/forge/` to `https://intake.builderbranding.co`; Tally CTA section replaced by "Footer CTA blocks" documentation covering both the Brand Excavation and workshop callouts
+
+### Files changed
+
+- `skills/optimize/templates/report.html` — INDEX nav drawer (CSS + HTML + JS); Brand Excavation callout; secondary style for workshop callout
+- `skills/optimize/SKILL.md` — `{{brand_excavation_hook}}` token documentation; intake URL fix
+- `netlify/functions/dashboard-data.js` — new
+- `skills/intake/templates/dashboard.html` — new
+- `netlify.toml` — dashboard build step
+- `.claude-plugin/plugin.json` — `1.11.7` → `1.12.0`
+- `CODENAMES.md` — v1.12.x Surface codename
+
 ## [1.11.7] — 2026-05-22
 
 ### Codename: Phase (inherited from v1.11.0)
