@@ -311,7 +311,7 @@ Phase variants for `{{brand_excavation_hook}}`:
 - **EXIT_READY:** `Acquirers pay premiums for businesses with clear positioning. Brand Excavation sharpens your story before diligence.`
 - **Default (no phase):** `You have a business. Brand Excavation gives it a message.`
 
-**Secondary — Business Model Strip Down workshop.** Fixed block — hardcoded into the template. Workshop time (Thursdays 7pm), form URL (`https://tally.so/r/aQj7dy`), and copy are stable across runs. No substitution required. Document any future workshop-time or URL change by editing the template directly.
+The workshop callout was removed in v1.12.0. Only the Brand Excavation callout ships with every report. The nav drawer also carries a `[ $ ] Book Your Brand Excavation` CTA linking to `https://clients.builderbranding.co/brandexcavation`.
 
 ### Automation Surface (Section 7.0) render
 
