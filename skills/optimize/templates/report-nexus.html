@@ -507,18 +507,21 @@ details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; 
         <div id="hero-webgl"></div>
         <div class="hero-webgl-ui">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span class="eyebrow">// Neural Analysis Grid</span>
+            <span class="eyebrow">// First Principles Analysis</span>
             <div style="display:flex;align-items:center;gap:6px">
               <span class="status-dot" style="animation-delay:.8s"></span>
               <span class="eyebrow" style="color:var(--accent)">Active</span>
             </div>
           </div>
-          <div style="position:absolute;top:26%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:20">
-            <div style="background:rgba(0,0,0,0.55);border:1px solid var(--accent-border);border-radius:4px;padding:6px 16px;backdrop-filter:blur(8px);text-align:center">
-              <span class="eyebrow" style="color:var(--accent)">Model Core</span>
-              <div style="margin-top:3px"><span class="eyebrow">38 Lenses</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;line-height:2;color:var(--text-3)">
+              <div><span style="color:#ff7000">5</span> friction stripped</div>
+              <div><span style="color:var(--accent)">7</span> core nodes remain</div>
             </div>
-            <div style="width:1px;height:40px;background:linear-gradient(to bottom,var(--accent-border),transparent)"></div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-align:right;line-height:2;color:var(--text-3)">
+              <div>38 models evaluated</div>
+              <div id="hero-phase">ANALYZING</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1023,104 +1026,254 @@ details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; 
 <!-- SCRIPTS                                       -->
 <!-- ════════════════════════════════════════════ -->
 
-<!-- Three.js hero WebGL animation -->
+<!-- Three.js hero — First Principles Deconstruction -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var container = document.getElementById('hero-webgl');
   if (!container || typeof THREE === 'undefined') return;
 
   var scene = new THREE.Scene();
-  var d = 15;
-  var camera = new THREE.OrthographicCamera(-d, d, d, -d, 1, 1000);
-  camera.position.set(20, 20, 20);
-  camera.lookAt(scene.position);
+  var camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+  camera.position.set(6, 4.5, 9.5);
+  camera.lookAt(0, 0.2, 0);
 
   var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   container.appendChild(renderer.domElement);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-  var dir = new THREE.DirectionalLight(0xffffff, 0.8);
-  dir.position.set(10, 20, 10);
-  scene.add(dir);
-  var coreLight = new THREE.PointLight(0x00e5ff, 2, 20);
-  coreLight.position.set(0, 2, 0);
-  scene.add(coreLight);
-
-  var darkMat   = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8, metalness: 0.2 });
-  var accentMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 0.5, roughness: 0.2, metalness: 0.8 });
-  var wireMat   = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.3 });
+  scene.add(new THREE.AmbientLight(0xffffff, 0.2));
+  var keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
+  keyLight.position.set(4, 8, 6); scene.add(keyLight);
+  var coreLight = new THREE.PointLight(0x00e5ff, 2.5, 16);
+  coreLight.position.set(0, 1, 0); scene.add(coreLight);
 
   var group = new THREE.Group();
   scene.add(group);
 
-  var grid = new THREE.GridHelper(30, 15, 0x333333, 0x1a1a1a);
-  grid.position.y = -2;
-  group.add(grid);
+  // Geometries: flat card for core nodes, blocky cube for friction
+  var cardGeo  = new THREE.BoxGeometry(1.4, 0.9, 0.07);
+  var blockGeo = new THREE.BoxGeometry(0.85, 0.85, 0.85);
+  var cardEdge  = new THREE.EdgesGeometry(cardGeo);
+  var blockEdge = new THREE.EdgesGeometry(blockGeo);
 
-  var platGeo = new THREE.BoxGeometry(14, 1.5, 14);
-  var platform = new THREE.Mesh(platGeo, darkMat);
-  platform.position.y = -1;
-  platform.add(new THREE.LineSegments(new THREE.EdgesGeometry(platGeo), new THREE.LineBasicMaterial({ color: 0x333333 })));
-  group.add(platform);
+  function makeNode(isFriction) {
+    var geo  = isFriction ? blockGeo  : cardGeo;
+    var edge = isFriction ? blockEdge : cardEdge;
+    var bodyMat = new THREE.MeshStandardMaterial({
+      color: isFriction ? 0x1c0800 : 0x010d18,
+      roughness: 0.4, metalness: 0.6,
+      transparent: true, opacity: 0.88
+    });
+    var edgeMat = new THREE.LineBasicMaterial({
+      color: isFriction ? 0xff6a00 : 0x00e5ff,
+      transparent: true, opacity: 0.9
+    });
+    var mesh = new THREE.Mesh(geo, bodyMat);
+    mesh.add(new THREE.LineSegments(edge, edgeMat));
+    mesh.userData.bodyMat = bodyMat;
+    mesh.userData.edgeMat = edgeMat;
+    return mesh;
+  }
 
-  var midGeo = new THREE.BoxGeometry(8, 1, 8);
-  var mid = new THREE.Mesh(midGeo, darkMat);
-  mid.position.y = 0.25;
-  mid.add(new THREE.LineSegments(new THREE.EdgesGeometry(midGeo), new THREE.LineBasicMaterial({ color: 0x444444 })));
-  group.add(mid);
+  // Clean (optimized) positions: hexagon ring + center
+  var R = 2.75;
+  var cleanPositions = [
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(R, 0, 0),
+    new THREE.Vector3(R*0.5, 0,  R*0.866),
+    new THREE.Vector3(-R*0.5, 0,  R*0.866),
+    new THREE.Vector3(-R, 0, 0),
+    new THREE.Vector3(-R*0.5, 0, -R*0.866),
+    new THREE.Vector3(R*0.5, 0, -R*0.866)
+  ];
+  // Each card faces outward from center in clean state
+  var cleanRotations = cleanPositions.map(function(p, i) {
+    if (i === 0) return new THREE.Euler(0.08, 0, 0);
+    var a = Math.atan2(p.z, p.x);
+    return new THREE.Euler(0.08, -(a - Math.PI * 0.5), 0);
+  });
 
-  var coreGeo = new THREE.BoxGeometry(3, 1, 3);
-  var core = new THREE.Mesh(coreGeo, accentMat);
-  core.position.y = 1.25;
-  group.add(core);
+  // Chaos positions (scattered, irregular)
+  var chaosPositions = [
+    new THREE.Vector3(-2.7,  0.9, -1.5),
+    new THREE.Vector3( 1.8,  1.4, -2.1),
+    new THREE.Vector3( 3.2, -0.4,  0.8),
+    new THREE.Vector3(-1.2, -1.0,  2.7),
+    new THREE.Vector3( 2.8,  0.8,  2.4),
+    new THREE.Vector3(-3.5,  0.3,  1.0),
+    new THREE.Vector3( 0.5, -0.7, -3.0)
+  ];
 
-  var ringGeo = new THREE.CylinderGeometry(4.5, 4.5, 1.5, 32, 1, true);
-  var ring1 = new THREE.LineSegments(new THREE.EdgesGeometry(ringGeo), wireMat);
-  var ring2 = new THREE.LineSegments(new THREE.EdgesGeometry(ringGeo), wireMat);
-  ring1.position.y = 4; ring2.position.y = 7;
-  group.add(ring1, ring2);
+  // Friction chaos positions and exit vectors
+  var frictionChaos = [
+    new THREE.Vector3( 1.5,  2.0,  0.7),
+    new THREE.Vector3(-2.2, -0.6, -1.7),
+    new THREE.Vector3( 0.4,  1.7,  2.0),
+    new THREE.Vector3(-1.8,  1.0, -2.4),
+    new THREE.Vector3( 2.5, -1.3, -0.9)
+  ];
+  var frictionExit = [
+    new THREE.Vector3( 5.0,  9.0,  4.0),
+    new THREE.Vector3(-7.0, -5.5, -5.0),
+    new THREE.Vector3( 1.5, 10.0,  5.5),
+    new THREE.Vector3(-6.0,  7.0, -6.0),
+    new THREE.Vector3( 8.0, -6.5, -3.5)
+  ];
 
-  var nodes = [];
-  var nodeGeo = new THREE.BoxGeometry(0.6, 0.6, 0.6);
-  for (var i = 0; i < 6; i++) {
-    var node = new THREE.Mesh(nodeGeo, accentMat);
-    var angle = (i / 6) * Math.PI * 2;
-    var radius = 8 + Math.random() * 2;
-    node.position.set(Math.cos(angle) * radius, Math.random() * 4 + 1, Math.sin(angle) * radius);
-    var nw = new THREE.LineSegments(new THREE.EdgesGeometry(nodeGeo), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 }));
-    nw.scale.set(1.5, 1.5, 1.5);
-    node.add(nw);
-    node.userData.startY  = node.position.y;
-    node.userData.offset  = Math.random() * Math.PI * 2;
-    group.add(node);
-    nodes.push(node);
+  // Build core meshes
+  var coreMeshes = chaosPositions.map(function(cp, i) {
+    var m = makeNode(false);
+    m.position.copy(cp);
+    m.rotation.set(
+      (Math.random() - 0.5) * 1.2,
+      Math.random() * Math.PI * 2,
+      (Math.random() - 0.5) * 1.0
+    );
+    m.userData.chaosPos = cp.clone();
+    m.userData.chaosRot = m.rotation.clone();
+    m.userData.cleanPos = cleanPositions[i];
+    m.userData.cleanRot = cleanRotations[i];
+    m.userData.offset   = i * 0.83;
+    group.add(m);
+    return m;
+  });
+
+  // Build friction meshes
+  var frictionMeshes = frictionChaos.map(function(cp, i) {
+    var m = makeNode(true);
+    m.position.copy(cp);
+    m.rotation.set(
+      (Math.random() - 0.5) * 1.4,
+      Math.random() * Math.PI * 2,
+      (Math.random() - 0.5) * 1.4
+    );
+    m.userData.chaosPos = cp.clone();
+    m.userData.exitPos  = frictionExit[i];
+    m.userData.offset   = i * 1.1 + 0.3;
+    group.add(m);
+    return m;
+  });
+
+  // Connection lines: 6 ring edges + 6 center spokes = 12 segments
+  var lineBuf = new Float32Array(72);
+  var lineGeo = new THREE.BufferGeometry();
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(lineBuf, 3));
+  var lineMat = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0 });
+  group.add(new THREE.LineSegments(lineGeo, lineMat));
+
+  function updateConnections() {
+    var center = coreMeshes[0].position;
+    var ring   = coreMeshes.slice(1);
+    var b = lineBuf, k = 0;
+    for (var i = 0; i < ring.length; i++) {
+      var a = ring[i].position, n = ring[(i + 1) % ring.length].position;
+      b[k++]=a.x; b[k++]=a.y; b[k++]=a.z;
+      b[k++]=n.x; b[k++]=n.y; b[k++]=n.z;
+    }
+    for (var j = 0; j < ring.length; j++) {
+      b[k++]=center.x; b[k++]=center.y; b[k++]=center.z;
+      b[k++]=ring[j].position.x; b[k++]=ring[j].position.y; b[k++]=ring[j].position.z;
+    }
+    lineGeo.attributes.position.needsUpdate = true;
+  }
+
+  function ss(t) { t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); }
+
+  var clock = new THREE.Clock();
+  var CYCLE = 17, prevFloor = -1;
+  var phaseEl = document.getElementById('hero-phase');
+  var phaseLabels = ['ANALYZING', 'STRIPPING', 'ALIGNING', 'OPTIMIZED'];
+  var phaseColors = ['var(--text-3)', '#ff6a00', 'var(--text-2)', 'var(--accent)'];
+
+  function animate() {
+    requestAnimationFrame(animate);
+    var elapsed = clock.getElapsedTime();
+    var ct = elapsed % CYCLE;
+    var cf = Math.floor(elapsed / CYCLE);
+
+    // Cycle reset: snap all nodes back to chaos at start of each cycle
+    if (cf !== prevFloor) {
+      prevFloor = cf;
+      coreMeshes.forEach(function(m) {
+        m.position.copy(m.userData.chaosPos);
+        m.rotation.copy(m.userData.chaosRot);
+      });
+      frictionMeshes.forEach(function(m) {
+        m.position.copy(m.userData.chaosPos);
+        m.userData.bodyMat.opacity = 0.88;
+        m.userData.edgeMat.opacity = 0.90;
+      });
+      lineMat.opacity = 0;
+    }
+
+    // Phase thresholds
+    var stripT = ss(Math.max(0, (ct - 4.5) / 3.5));   // 4.5 → 8s
+    var alignT = ss(Math.max(0, (ct - 8.0) / 4.5));   // 8 → 12.5s
+    var phase  = ct < 4.5 ? 0 : ct < 8 ? 1 : ct < 12.5 ? 2 : 3;
+
+    if (phaseEl) {
+      phaseEl.textContent = phaseLabels[phase];
+      phaseEl.style.color = phaseColors[phase];
+    }
+
+    group.rotation.y = elapsed * 0.065;
+    var pulse = (Math.sin(elapsed * 2.5) + 1) * 0.5;
+    coreLight.intensity = 1.5 + pulse * 1.5;
+    coreLight.color.setHex(phase === 1 ? 0xff6a00 : 0x00e5ff);
+
+    // Core nodes
+    coreMeshes.forEach(function(m, i) {
+      var d = m.userData;
+      if (alignT > 0) {
+        m.position.lerp(d.cleanPos, 0.028);
+        m.rotation.x += (d.cleanRot.x - m.rotation.x) * 0.028;
+        m.rotation.y += (d.cleanRot.y - m.rotation.y) * 0.028;
+        m.rotation.z += (d.cleanRot.z - m.rotation.z) * 0.028;
+        if (phase === 3) {
+          m.position.y = d.cleanPos.y + Math.sin(elapsed * 0.75 + d.offset) * 0.055;
+          d.edgeMat.opacity = 0.65 + pulse * 0.3;
+        }
+      } else {
+        // Gentle chaos float
+        m.position.x = d.chaosPos.x + Math.sin(elapsed * 0.38 + d.offset) * 0.22;
+        m.position.y = d.chaosPos.y + Math.sin(elapsed * 0.52 + d.offset * 0.9) * 0.28;
+        m.position.z = d.chaosPos.z + Math.cos(elapsed * 0.44 + d.offset) * 0.18;
+        m.rotation.y += 0.007;
+        m.rotation.x += 0.003;
+      }
+    });
+
+    // Friction nodes
+    frictionMeshes.forEach(function(m, i) {
+      var d = m.userData;
+      if (stripT > 0) {
+        m.position.lerp(d.exitPos, 0.022 + stripT * 0.012);
+        d.bodyMat.opacity = Math.max(0, d.bodyMat.opacity - 0.011);
+        d.edgeMat.opacity = Math.max(0, d.edgeMat.opacity - 0.011);
+        m.rotation.x += 0.045 + i * 0.008;
+        m.rotation.z += 0.030 + i * 0.006;
+      } else {
+        m.position.x = d.chaosPos.x + Math.sin(elapsed * 0.52 + d.offset) * 0.2;
+        m.position.y = d.chaosPos.y + Math.sin(elapsed * 0.68 + d.offset) * 0.24;
+        m.position.z = d.chaosPos.z + Math.cos(elapsed * 0.58 + d.offset) * 0.2;
+        m.rotation.y += 0.013; m.rotation.x += 0.008;
+        // Orange pulse
+        d.edgeMat.opacity = 0.55 + ((Math.sin(elapsed * 4.5 + d.offset * 2) + 1) * 0.5) * 0.4;
+      }
+    });
+
+    // Connection lines fade in during align phase
+    lineMat.opacity = alignT * 0.55;
+    if (alignT > 0) updateConnections();
+
+    renderer.render(scene, camera);
   }
 
   function resize() {
-    var w = container.clientWidth, h = container.clientHeight;
-    var aspect = w / h || 1;
-    camera.left = -d * aspect; camera.right = d * aspect;
-    camera.top = d; camera.bottom = -d;
+    var w = container.clientWidth, h = container.clientHeight || 1;
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h, false);
-  }
-
-  var clock = new THREE.Clock();
-  function animate() {
-    requestAnimationFrame(animate);
-    var t = clock.getElapsedTime();
-    var pulse = (Math.sin(t * 3) + 1) * 0.5;
-    group.rotation.y = Math.sin(t * 0.1) * 0.1;
-    ring1.rotation.y = t * 0.5;
-    ring2.rotation.y = -t * 0.3;
-    accentMat.emissiveIntensity = 0.3 + pulse * 0.7;
-    coreLight.intensity = 1 + pulse;
-    nodes.forEach(function(n) {
-      n.position.y = n.userData.startY + Math.sin(t * 2 + n.userData.offset) * 0.5;
-      n.rotation.x += 0.01; n.rotation.y += 0.01;
-    });
-    renderer.render(scene, camera);
   }
 
   resize(); animate();
