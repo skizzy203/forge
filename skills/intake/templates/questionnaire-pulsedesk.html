@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge Intake — Distill Business Model Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base: #080C14;
+  --bg-card: rgba(2, 6, 23, 0.65);
+  --bg-card-solid: #0B1220;
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --bg-surface-hover: rgba(255, 255, 255, 0.07);
+  --accent: #CFFAFE;
+  --accent-deep: #A5F3FC;
+  --accent-glow: rgba(34, 211, 238, 0.12);
+  --accent-glow-strong: rgba(34, 211, 238, 0.22);
+  --accent-border: rgba(207, 250, 254, 0.2);
+  --accent-on: #020617;
+  --text-primary: #F1F5F9;
+  --text-strong: #FFFFFF;
+  --text-body: #94A3B8;
+  --text-tertiary: #CBD5E1;
+  --text-faint: rgba(148, 163, 184, 0.35);
+  --rule: rgba(255, 255, 255, 0.1);
+  --rule-strong: rgba(255, 255, 255, 0.16);
+  --header-bg: rgba(8, 12, 20, 0.7);
+  --warn: #FCD34D;
+  --warn-soft: rgba(252, 211, 77, 0.10);
+  --shadow-card-soft: 0 16px 48px rgba(0, 0, 0, 0.45);
+  --shadow-cta: 0 10px 15px -3px rgba(8, 51, 68, 0.45), 0 4px 6px -4px rgba(8, 51, 68, 0.45);
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", "Geist", system-ui, -apple-system, sans-serif;
+  --radius-card-lg: 32px;
+  --radius-card: 24px;
+  --radius-card-sm: 16px;
+  --radius-input: 12px;
+  --radius-pill: 9999px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 1200px 600px at 50% -100px, rgba(34, 211, 238, 0.10), transparent 60%),
+    radial-gradient(ellipse 800px 400px at 20% 20%, rgba(34, 211, 238, 0.05), transparent 60%),
+    radial-gradient(ellipse 800px 400px at 80% 80%, rgba(167, 139, 250, 0.04), transparent 60%);
+}
+
+.frame {
+  width: 100%;
+  max-width: 880px;
+  padding: 0 32px 120px;
+  position: relative;
+  flex: 1;
+  z-index: 1;
+}
+@media (max-width: 768px) { .frame { padding: 0 20px 80px; } }
+
+/* Tickmarks hidden */
+.tick { display: none; }
+
+/* Sticky header */
+.header-mark {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-body);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--header-bg);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  padding: 16px 32px;
+  margin: 0 -32px 56px;
+  border-bottom: 1px solid var(--rule);
+}
+.header-mark .left { font-weight: 500; color: var(--text-strong); letter-spacing: -0.01em; }
+.header-mark .left .sec { color: var(--text-strong); font-family: var(--font-display); font-weight: 600; }
+.header-mark .middle { color: var(--text-body); font-size: 13px; }
+.theme-toggle { display: none; }
+
+/* Section opener */
+.sec-num {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 20px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  margin-bottom: 28px;
+  color: var(--text-strong);
+  max-width: 22ch;
+}
+.display .line1, .display .line2 {
+  display: block;
+  font-size: clamp(40px, 6.5vw, 64px);
+  color: var(--text-strong);
+}
+.body-lg {
+  font-size: 18px;
+  line-height: 1.65;
+  margin-bottom: 36px;
+  color: var(--text-body);
+  max-width: 62ch;
+}
+.body-md {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text-body);
+  max-width: 65ch;
+}
+.body-sm {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-body);
+}
+.italic {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* Background numeral hidden */
+.bg-num { display: none; }
+
+/* Page transitions */
+.page {
+  display: none;
+  position: relative;
+  z-index: 1;
+  animation: snapIn 0.22s ease-out;
+}
+.page.active { display: block; }
+@keyframes snapIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Form fields */
+.field { margin-bottom: 32px; }
+.field-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-strong);
+  text-transform: none;
+  margin-bottom: 8px;
+  letter-spacing: -0.005em;
+}
+.field-label .qn {
+  display: inline-block;
+  color: var(--accent);
+  margin-right: 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  background: rgba(207, 250, 254, 0.08);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-pill);
+  vertical-align: 2px;
+}
+.field-probe {
+  display: block;
+  font-family: var(--font-body);
+  font-style: normal;
+  color: var(--text-body);
+  font-size: 14px;
+  margin-bottom: 14px;
+  line-height: 1.55;
+  max-width: 60ch;
+}
+input[type="text"], input[type="email"], input[type="number"], input[type="url"], textarea, select {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--rule);
+  color: var(--text-strong);
+  padding: 14px 18px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  border-radius: var(--radius-input);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+input[type="text"]::placeholder, input[type="email"]::placeholder, input[type="number"]::placeholder, input[type="url"]::placeholder, textarea::placeholder {
+  color: var(--text-faint);
+}
+input[type="text"]:hover, input[type="email"]:hover, input[type="number"]:hover, input[type="url"]:hover, textarea:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--rule-strong);
+}
+input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="url"]:focus, textarea:focus, select:focus {
+  border-color: var(--accent-border);
+  background: var(--bg-surface-hover);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+textarea { resize: vertical; min-height: 104px; font-family: var(--font-body); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .field-row { grid-template-columns: 1fr; } }
+
+/* Nav */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid var(--rule);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+button.btn {
+  background: var(--bg-surface);
+  color: var(--text-strong);
+  border: 1px solid var(--rule);
+  padding: 12px 22px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+button.btn:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+button.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+button.btn.primary {
+  background: var(--accent);
+  color: var(--accent-on);
+  border-color: rgba(165, 243, 252, 0.4);
+  font-weight: 600;
+  box-shadow: var(--shadow-cta);
+}
+button.btn.primary:hover {
+  background: var(--accent-deep);
+  border-color: rgba(165, 243, 252, 0.6);
+  color: var(--accent-on);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px -4px rgba(8, 51, 68, 0.55);
+}
+button.btn.secondary {
+  border-color: var(--rule);
+  color: var(--text-body);
+  background: transparent;
+}
+button.btn.secondary:hover { border-color: var(--accent-border); color: var(--accent); background: var(--bg-surface); }
+button.btn .arrow { margin-left: 8px; display: inline-block; transition: transform 0.2s; }
+button.btn.primary:hover .arrow { transform: translateX(3px); }
+
+.submit-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+.submit-actions .btn { flex: 0 0 auto; }
+
+.copy-toast {
+  display: inline-block;
+  margin-left: 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.copy-toast.show { opacity: 1; }
+
+/* Progress dots */
+.progress {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  background: var(--bg-surface);
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--rule);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--rule-strong);
+  background: transparent;
+  border-radius: var(--radius-pill);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.dot.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.25);
+  box-shadow: 0 0 12px var(--accent-glow-strong);
+}
+.dot.done {
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
+}
+
+/* Page 1 hero */
+.hero { padding: 16px 0 8px; }
+.hero .brand-line {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 500;
+  color: var(--accent);
+  font-size: 20px;
+  line-height: 1.4;
+  margin: 20px 0 28px;
+  max-width: 52ch;
+  letter-spacing: -0.01em;
+}
+
+/* Pull quote — soft glass card */
+.pq {
+  background: var(--bg-card);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-card);
+  padding: 28px 32px;
+  margin: 28px 0;
+  position: relative;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: var(--shadow-card-soft);
+}
+.pq::before, .pq::after { display: none; }
+.pq::after {
+  display: block;
+  content: "“";
+  position: absolute;
+  top: 12px;
+  right: 22px;
+  font-family: var(--font-display);
+  font-size: 60px;
+  color: var(--accent);
+  opacity: 0.5;
+  line-height: 1;
+  pointer-events: none;
+}
+.pq p {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 500;
+  color: var(--text-strong);
+  font-size: 22px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.pq cite {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-body);
+  text-transform: none;
+  margin-top: 14px;
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+/* BCD preview */
+.bcd-preview {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-card);
+  padding: 24px 28px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  max-height: 420px;
+  overflow-y: auto;
+  margin: 24px 0;
+  color: var(--text-tertiary);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: var(--shadow-card-soft);
+}
+
+.drop-instruction {
+  background: var(--bg-card);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-card);
+  padding: 24px 28px;
+  margin: 28px 0;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: var(--shadow-card-soft), 0 0 48px var(--accent-glow);
+}
+.drop-instruction h4 {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: inline-block;
+  padding: 5px 12px;
+  background: rgba(207, 250, 254, 0.08);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-pill);
+}
+.drop-instruction code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  background: var(--bg-surface);
+  padding: 3px 10px;
+  border: 1px solid var(--rule);
+  color: var(--accent);
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+/* Conditional reveal */
+.conditional { display: none; }
+.conditional.show { display: block; }
+
+.help-note {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0;
+  color: var(--text-body);
+  text-transform: none;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.help-note .tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  margin-right: 0;
+  font-size: 11px;
+  letter-spacing: 0;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 500;
+}
+.help-note .tag.hi {
+  color: var(--warn);
+  border-color: rgba(252, 211, 77, 0.35);
+  background: var(--warn-soft);
+}
+
+/* Hairline rule */
+.hr { height: 1px; background: var(--rule); margin: 36px 0; border: 0; }
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+<div class="header-mark">
+  <div class="left"><span class="sec">Forge · Intake</span></div>
+  <div class="middle"><span id="page-mark">P. 01 / 07</span></div>
+  <div class="right"></div>
+</div>
+
+<!-- PAGE 1 — Welcome + Email Gate -->
+<section class="page active" id="page1" data-page="1">
+  <div class="bg-num">01</div>
+  <div class="sec-num">01 · Welcome</div>
+  <h1 class="display">
+    <span class="line1">Where your business is.</span>
+    <span class="line2">Where it could go.</span>
+  </h1>
+  <p class="brand-line italic">A clear plan for your business, backed by market data.</p>
+  <p class="body-lg">This intake takes about 20 minutes. Honest answers in, sharp analysis out. The form runs locally in your browser and auto-saves between pages, so you can step away and come back.</p>
+  <div class="hr"></div>
+  <div class="field">
+    <label class="field-label" for="applicant_name"><span class="qn">→</span>Your name</label>
+    <span class="field-probe">How you'd like to be addressed on your report. First name is fine.</span>
+    <input type="text" id="applicant_name" name="applicant_name" placeholder="e.g. Scott Wise" required>
+  </div>
+  <div class="field">
+    <label class="field-label" for="email"><span class="qn">→</span>Email</label>
+    <span class="field-probe">Used once, to send you your report. No newsletter. No follow-up sequence.</span>
+    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+  </div>
+  <div class="field">
+    <label class="field-label" for="business_name"><span class="qn">→</span>Business name</label>
+    <input type="text" id="business_name" name="business_name" placeholder="The name on the door" required>
+  </div>
+  <div class="field">
+    <label class="field-label" for="business_url"><span class="qn">→</span>Business website</label>
+    <span class="field-probe">If you have one. Forge scrapes the homepage and About page for context that fills gaps in this questionnaire — offer structure, target market, current pricing, founder bio. Leave blank if you don't have a site yet.</span>
+    <input type="url" id="business_url" name="business_url" placeholder="https://example.com" inputmode="url">
+  </div>
+  <div class="nav">
+    <div class="progress">
+      <span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+    <button class="btn primary" onclick="nextPage(1)">Begin<span class="arrow">→</span></button>
+  </div>
+</section>
+
+<!-- PAGE 2 — Business Basics -->
+<section class="page" id="page2" data-page="2">
+  <div class="bg-num">02</div>
+  <div class="sec-num">02 · Business basics</div>
+  <h2 class="display">
+    <span class="line1">What it is.</span>
+    <span class="line2">Who pays.</span>
+  </h2>
+  <p class="body-lg">Plain language. The fewer adjectives, the better.</p>
+  <div class="hr"></div>
+
+  <div class="field">
+    <label class="field-label" for="q1"><span class="qn">Q1</span>What does the business do, in one sentence?</label>
+    <span class="field-probe">No jargon. What value exchanges hands? Who gives what to whom?</span>
+    <textarea id="q1" name="q1" rows="2" required></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q2"><span class="qn">Q2</span>How does it make money?</label>
+    <span class="field-probe">Revenue model. One-time, recurring, transactional, usage-based, commission, other. Be specific.</span>
+    <textarea id="q2" name="q2" rows="2" required></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q3"><span class="qn">Q3</span>Who is the customer?</label>
+    <span class="field-probe">The actual person who pays. Not "target market" — the specific human with the specific situation.</span>
+    <textarea id="q3" name="q3" rows="2" required></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q4"><span class="qn">Q4</span>What is the single biggest problem right now?</label>
+    <span class="field-probe">If you list several, force one. Multiple problems means we pick the wrong lenses.</span>
+    <textarea id="q4" name="q4" rows="2" required></textarea>
+  </div>
+
+  <div class="nav">
+    <div class="progress">
+      <span class="dot done"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" onclick="prevPage(2)">← Back</button>
+      <button class="btn primary" onclick="nextPage(2)">Next<span class="arrow">→</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 3 — The Numbers -->
+<section class="page" id="page3" data-page="3">
+  <div class="bg-num">03</div>
+  <div class="sec-num">03 · The numbers</div>
+  <h2 class="display">
+    <span class="line1">Rough is fine.</span>
+    <span class="line2">Untracked is data.</span>
+  </h2>
+  <p class="body-lg">We need rough magnitudes, not audited financials. "I don't track this" is a valid answer and itself a diagnosis.</p>
+  <div class="hr"></div>
+
+  <div class="field">
+    <label class="field-label" for="q10_revenue"><span class="qn">Q10a</span>Annual revenue</label>
+    <span class="field-probe">Or monthly recurring × 12. Approximate.</span>
+    <input type="text" id="q10_revenue" name="q10_revenue" placeholder="e.g. $250K, $2.4M, untracked">
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q10_margin"><span class="qn">Q10b</span>Gross margin %</label>
+    <span class="field-probe">Revenue minus direct cost of delivery, as a percentage. Best guess.</span>
+    <input type="text" id="q10_margin" name="q10_margin" placeholder="e.g. 60%, untracked">
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q10_customers"><span class="qn">Q10c</span>Active customer count</label>
+    <span class="field-probe">Or monthly active users, or active clients. Whatever maps to "people currently paying."</span>
+    <input type="text" id="q10_customers" name="q10_customers" placeholder="e.g. 47, ~200, 12K">
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q11_hours"><span class="qn">Q11a</span>Hours per week you can actually execute on changes</label>
+    <span class="field-probe">Not hours running the existing business. Extra hours available for executing on a redesign.</span>
+    <input type="text" id="q11_hours" name="q11_hours" placeholder="e.g. 5, 15, 40">
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q11_capital"><span class="qn">Q11b</span>Capital available to fund changes (next 90 days)</label>
+    <span class="field-probe">A number or range. This calibrates what kind of moves we can recommend.</span>
+    <input type="text" id="q11_capital" name="q11_capital" placeholder="e.g. $5K, $50K, none">
+  </div>
+
+  <div class="nav">
+    <div class="progress">
+      <span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" onclick="prevPage(3)">← Back</button>
+      <button class="btn primary" onclick="nextPage(3)">Next<span class="arrow">→</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 4 — Problem & History -->
+<section class="page" id="page4" data-page="4">
+  <div class="bg-num">04</div>
+  <div class="sec-num">04 · Problem &amp; history</div>
+  <h2 class="display">
+    <span class="line1">What you've tried.</span>
+    <span class="line2">What you'd keep.</span>
+  </h2>
+  <div class="hr"></div>
+
+  <div class="field">
+    <label class="field-label" for="q5"><span class="qn">Q5</span>What does "winning" look like in 12 months?</label>
+    <span class="field-probe">A number, a state, a specific condition. Not "grow the business."</span>
+    <textarea id="q5" name="q5" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q6"><span class="qn">Q6</span>What constraints are non-negotiable?</label>
+    <span class="field-probe">Capital, time, team size, regulatory, personal commitments. What limits options structurally?</span>
+    <textarea id="q6" name="q6" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q7"><span class="qn">Q7</span>What has already been tried?</label>
+    <span class="field-probe">Approaches that failed or plateaued. Why did they stop working? Stops us from re-recommending dead paths.</span>
+    <textarea id="q7" name="q7" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q8"><span class="qn">Q8</span>What does the business do better than anyone else?</label>
+    <span class="field-probe">Even if small. The actual edge. If "nothing" — that's the diagnosis.</span>
+    <textarea id="q8" name="q8" rows="2"></textarea>
+  </div>
+
+  <div class="nav">
+    <div class="progress">
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" onclick="prevPage(4)">← Back</button>
+      <button class="btn primary" onclick="nextPage(4)">Next<span class="arrow">→</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 5 — Position & Constraints (Conditional) -->
+<section class="page" id="page5" data-page="5">
+  <div class="bg-num">05</div>
+  <div class="sec-num">05 · Position &amp; constraints</div>
+  <h2 class="display">
+    <span class="line1">Where competition sits.</span>
+    <span class="line2">Where the leak is.</span>
+  </h2>
+  <p class="body-lg">The questions on this page surface based on what you told us. Answer what applies. Skip what doesn't.</p>
+  <div class="hr"></div>
+
+  <div class="field">
+    <label class="field-label" for="q15"><span class="qn">Q15</span>Who are the three closest alternatives?</label>
+    <span class="field-probe">When a customer doesn't choose you, where do they go? Name them. Why do customers pick them instead?</span>
+    <textarea id="q15" name="q15" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q16"><span class="qn">Q16</span>If the business closed tomorrow, who would miss it and why?</label>
+    <span class="field-probe">This surfaces the real value proposition — often different from the stated one.</span>
+    <textarea id="q16" name="q16" rows="2"></textarea>
+  </div>
+
+  <div class="conditional" data-trigger="operational">
+    <div class="field">
+      <label class="field-label" for="q17"><span class="qn">Q17</span>What's the one thing that, if removed, would break everything?</label>
+      <span class="field-probe">The load-bearing element. Everything else is potentially removable.</span>
+      <textarea id="q17" name="q17" rows="2"></textarea>
+    </div>
+  </div>
+
+  <div class="conditional" data-trigger="retention">
+    <p class="help-note"><span class="tag hi">Surfaced</span>You mentioned churn or retention. Two more.</p>
+    <div class="field">
+      <label class="field-label" for="q21"><span class="qn">Q21</span>What's churn or lifetime like, and why do customers leave?</label>
+      <span class="field-probe">Specific reasons in their words. Not "they didn't see value."</span>
+      <textarea id="q21" name="q21" rows="2"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label" for="q22"><span class="qn">Q22</span>What would a customer lose by switching away today?</label>
+      <span class="field-probe">If "nothing" — that's the lock-in problem.</span>
+      <textarea id="q22" name="q22" rows="2"></textarea>
+    </div>
+  </div>
+
+  <div class="conditional" data-trigger="incentive">
+    <p class="help-note"><span class="tag hi">Surfaced</span>You mentioned alignment or team friction. Two more.</p>
+    <div class="field">
+      <label class="field-label" for="q23"><span class="qn">Q23</span>Who are the key stakeholders and what are they actually rewarded for?</label>
+      <span class="field-probe">Formal incentives AND informal ones (status, autonomy, fewer headaches). They diverge often.</span>
+      <textarea id="q23" name="q23" rows="3"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label" for="q24"><span class="qn">Q24</span>Where do those incentives conflict with what the business needs?</label>
+      <span class="field-probe">One specific example. Be concrete.</span>
+      <textarea id="q24" name="q24" rows="2"></textarea>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="progress">
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" onclick="prevPage(5)">← Back</button>
+      <button class="btn primary" onclick="nextPage(5)">Next<span class="arrow">→</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 6 — Operator Edge -->
+<section class="page" id="page6" data-page="6">
+  <div class="bg-num">06</div>
+  <div class="sec-num">06 · Operator edge</div>
+  <h2 class="display">
+    <span class="line1">Most frameworks</span>
+    <span class="line2">skip this.</span>
+  </h2>
+  <p class="body-lg">Most optimization tools treat operators as interchangeable. We don't. These six surface where your specific background creates a position no one else can credibly occupy.</p>
+  <div class="pq">
+    <p>"The best part is no part. The best operator is the one with the unfair edge."</p>
+    <cite>Distill operating principle</cite>
+  </div>
+  <div class="hr"></div>
+
+  <div class="field">
+    <label class="field-label" for="q25"><span class="qn">Q25</span>What is your background before this business?</label>
+    <span class="field-probe">Industries, roles, skills built over years. Go back as far as relevant.</span>
+    <textarea id="q25" name="q25" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q26"><span class="qn">Q26</span>What do you know that most people in your market don't?</label>
+    <span class="field-probe">Insider knowledge, lived experience, unconventional perspective. What do you see that they miss?</span>
+    <textarea id="q26" name="q26" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q27"><span class="qn">Q27</span>What industry or domain outside your current one do you understand deeply?</label>
+    <span class="field-probe">Include hobbies, communities, past lives. Deep knowledge of any system counts.</span>
+    <textarea id="q27" name="q27" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q28"><span class="qn">Q28</span>What "obvious" thing in another field would be radical if applied to yours?</label>
+    <span class="field-probe">Cross-domain imports are the most reliable source of genuine innovation.</span>
+    <textarea id="q28" name="q28" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q29"><span class="qn">Q29</span>Who are you uniquely credible to?</label>
+    <span class="field-probe">A specific customer type who'd trust you more than anyone else, based on your story.</span>
+    <textarea id="q29" name="q29" rows="2"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="q30"><span class="qn">Q30</span>What's a belief you hold about this market that most people in it think is wrong?</label>
+    <span class="field-probe">If true, it's a moat. If wrong, surface it now before we design around a false premise.</span>
+    <textarea id="q30" name="q30" rows="3"></textarea>
+  </div>
+
+  <div class="nav">
+    <div class="progress">
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" onclick="prevPage(6)">← Back</button>
+      <button class="btn primary" onclick="nextPage(6)">Next<span class="arrow">→</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 7 — Hypothesis + Submit -->
+<section class="page" id="page7" data-page="7">
+  <div class="bg-num">07</div>
+  <div class="sec-num">07 · Your hypothesis</div>
+  <h2 class="display">
+    <span class="line1">Where do you think</span>
+    <span class="line2">the lever is?</span>
+  </h2>
+  <p class="body-lg">Your guess at where margin or share would come from if the business were redesigned. We may agree or contradict. Either way, we need to know your hypothesis.</p>
+  <div class="hr"></div>
+
+  <div class="field">
+    <label class="field-label" for="q9"><span class="qn">Q9</span>Where would higher margin or market share come from?</label>
+    <span class="field-probe">One sentence: "If we [did X], margin/share would improve because [reason]."</span>
+    <textarea id="q9" name="q9" rows="4" placeholder="If we _________, margin/share would improve because _________."></textarea>
+  </div>
+
+  <div class="nav">
+    <div class="progress">
+      <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" onclick="prevPage(7)">← Back</button>
+      <button class="btn primary" onclick="submitForm()">Submit<span class="arrow">→</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 8 — Result -->
+<section class="page" id="page8" data-page="8">
+  <div class="bg-num">✓</div>
+  <div class="sec-num">Done · BCD generated</div>
+  <h2 class="display">
+    <span class="line1">Your business context</span>
+    <span class="line2">is ready.</span>
+  </h2>
+  <p class="body-lg">Below is your Business Context Document. Download it. Save it.</p>
+
+  <div class="drop-instruction">
+    <h4>Next step — pick one</h4>
+    <p class="body-md" style="margin-top:10px">
+      <strong style="color:var(--text-strong)">If you're attending a workshop:</strong> click <em style="color:var(--accent);font-style:normal">Email to facilitator</em>. We'll receive your context and generate your intelligence report before the session.
+    </p>
+    <p class="body-md" style="margin-top:10px">
+      <strong style="color:var(--text-strong)">If you're running Forge yourself:</strong> click <em style="color:var(--accent);font-style:normal">Download BCD</em>, then save the file to <code>~/forge-intake/</code> or upload it directly to Cowork / Claude Code and run <code>/optimize</code>.
+    </p>
+  </div>
+
+  <div class="submit-actions">
+    <button class="btn primary" onclick="emailBCD()">✉ Email to facilitator<span class="arrow">→</span></button>
+    <button class="btn secondary" onclick="downloadBCD()">↓ Download BCD</button>
+    <button class="btn secondary" onclick="copyBCD()" id="copy-btn">⧉ Copy to clipboard</button>
+  </div>
+
+  <div class="bcd-preview" id="bcd-preview"></div>
+
+  <div class="hr"></div>
+  <p class="body-sm italic">A clear plan for your business, backed by market data.</p>
+</section>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// FACILITATOR CONFIG — edit before distributing this form.
+// ─────────────────────────────────────────────────────────────
+const FACILITATOR_EMAIL = 'facilitator@distill.local';
+const FACILITATOR_LABEL = 'Forge Facilitator';
+
+const STORAGE_KEY = 'forge-intake-v1';
+
+// Page navigation
+let currentPage = 1;
+const TOTAL_PAGES = 7;
+
+function showPage(n) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page' + n).classList.add('active');
+  document.getElementById('page-mark').textContent = 'P. ' + String(n).padStart(2,'0') + ' / 07';
+  currentPage = n;
+  window.scrollTo({top: 0, behavior: 'instant'});
+  saveState();
+}
+
+function validatePage(n) {
+  if (n === 1) {
+    const applicantName = document.getElementById('applicant_name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const name = document.getElementById('business_name').value.trim();
+    const url = document.getElementById('business_url').value.trim();
+    if (!applicantName) { alert('Your name is required.'); return false; }
+    if (!email || !email.includes('@')) { alert('A valid email is required.'); return false; }
+    if (!name) { alert('Business name is required.'); return false; }
+    if (url && !/^https?:\/\/[^\s.]+\.[^\s]+/i.test(url)) {
+      alert('Business website should start with http:// or https:// and look like a real URL. Leave blank if you don\'t have one.');
+      return false;
+    }
+  }
+  if (n === 2) {
+    const requireds = ['q1','q2','q3','q4'];
+    for (const id of requireds) {
+      if (!document.getElementById(id).value.trim()) {
+        alert('Please answer all four questions before continuing.');
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function detectTriggers() {
+  const q4 = (document.getElementById('q4')?.value || '').toLowerCase();
+  const q7 = (document.getElementById('q7')?.value || '').toLowerCase();
+  const combined = q4 + ' ' + q7;
+  const triggers = {
+    operational: /complex|too much|overwhelm|too many|chaos|messy|operations|workload|busy/i.test(combined),
+    retention: /churn|retention|losing customers|cancel|leave|attrition|leak/i.test(combined),
+    incentive: /alignment|team|incentive|reward|motivation|partner|stakeholder|conflict/i.test(combined)
+  };
+  document.querySelectorAll('.conditional').forEach(el => {
+    const trig = el.dataset.trigger;
+    if (triggers[trig]) el.classList.add('show');
+    else el.classList.remove('show');
+  });
+}
+
+function nextPage(from) {
+  if (!validatePage(from)) return;
+  if (from === 4) detectTriggers();
+  if (from < TOTAL_PAGES) showPage(from + 1);
+}
+function prevPage(from) {
+  if (from > 1) showPage(from - 1);
+}
+
+// Auto-save
+function saveState() {
+  const data = {};
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    if (el.id) data[el.id] = el.value;
+  });
+  data._page = currentPage;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    Object.keys(data).forEach(k => {
+      if (k.startsWith('_')) return;
+      const el = document.getElementById(k);
+      if (el) el.value = data[k];
+    });
+    if (data._page && data._page >= 1 && data._page <= TOTAL_PAGES) {
+      showPage(data._page);
+    }
+  } catch(e) {}
+}
+document.addEventListener('input', () => saveState());
+loadState();
+
+// BCD generation
+function buildBCD() {
+  function v(id) { return (document.getElementById(id)?.value || '').trim() || '_(not provided)_'; }
+  const businessName = v('business_name');
+  const today = new Date().toISOString().slice(0,10);
+  const slug = businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'business';
+
+  let md = '# Business Context Document\n';
+  md += 'Generated by: Forge Intake v1.0\n';
+  md += 'Date: ' + today + '\n';
+  md += 'Operator name: ' + v('applicant_name') + '\n';
+  md += 'Operator email: ' + v('email') + '\n';
+  const businessUrl = v('business_url');
+  if (businessUrl) md += 'Business website: ' + businessUrl + '\n';
+  md += '\n## Core Business\n';
+  md += '- Business name: ' + businessName + '\n';
+  md += '- Operator name: ' + v('applicant_name') + '\n';
+  if (businessUrl) md += '- Business website: ' + businessUrl + '\n';
+  md += '- What it does: ' + v('q1') + '\n';
+  md += '- Revenue model: ' + v('q2') + '\n';
+  md += '- Customer: ' + v('q3') + '\n';
+  md += '- Primary problem: ' + v('q4') + '\n';
+  md += '- 12-month winning condition: ' + v('q5') + '\n';
+  md += '- Non-negotiable constraints: ' + v('q6') + '\n';
+  md += "- What's been tried (and failed): " + v('q7') + '\n';
+  md += '- Current edge: ' + v('q8') + '\n';
+  md += '- Margin/share lever hypothesis: ' + v('q9') + '\n';
+  md += '- Quantitative baseline:\n';
+  md += '  - Revenue: ' + v('q10_revenue') + '\n';
+  md += '  - Gross margin %: ' + v('q10_margin') + '\n';
+  md += '  - Customer count: ' + v('q10_customers') + '\n';
+  md += '- Execution capacity (next 90 days):\n';
+  md += '  - Operator hours/week available: ' + v('q11_hours') + '\n';
+  md += '  - Capital available: ' + v('q11_capital') + '\n\n';
+  md += '## Diagnostic Depth\n';
+  const optional = ['q15','q16','q17','q21','q22','q23','q24'];
+  let anyDD = false;
+  optional.forEach(id => {
+    const val = (document.getElementById(id)?.value || '').trim();
+    if (val) { md += '- ' + id.toUpperCase() + ': ' + val + '\n'; anyDD = true; }
+  });
+  if (!anyDD) md += '_(none surfaced)_\n';
+  md += '\n## Operator Edge Profile\n';
+  md += '- Background before this business: ' + v('q25') + '\n';
+  md += '- Insider knowledge: ' + v('q26') + '\n';
+  md += '- Cross-domain depth: ' + v('q27') + '\n';
+  md += '- Cross-domain import opportunity: ' + v('q28') + '\n';
+  md += '- Unique credibility target: ' + v('q29') + '\n';
+  md += '- Contrarian market belief: ' + v('q30') + '\n';
+  return { md, slug, today };
+}
+
+function submitForm() {
+  const { md, slug, today } = buildBCD();
+  document.getElementById('bcd-preview').textContent = md;
+  showPage(8);
+  window._bcdContent = md;
+  window._bcdFilename = slug + '-' + today + '.bcd.md';
+}
+
+function downloadBCD() {
+  const blob = new Blob([window._bcdContent], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = window._bcdFilename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function copyBCD() {
+  const btn = document.getElementById('copy-btn');
+  try {
+    await navigator.clipboard.writeText(window._bcdContent);
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  } catch (e) {
+    alert('Clipboard access blocked. Use Download instead.');
+  }
+}
+
+function emailBCD() {
+  const applicant = (document.getElementById('applicant_name').value || 'Forge applicant').trim();
+  const business = (document.getElementById('business_name').value || 'business').trim();
+  const subject = '[Forge Intake] ' + business + ' — ' + applicant;
+  const downloadedName = window._bcdFilename || 'forge-bcd.md';
+  const shortIntro =
+    'Hi,' + '\n\n' +
+    'I just completed the Forge intake questionnaire.' + '\n\n' +
+    'My Business Context Document is attached as: ' + downloadedName + '\n' +
+    '(If you do not see an attachment: I will paste the BCD content in a follow-up message, or you can ask me to re-send.)' + '\n\n' +
+    'Looking forward to the report.' + '\n\n' +
+    '— ' + applicant + '\n';
+  const bodyLen = encodeURIComponent(window._bcdContent || '').length;
+  let body = shortIntro;
+  if (bodyLen < 1500 && window._bcdContent) {
+    body += '\n--- BCD CONTENT BELOW ---\n\n' + window._bcdContent;
+  }
+  downloadBCD();
+  const href = 'mailto:' + encodeURIComponent(FACILITATOR_EMAIL) +
+               '?subject=' + encodeURIComponent(subject) +
+               '&body=' + encodeURIComponent(body);
+  window.location.href = href;
+}
+</script>
+</body>
+</html>

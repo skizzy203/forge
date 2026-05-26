@@ -33,6 +33,8 @@ This skill emits a customized self-contained HTML questionnaire artifact for fac
 
 1. Read the template at `${CLAUDE_SKILL_DIR}/templates/questionnaire.html`. It is a complete, self-contained HTML file with inline CSS, inline JavaScript, and only one external dependency (Google Fonts).
 
+   **Template variant.** A parallel `${CLAUDE_SKILL_DIR}/templates/questionnaire-pulsedesk.html` exists with the same form fields, validation, BCD generation, conditional reveal logic, and `FACILITATOR_EMAIL` constant — only the visual language differs (softer modern SaaS aesthetic: Plus Jakarta Sans, pill buttons, mint-cyan glass cards, dark-only). Use it when the operator asks for the "Pulsedesk template", "the new template", "the modern intake", "the SaaS variant", or otherwise references the Pulsedesk look. Default to `questionnaire.html` otherwise. Customization steps below apply identically to either file.
+
 2. **Set the facilitator email.** Near the top of the `<script>` block the template has a `FACILITATOR_EMAIL` constant set to a placeholder (`'facilitator@distill.local'`). Replace it with the actual email of the workshop facilitator distributing this form — that's the address the "Email to Facilitator" button mails BCDs to. If the user hasn't given you their email, ask once before emitting the form (this is the only piece you cannot reasonably default). Also update `FACILITATOR_LABEL` if they want a custom display name in the subject line.
 
 3. If the user has asked for any additional customization (workshop name, branding line, custom welcome copy), apply those edits to the template.

@@ -274,6 +274,15 @@ All six diagrams use the same theme-reactive Mermaid init block from `visual-pri
 
 Load `${CLAUDE_SKILL_DIR}/templates/report.html`. The template has placeholder tokens like `{{applicant_name}}`, `{{business_name}}`, `{{section_2_market_brief}}`, `{{as_is_mermaid}}`, `{{move_1_paragraph}}`, etc.
 
+### Template variant selection
+
+Two parallel templates exist. Both expose the **identical** `{{token}}` set, so the substitution logic in this phase is template-agnostic — only the file loaded changes.
+
+- **`report.html`** (default) — the terminal-noir intelligence brief. Dark/light toggle, JetBrains Mono labels, sharp corners, sci-fi register. Use unless the operator asks otherwise.
+- **`report-nexus.html`** — Nexus Core autonomous-systems aesthetic. Dark/light toggle, Bricolage Grotesque display, Three.js WebGL hero, Tailwind layout, cyan accent. Same content, same tokens, same Mermaid theming — only the visual language differs.
+
+Pick `report-nexus.html` when the operator says any of: "Nexus template", "Nexus theme", "cyber template", "autonomous theme", "the dark sci-fi variant", "variant 2", "the new template", or otherwise references the Nexus or autonomous-systems look. If unclear, ask once which variant they want before rendering. Do not switch variants mid-run.
+
 ### Mermaid loading (CDN + offline graceful fallback)
 
 The template loads Mermaid via the CDN ESM import in the rendered report. A small detection script runs three seconds after page load: if `window.mermaid` is still undefined (CDN unreachable, browser offline, etc.), every `.mermaid` block is replaced with a graceful notice telling the reader to reconnect. Reports degrade visibly rather than silently producing blank diagram divs.
