@@ -71,12 +71,14 @@ body {
 }
 .display-lg {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: clamp(28px, 3.5vw, 48px);
+  font-size: clamp(32px, 4vw, 54px);
   font-weight: 500;
-  line-height: 1.1;
+  line-height: 1.08;
   letter-spacing: -0.01em;
+  text-transform: uppercase;
   color: var(--text);
 }
+.display-accent { color: var(--accent); }
 .display-md {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: clamp(20px, 2vw, 28px);
@@ -296,7 +298,7 @@ details summary:hover { color: var(--accent); }
 details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.7; color: var(--text-2); }
 
 /* ─── SUB-HEADINGS ───────────────────────────── */
-.sub-head { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin: 40px 0 14px; }
+.sub-head { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin: 40px 0 14px; }
 
 /* ─── PREPARED-FOR ───────────────────────────── */
 .prepared-for { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); margin-bottom: 20px; }
@@ -561,7 +563,7 @@ details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; 
 <!-- ════════════════════════════════════════════ -->
 <section class="nexus-section" id="sec2">
   <div class="badge badge-accent" style="margin-bottom:20px"><span class="status-dot"></span><span>// 02 · Market Intelligence Brief</span></div>
-  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">Where the market is. What it's telling you.</h2>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">Where the market is.<br><span class="display-accent">What it's telling you.</span></h2>
 
   <div class="callout">
     <div class="label">Total addressable market</div>
@@ -611,7 +613,7 @@ details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; 
     <span class="status-dot" style="background:var(--danger);box-shadow:0 0 8px var(--danger)"></span>
     <span>// 03 · Where the Business Is Today</span>
   </div>
-  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">What's binding. What's leaking.</h2>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">What's binding.<br><span class="display-accent">What's leaking.</span></h2>
 
   <p class="body-lg" style="margin-bottom:24px">{{as_is_paragraph}}</p>
 
@@ -653,7 +655,7 @@ details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; 
 <!-- ════════════════════════════════════════════ -->
 <section class="nexus-section" id="sec4">
   <div class="badge badge-accent" style="margin-bottom:20px"><span class="status-dot"></span><span>// 04 · Optimization Analysis</span></div>
-  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">The lenses applied. What each surfaced.</h2>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">The lenses applied.<br><span class="display-accent">What each surfaced.</span></h2>
 
   <p class="sub-head">4.1 — Diagnose findings</p>
   <div class="grid-auto cols-2">
@@ -763,7 +765,7 @@ details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; 
 <!-- ════════════════════════════════════════════ -->
 <section class="nexus-section" id="sec6">
   <div class="badge badge-accent" style="margin-bottom:20px"><span class="status-dot"></span><span>// 06 · Implementation Plan</span></div>
-  <h2 class="display-lg" style="max-width:22ch;margin-bottom:16px">Three moves. In order.</h2>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:16px">Three moves.<br><span class="display-accent">In order.</span></h2>
   <p class="body-lg" style="margin-bottom:28px">What to do on Monday.</p>
 
   <div class="moves">
@@ -902,7 +904,7 @@ details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; 
     <span class="status-dot" style="background:var(--danger);box-shadow:0 0 8px var(--danger);animation-delay:1.2s"></span>
     <span>// 08 · Pressure Test</span>
   </div>
-  <h2 class="display-lg" style="max-width:22ch;margin-bottom:16px">Three attacks. What survives.</h2>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:16px">Three attacks.<br><span class="display-accent">What survives.</span></h2>
   <p class="body-lg" style="margin-bottom:28px">{{pt_intro_paragraph}}</p>
 
   <p class="sub-head">8.1 — Dialectical test</p>
