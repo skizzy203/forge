@@ -1,0 +1,1456 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge Intelligence Report — Mechanical Magic LLC</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── DESIGN TOKENS ──────────────────────────── */
+:root {
+  --warn:    #FCD34D;
+  --danger:  #F87171;
+  --success: #34D399;
+  --info:    #C4B5FD;
+}
+[data-theme="dark"] {
+  --bg:           #050505;
+  --surface:      #0a0a0a;
+  --surface-2:    #18181B;
+  --border:       rgba(255,255,255,0.1);
+  --text:         #FFFFFF;
+  --text-2:       #A1A1AA;
+  --text-3:       rgba(255,255,255,0.4);
+  --header-bg:    rgba(5,5,5,0.88);
+  --accent:       #00E5FF;
+  --accent-dim:   #00CCE5;
+  --accent-glow:  rgba(0,229,255,0.12);
+  --accent-border:rgba(0,229,255,0.3);
+  --bg-wash:      radial-gradient(circle at 50% 0%, rgba(0,229,255,0.07) 0%, transparent 60%);
+}
+[data-theme="light"] {
+  --bg:           #f4f4f5;
+  --surface:      #ffffff;
+  --surface-2:    #f0f0f4;
+  --border:       rgba(0,0,0,0.09);
+  --text:         #09090b;
+  --text-2:       #52525b;
+  --text-3:       rgba(0,0,0,0.35);
+  --header-bg:    rgba(244,244,245,0.92);
+  --accent:       #0099AA;
+  --accent-dim:   #007A88;
+  --accent-glow:  rgba(0,153,170,0.08);
+  --accent-border:rgba(0,153,170,0.3);
+  --bg-wash:      radial-gradient(circle at 50% 0%, rgba(0,180,200,0.05) 0%, transparent 60%);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg);
+  background-image: var(--bg-wash);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+/* ─── TYPOGRAPHY ─────────────────────────────── */
+.display-xl {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.display-lg {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(28px, 3.5vw, 48px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.display-md {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text);
+}
+.body-lg { font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7;  color: var(--text-2); max-width: 64ch; }
+.body-md { font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.65; color: var(--text-2); }
+.body-sm { font-family: 'Inter', sans-serif; font-size: 13px; line-height: 1.6;  color: var(--text-2); }
+.eyebrow  {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.15em;
+  color: var(--text-3);
+}
+
+/* ─── LAYOUT ─────────────────────────────────── */
+.frame { max-width: 1280px; margin: 0 auto; padding: 0 40px 120px; }
+@media (max-width: 768px) { .frame { padding: 0 20px 80px; } }
+
+/* ─── SURFACES ───────────────────────────────── */
+.card        { background: var(--surface); border: 1px solid var(--border);        border-radius: 20px; }
+.card-sm     { background: var(--surface); border: 1px solid var(--border);        border-radius: 8px;  }
+.card-accent { background: var(--surface); border: 1px solid var(--accent-border); border-radius: 20px; box-shadow: 0 0 40px var(--accent-glow); }
+
+/* ─── BADGES ─────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  border-radius: 9999px;
+  padding: 4px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+.badge-accent { border-color: var(--accent-border); background: rgba(0,229,255,0.07); color: var(--accent); }
+[data-theme="light"] .badge { background: rgba(0,0,0,0.04); }
+
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* severity tags — class names match pulsedesk for token compatibility */
+.tag { display: inline-block; border-radius: 9999px; padding: 3px 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; }
+.tag.hi      { color: var(--warn);    border: 1px solid rgba(252,211,77,0.35);  background: rgba(252,211,77,0.07); }
+.tag.med     { color: var(--accent);  border: 1px solid var(--accent-border);   background: rgba(0,229,255,0.07); }
+.tag.low     { color: var(--text-2);  border: 1px solid var(--border); }
+.tag.danger  { color: var(--danger);  border: 1px solid rgba(248,113,113,0.35); background: rgba(248,113,113,0.07); }
+.tag.success { color: var(--success); border: 1px solid rgba(52,211,153,0.35);  background: rgba(52,211,153,0.07); }
+
+/* ─── READING PROGRESS ───────────────────────── */
+#reading-progress {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  z-index: 100; transition: width 0.08s linear; pointer-events: none;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* ─── STICKY HEADER ──────────────────────────── */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--header-bg);
+  backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 40px; height: 56px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+@media (max-width: 768px) { .site-header-inner { padding: 0 20px; } }
+
+/* ─── SECTIONS ───────────────────────────────── */
+.nexus-section { margin-bottom: 112px; padding-top: 8px; }
+@media (max-width: 768px) { .nexus-section { margin-bottom: 72px; } }
+
+.fade-init .nexus-section { opacity: 0; transform: translateY(16px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.fade-init .nexus-section.in-view { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .fade-init .nexus-section { opacity: 1; transform: none; transition: none; } }
+
+/* ─── HERO ───────────────────────────────────── */
+.hero-wrap { border: 1px solid var(--border); border-radius: 20px; overflow: hidden; background: var(--surface); }
+.hero-inner { display: flex; min-height: 460px; }
+@media (max-width: 1024px) { .hero-inner { flex-direction: column; } }
+
+.hero-left {
+  flex: 1; padding: 48px 48px 40px;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; z-index: 10;
+}
+@media (max-width: 768px) { .hero-left { padding: 32px 24px; border-right: none; border-bottom: 1px solid var(--border); } }
+
+.hero-right {
+  width: 46%; min-height: 380px;
+  background: var(--surface-2);
+  overflow: hidden; flex-shrink: 0; position: relative;
+}
+@media (max-width: 1024px) { .hero-right { width: 100%; min-height: 240px; } }
+
+#hero-webgl { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+#hero-webgl canvas { display: block; width: 100%; height: 100%; }
+
+.hero-webgl-ui {
+  position: absolute; inset: 0; z-index: 10; padding: 24px;
+  display: flex; flex-direction: column; justify-content: space-between; pointer-events: none;
+}
+
+/* ─── METRICS STRIP ──────────────────────────── */
+.metrics-strip {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 20px 20px;
+  background: var(--surface); overflow: hidden;
+}
+@media (max-width: 900px)  { .metrics-strip { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px)  { .metrics-strip { grid-template-columns: repeat(2, 1fr); } }
+
+.metric-cell {
+  padding: 22px 16px; text-align: center;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.metric-cell:last-child { border-right: none; }
+.metric-value {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(16px, 2.2vw, 28px); font-weight: 500;
+  color: var(--accent); line-height: 1.15; margin-bottom: 8px;
+}
+.metric-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-3); }
+
+/* ─── PULL QUOTE ─────────────────────────────── */
+.pq { border: 1px solid var(--accent-border); border-radius: 20px; padding: 28px 32px; margin: 28px 0; background: var(--surface); box-shadow: 0 0 40px var(--accent-glow); }
+.pq p { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(17px, 1.8vw, 22px); font-weight: 400; line-height: 1.4; color: var(--text); margin-bottom: 12px; max-width: 60ch; }
+.pq cite { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-style: normal; }
+
+/* ─── CALLOUT ─────────────────────────────────── */
+.callout { border: 1px solid var(--accent-border); border-radius: 20px; padding: 24px 28px; margin: 24px 0; background: var(--surface); box-shadow: 0 0 30px var(--accent-glow); }
+.callout .label   { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 10px; }
+.callout .headline { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(17px, 1.8vw, 22px); font-weight: 500; line-height: 1.25; color: var(--text); margin-bottom: 10px; }
+.callout p { font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.65; color: var(--text-2); }
+
+/* ─── GRID CELLS ─────────────────────────────── */
+.grid-auto { display: grid; gap: 14px; margin: 18px 0; }
+.grid-auto.cols-2 { grid-template-columns: 1fr 1fr; }
+.grid-auto.cols-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 768px) { .grid-auto.cols-2, .grid-auto.cols-3 { grid-template-columns: 1fr; } }
+
+.cell { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px 22px; transition: border-color 0.2s; }
+.cell:hover { border-color: var(--accent-border); }
+.cell .cell-glyph { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; }
+.cell .cell-idx   { color: var(--text-3); margin-left: 2px; }
+.cell .cell-head  { font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 500; color: var(--text); margin-bottom: 8px; line-height: 1.2; }
+.cell .cell-body  { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.65; color: var(--text-2); margin-bottom: 10px; }
+.cell .cell-aside { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); }
+
+/* ─── INSIGHT TABLE ──────────────────────────── */
+.insight { border: 1px solid var(--accent-border); border-radius: 20px; overflow: hidden; margin: 24px 0; background: var(--surface); box-shadow: 0 0 30px var(--accent-glow); }
+.insight-row { display: flex; gap: 24px; align-items: baseline; padding: 14px 24px; border-bottom: 1px solid var(--border); }
+.insight-row:last-child { border-bottom: none; }
+.insight-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); min-width: 190px; flex-shrink: 0; }
+.insight-value { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.55; color: var(--text); }
+@media (max-width: 640px) { .insight-row { flex-direction: column; gap: 4px; } .insight-label { min-width: auto; } }
+
+/* ─── CONTRAST (AS-IS / PROPOSED) ───────────── */
+.contrast { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 28px 0; }
+@media (max-width: 768px) { .contrast { grid-template-columns: 1fr; } }
+.contrast-col { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px 28px; }
+.contrast-col.proposed { border-color: var(--accent-border); box-shadow: 0 0 40px var(--accent-glow); }
+.contrast-col .label        { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; display: block; }
+.contrast-col.as-is .label  { color: var(--text-3); }
+.contrast-col.proposed .label { color: var(--accent); }
+.contrast-col .as-is-title, .contrast-col .proposed-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-2); margin: 8px 0; }
+.contrast-col.proposed .proposed-title { color: var(--accent); }
+.contrast-col .hard-headline { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(18px, 2vw, 26px); font-weight: 500; line-height: 1.2; color: var(--text); margin-bottom: 14px; }
+.contrast-col ul { list-style: none; padding: 0; margin-bottom: 14px; }
+.contrast-col ul li { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.65; color: var(--text-2); padding: 5px 0 5px 16px; position: relative; }
+.contrast-col ul li::before { content: ""; position: absolute; left: 0; top: 12px; width: 5px; height: 5px; border-radius: 50%; background: var(--text-3); }
+.contrast-col.proposed ul li::before { background: var(--accent); }
+.contrast-col .closing { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-2); line-height: 1.5; }
+
+/* ─── DIAGRAMS ───────────────────────────────── */
+.diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin: 22px 0; overflow-x: auto; }
+.diagram.as-is   { border-color: rgba(248,113,113,0.22); }
+.diagram.proposed { border-color: var(--accent-border); box-shadow: 0 0 40px var(--accent-glow); }
+.diagram-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-3); margin-bottom: 16px; }
+.diagram.as-is .diagram-label   { color: var(--danger); }
+.diagram.proposed .diagram-label { color: var(--accent); }
+@media (max-width: 640px) { .diagram { padding: 16px 12px; } .diagram .mermaid { min-width: 520px; } .diagram .mermaid svg { max-width: none; width: auto; height: auto; } }
+
+/* ─── MOVE CARDS ─────────────────────────────── */
+.moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0; }
+@media (max-width: 768px) { .moves { grid-template-columns: 1fr; } }
+.move { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; transition: border-color 0.2s; }
+.move:hover { border-color: var(--accent-border); }
+a.move { text-decoration: none; color: inherit; display: block; }
+a.move:hover .headline { color: var(--accent); }
+.move .timing { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; display: inline-block; padding: 3px 10px; border-radius: 9999px; }
+.move.m1 .timing { color: var(--accent);   border: 1px solid var(--accent-border);        background: rgba(0,229,255,0.07); }
+.move.m2 .timing { color: var(--success);  border: 1px solid rgba(52,211,153,0.35);        background: rgba(52,211,153,0.07); }
+.move.m3 .timing { color: var(--info);     border: 1px solid rgba(196,181,253,0.35);       background: rgba(196,181,253,0.07); }
+.move .headline { font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 500; line-height: 1.25; color: var(--text); margin-bottom: 8px; transition: color 0.2s; }
+.move p { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; color: var(--text-2); }
+
+/* ─── COLLAPSIBLE ────────────────────────────── */
+details { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin: 8px 0; }
+details summary { padding: 13px 18px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); list-style: none; display: flex; justify-content: space-between; align-items: center; }
+details summary::-webkit-details-marker { display: none; }
+details summary::after { content: "+"; color: var(--accent); font-size: 16px; font-weight: 400; }
+details[open] summary::after { content: "−"; }
+details summary:hover { color: var(--accent); }
+details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.7; color: var(--text-2); }
+
+/* ─── SUB-HEADINGS ───────────────────────────── */
+.sub-head { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin: 40px 0 14px; }
+
+/* ─── PREPARED-FOR ───────────────────────────── */
+.prepared-for { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); margin-bottom: 20px; }
+.prepared-for .prep-label { color: var(--text-3); margin-right: 8px; }
+.prepared-for .prep-name  { color: var(--accent); }
+.prepared-for .prep-sep   { color: var(--text-3); margin: 0 8px; }
+
+/* ─── HAIRLINE ────────────────────────────────── */
+.nexus-hr { height: 1px; background: var(--border); margin: 48px 0; border: none; }
+
+/* ─── SOURCES ────────────────────────────────── */
+.sources { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.9; color: var(--text-2); }
+.sources a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+.sources a:hover { border-color: var(--accent); }
+
+/* ─── APPENDIX LIST ──────────────────────────── */
+.appendix-list { list-style: none; padding: 0; }
+.appendix-list li { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: default; transition: background 0.15s; outline: none; }
+.appendix-list li:last-child { border-bottom: none; }
+.appendix-list li:hover, .appendix-list li:focus-within { background: rgba(0,229,255,0.04); }
+.appendix-list .lens-name { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); display: block; }
+.appendix-list .lens-def { font-family: 'Inter', sans-serif; color: var(--text-2); display: block; font-size: 13px; line-height: 1.55; max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.25s ease; margin-top: 0; }
+.appendix-list li:hover .lens-def, .appendix-list li:focus-within .lens-def { max-height: 160px; opacity: 1; margin-top: 6px; }
+
+/* ─── FOOTER ─────────────────────────────────── */
+.site-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; margin-top: 80px; border-top: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-3); }
+
+/* ─── COUNT-UP ───────────────────────────────── */
+[data-countup] { font-variant-numeric: tabular-nums; }
+
+/* ─── STATUS DOT PULSE ───────────────────────── */
+@keyframes dot-pulse { 0%,100% { opacity:1; box-shadow: 0 0 8px var(--accent); } 50% { opacity:.4; box-shadow: 0 0 3px var(--accent); } }
+.status-dot { animation: dot-pulse 2.4s ease-in-out infinite; }
+
+/* ─── DIAGRAM EXPAND MODAL ───────────────────── */
+.diagram { position: relative; }
+.diagram-expand { position: absolute; top: 8px; right: 8px; background: var(--surface); color: var(--text-3); border: 1px solid var(--border); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; transition: all 0.15s; opacity: 0.7; border-radius: 4px; }
+.diagram-expand:hover, .diagram-expand:focus { color: var(--accent); border-color: var(--accent); opacity: 1; outline: none; }
+.diagram-modal { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.95); display: none; flex-direction: column; overflow: hidden; }
+.diagram-modal.open { display: flex; }
+.diagram-modal__panel { flex: 1; width: 100%; overflow: auto; padding: 56px 24px 24px; background: var(--bg); -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom; }
+.diagram-modal__close { position: fixed; top: 14px; right: 14px; z-index: 201; background: var(--surface); color: var(--text-3); border: 1px solid var(--border); width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1; cursor: pointer; transition: all 0.15s; border-radius: 4px; }
+.diagram-modal__close:hover, .diagram-modal__close:focus { color: var(--accent); border-color: var(--accent); outline: none; }
+.diagram-modal__svg { display: block; width: 100%; }
+.diagram-modal__svg svg { width: 100% !important; height: auto !important; max-width: none !important; min-width: 0; }
+.diagram-modal__label { position: fixed; top: 18px; left: 16px; z-index: 201; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: var(--text-3); text-transform: uppercase; }
+@media (max-width: 640px) { .diagram-modal__panel { padding: 56px 12px 24px; } .diagram-expand { width: 28px; height: 28px; } }
+
+/* ─── INDEX NAV DRAWER ───────────────────────── */
+.nav-toggle { background: transparent; border: 1px solid var(--border); color: var(--text-3); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 12px; cursor: pointer; transition: all 0.15s; border-radius: 4px; }
+.nav-toggle:hover, .nav-toggle.active { color: var(--accent); border-color: var(--accent); }
+.nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 99; }
+.nav-overlay.open { display: block; }
+.nav-drawer { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 100; transition: right 0.25s ease; display: flex; flex-direction: column; overflow: hidden; }
+.nav-drawer.open { right: 0; }
+.nav-drawer__header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.nav-drawer__title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--accent); font-weight: 600; text-transform: uppercase; }
+.nav-drawer__close { background: transparent; border: 1px solid var(--border); color: var(--text-3); font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; cursor: pointer; letter-spacing: 0.1em; transition: all 0.15s; border-radius: 4px; }
+.nav-drawer__close:hover { color: var(--accent); border-color: var(--accent); }
+.nav-drawer__list { list-style: none; padding: 12px 0; flex: 1; overflow-y: auto; margin: 0; }
+.nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; text-decoration: none; color: var(--text-3); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.15s; border-left: 2px solid transparent; }
+.nav-link:hover { color: var(--text); background: var(--accent-border); }
+.nav-link.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-border); }
+.nav-num { min-width: 20px; color: var(--text-3); font-size: 10px; }
+.nav-link.active .nav-num { color: var(--accent); }
+@media (max-width: 480px) { .nav-drawer { width: min(280px, 85vw); } .nav-drawer__close { min-height: 44px; min-width: 44px; padding: 8px 14px; } }
+
+/* ─── BE-LOGO DARK/LIGHT SWITCH ──────────────── */
+.be-logo { display: block; max-width: 160px; height: auto; margin-bottom: 16px; }
+.be-logo-light { display: none; }
+.be-logo-dark { display: block; }
+[data-theme="light"] .be-logo-light { display: block; }
+[data-theme="light"] .be-logo-dark { display: none; }
+
+/* ─── PRINT ──────────────────────────────────── */
+@media print {
+  #reading-progress, .theme-toggle, .nav-toggle, .nav-drawer, .nav-overlay, .hero-right, .diagram-expand, .diagram-modal { display: none !important; }
+  .site-header { position: static !important; background: transparent !important; backdrop-filter: none !important; border: none !important; }
+  [data-theme="dark"] { --bg: #fff; --surface: #fff; --surface-2: #f5f5f5; --border: #ddd; --text: #111; --text-2: #555; --text-3: #999; --accent: #0099AA; --accent-border: rgba(0,153,170,0.3); --accent-glow: transparent; --bg-wash: none; }
+  .nexus-section { opacity: 1 !important; transform: none !important; break-inside: avoid; }
+  .diagram, .card, .card-accent, .callout, .pq, .contrast-col, .move, .cell, .insight { box-shadow: none !important; break-inside: avoid; }
+  .hero-inner { flex-direction: column; min-height: auto; }
+  .hero-left { border-right: none; }
+  .frame { padding: 0 10mm 20mm; max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- Diagram expand modal -->
+<div id="diagram-modal" class="diagram-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Expanded diagram view">
+  <div class="diagram-modal__panel" role="document">
+    <div class="diagram-modal__label">[ &#10239; ] DIAGRAM &mdash; FULL SIZE</div>
+    <button class="diagram-modal__close" id="diagram-modal-close" aria-label="Close expanded diagram">&times;</button>
+    <div class="diagram-modal__svg" id="diagram-modal-svg" aria-live="polite"></div>
+  </div>
+</div>
+
+<!-- INDEX nav drawer -->
+<div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-hidden="true" aria-label="Report section index">
+  <div class="nav-drawer__header">
+    <span class="nav-drawer__title">&#9135; INDEX</span>
+    <button class="nav-drawer__close" id="nav-drawer-close" aria-label="Close index">[ &times; ] CLOSE</button>
+  </div>
+  <ol class="nav-drawer__list">
+    <li><a href="#sec1"    class="nav-link" data-sec="sec1">    <span class="nav-num">01</span>Executive Summary</a></li>
+    <li><a href="#sec2"    class="nav-link" data-sec="sec2">    <span class="nav-num">02</span>Market Intelligence</a></li>
+    <li><a href="#sec3"    class="nav-link" data-sec="sec3">    <span class="nav-num">03</span>Where You Are Today</a></li>
+    <li><a href="#sec4"    class="nav-link" data-sec="sec4">    <span class="nav-num">04</span>Optimization Analysis</a></li>
+    <li><a href="#sec5"    class="nav-link" data-sec="sec5">    <span class="nav-num">05</span>The Proposed Model</a></li>
+    <li><a href="#sec6"    class="nav-link" data-sec="sec6">    <span class="nav-num">06</span>Implementation Plan</a></li>
+    <li><a href="#sec7"    class="nav-link" data-sec="sec7">    <span class="nav-num">07</span>Amplified Moves</a></li>
+    <li><a href="#sec8"    class="nav-link" data-sec="sec8">    <span class="nav-num">08</span>Pressure Test</a></li>
+    <li><a href="#appendix" class="nav-link" data-sec="appendix"><span class="nav-num">&#8853;</span>Appendix</a></li>
+  </ol>
+</nav>
+
+<div id="reading-progress" aria-hidden="true"></div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- STICKY HEADER                                 -->
+<!-- ════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="site-header-inner">
+
+    <a href="#" style="text-decoration:none;display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <iconify-icon icon="solar:cpu-linear" style="font-size:1.1rem;color:var(--accent)" stroke-width="1.5"></iconify-icon>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;color:var(--text)">FORGE.INTELLIGENCE</span>
+    </a>
+
+    <nav style="display:none;align-items:center;gap:18px" class="md:flex">
+      <a href="#sec1" class="eyebrow" style="text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">01</a>
+      <a href="#sec2" class="eyebrow" style="text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">02</a>
+      <a href="#sec3" class="eyebrow" style="text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">03</a>
+      <a href="#sec4" class="eyebrow" style="text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">04</a>
+      <a href="#sec5" class="eyebrow" style="text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">05</a>
+      <a href="#sec6" class="eyebrow" style="text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">06</a>
+      <a href="#sec7" class="eyebrow" style="text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">07</a>
+      <a href="#sec8" class="eyebrow" style="text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">08</a>
+    </nav>
+
+    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <span class="eyebrow" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:none" id="biz-short">Mechanical Magic LLC</span>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle section index" aria-expanded="false" aria-controls="nav-drawer">[ &#8801; ] INDEX</button>
+      <button id="theme-toggle" class="theme-toggle badge" onclick="toggleTheme()" title="Toggle light/dark" style="cursor:pointer;display:flex;align-items:center;gap:6px">
+        <iconify-icon id="theme-icon" icon="solar:sun-linear" style="font-size:0.85rem"></iconify-icon>
+        <span id="theme-label">Light</span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<div class="frame">
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 1 — EXECUTIVE SUMMARY                -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="sec1" style="margin-top:40px">
+
+  <!-- Hero split panel -->
+  <div class="hero-wrap">
+    <div class="hero-inner">
+
+      <!-- Left: text -->
+      <div class="hero-left">
+        <div>
+          <div class="badge badge-accent" style="margin-bottom:24px">
+            <span class="status-dot"></span>
+            <span>// 01 · Executive Summary</span>
+          </div>
+
+          <p class="prepared-for">
+            <span class="prep-label">Prepared for</span>
+            <span class="prep-name">DJ Moran</span>
+            <span class="prep-sep">·</span>Mechanical Magic LLC
+          </p>
+
+          <h1 class="display-xl" style="margin-bottom:20px;max-width:18ch">Mechanical Magic LLC</h1>
+          <p class="body-lg" style="margin-bottom:32px">You are the most-reviewed pressure washer in Cherokee County, with twenty years on the wand, four straight Angi Super Service awards, and a hundred five-star reviews. You are also under $100K a year. Throughput is the constraint &mdash; one DJ can only sell one DJ-day per day &mdash; and your calendar is full of $300 driveways instead of $1,500 restoration days.</p>
+        </div>
+
+        <!-- 3 move previews -->
+        <div>
+          <div class="moves" style="margin-bottom:12px">
+            <a class="move m1" href="#sec6" aria-label="Jump to Move 1 detail">
+              <div class="timing">This week</div>
+              <div class="headline">Pull the side businesses. Productize the day.</div>
+            </a>
+            <a class="move m2" href="#sec6" aria-label="Jump to Move 2 detail">
+              <div class="timing">This month</div>
+              <div class="headline">Sign one subcontractor for the small jobs.</div>
+            </a>
+            <a class="move m3" href="#sec6" aria-label="Jump to Move 3 detail">
+              <div class="timing">This quarter</div>
+              <div class="headline">Hire a closer, not a clone.</div>
+            </a>
+          </div>
+          <p class="body-sm">Full detail in <a href="#sec6" style="color:var(--accent);text-decoration:none">Section 06 →</a></p>
+        </div>
+      </div>
+
+      <!-- Right: Three.js WebGL -->
+      <div class="hero-right">
+        <div id="hero-webgl"></div>
+        <div class="hero-webgl-ui">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="eyebrow">// Neural Analysis Grid</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="status-dot" style="animation-delay:.8s"></span>
+              <span class="eyebrow" style="color:var(--accent)">Active</span>
+            </div>
+          </div>
+          <div style="position:absolute;top:26%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:20">
+            <div style="background:rgba(0,0,0,0.55);border:1px solid var(--accent-border);border-radius:4px;padding:6px 16px;backdrop-filter:blur(8px);text-align:center">
+              <span class="eyebrow" style="color:var(--accent)">Model Core</span>
+              <div style="margin-top:3px"><span class="eyebrow">38 Lenses</span></div>
+            </div>
+            <div style="width:1px;height:40px;background:linear-gradient(to bottom,var(--accent-border),transparent)"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /hero-wrap -->
+
+  <!-- Metrics strip -->
+  <div class="metrics-strip">
+    <div class="metric-cell">
+      <div class="metric-value" style="font-size:clamp(13px,1.4vw,20px);line-height:1.3">U.S. pressure washing services: $1.2B and compounding 5.7% a year.</div>
+      <div class="metric-label">Market Size</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-value">$<span data-countup="290" data-countup-suffix="K">290</span></div>
+      <div class="metric-label">Year 1 Ceiling</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-value">3</div>
+      <div class="metric-label">Implementation Moves</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-value">$<span data-countup="720" data-countup-suffix="K">720</span></div>
+      <div class="metric-label">Year 3 Ceiling</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-value" style="font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.05em">FORGE</div>
+      <div class="metric-label">v1.2.2</div>
+    </div>
+  </div>
+
+  <!-- Pull quote -->
+  <div class="pq" style="margin-top:32px">
+    <p>You don&rsquo;t need a partner who is a clone of you. You need a calendar that respects what you are worth.</p>
+    <cite>Forge diagnosis · Mechanical Magic LLC</cite>
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 2 — MARKET INTELLIGENCE BRIEF        -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="sec2">
+  <div class="badge badge-accent" style="margin-bottom:20px"><span class="status-dot"></span><span>// 02 · Market Intelligence Brief</span></div>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">Where the market is. What it's telling you.</h2>
+
+  <div class="callout">
+    <div class="label">Total addressable market</div>
+    <div class="headline">U.S. pressure washing services: $1.2B and compounding 5.7% a year.</div>
+    <p>Residential is 56% of demand. Driveway and siding alone account for 63% of residential bookings. Solo operators with a single helper routinely produce $250K to $300K. You are operating in a growth market while running at a third of the proven solo ceiling.</p>
+  </div>
+
+  <p class="sub-head">Three macro signals</p>
+  <div class="grid-auto cols-3">
+    <div class="cell">
+      <div class="cell-glyph">Signal <span class="cell-idx">01</span></div>
+      <div class="cell-head">Suburban curb-appeal spend is up</div>
+      <div class="cell-body">Homeowners in suburban corridors are pouring discretionary income into property value and exterior maintenance. Older affluent owners &mdash; your stated dream customer &mdash; are the segment most willing to pay premium for damage prevention rather than basic cleaning.</div>
+      <span class="tag hi">HIGH</span>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Signal <span class="cell-idx">02</span></div>
+      <div class="cell-head">Cherokee County is moderately competitive, not saturated</div>
+      <div class="cell-body">Skilled Pugs, ClearView, Swan&rsquo;s, Carter&rsquo;s, Alpha, Hydro Pro, Pillar &mdash; at least seven named operators chase the same ZIPs. None match your review depth or your award streak. You are competing on price against shops with weaker proof.</div>
+      <span class="tag med">WATCH</span>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Signal <span class="cell-idx">03</span></div>
+      <div class="cell-head">There is a death zone above $500K</div>
+      <div class="cell-body">Industry data shows a profitability collapse between $500K and $1.2M, when payroll, comp insurance, and overhead arrive before scale catches up. The exit is to stay solo at premium prices or to add labor against a written process, not personality.</div>
+      <span class="tag hi">HIGH</span>
+    </div>
+  </div>
+
+  <p class="sub-head">Competitive density</p>
+  <p class="body-md" style="margin-bottom:24px">Seven named local operators compete in the same ZIP codes. None match Mechanical Magic&rsquo;s 100+ five-star review depth, four consecutive Angi Super Service Awards, or the documented plant-protection process. The competitive risk is price pressure from lower-trust operators, not quality competition at the premium tier.</p>
+
+  <p class="sub-head">Opportunity windows</p>
+  <p class="body-md" style="margin-bottom:24px">Spring and early summer are peak demand windows where homeowners accept higher rates to skip multi-week wait lists. The window to install a premium tier on your calendar before summer 2026 is now. Your existing review base and Angi awards do the trust work for you the day the new pricing goes live.</p>
+
+  <details>
+    <summary>Sources cited</summary>
+    <div class="details-body"><div class="sources"><p>&bull; <a href="https://www.housecallpro.com/resources/pressure-washing-industry-statistics/" target="_blank">HouseCall Pro &mdash; Pressure Washing Industry Statistics (27,000+ U.S. operators, $27/hr avg wage)</a></p>
+        <p>&bull; <a href="https://www.fortunebusinessinsights.com/pressure-washer-market-104607" target="_blank">Fortune Business Insights &mdash; Pressure Washer Market 2026&ndash;2034</a></p>
+        <p>&bull; <a href="https://www.mordorintelligence.com/industry-reports/pressure-washer-market" target="_blank">Mordor Intelligence &mdash; Pressure Washer Market 2026&ndash;2031 (5.12% CAGR)</a></p>
+        <p>&bull; <a href="https://spraywell.com/blog/how-to-scale-a-pressure-washing-business-from-solo-operator-to-a-5person-crew/" target="_blank">Spraywell &mdash; Scaling Solo to 5-Person Crew (death zone $500K&ndash;$1.2M)</a></p>
+        <p>&bull; <a href="https://www.kingofpressurewash.com/blog/pressure-washing-2026-start-grow-and-scale-your-business" target="_blank">King of Pressure Wash &mdash; 2026 Scaling Playbook ($250K&ndash;$300K solo ceiling)</a></p>
+        <p>&bull; <a href="https://homeguide.com/costs/pressure-washing-prices" target="_blank">HomeGuide &mdash; 2026 Pressure Washing Prices ($130&ndash;$160/hr avg, $50&ndash;$200 range)</a></p>
+        <p>&bull; <a href="https://www.angi.com/companylist/us/ga/canton/pressure-washing.htm" target="_blank">Angi &mdash; Top 10 Pressure Washers in Canton, GA (competitive landscape)</a></p>
+        <p>&bull; <a href="https://skilledpugs.com/canton-georgia/" target="_blank">Skilled Pugs Canton &mdash; local competitor, HOA-compliance positioning</a></p></div></div>
+  </details>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 3 — AS-IS DIAGNOSIS                  -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="sec3">
+  <div class="badge badge-accent" style="margin-bottom:20px">
+    <span class="status-dot" style="background:var(--danger);box-shadow:0 0 8px var(--danger)"></span>
+    <span>// 03 · Where the Business Is Today</span>
+  </div>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">What's binding. What's leaking.</h2>
+
+  <p class="body-lg" style="margin-bottom:24px">Mechanical Magic is a solo operation built on twenty years of pressure washing craft, a master mechanic&rsquo;s eye for technique, and a hundred five-star reviews from Cherokee County homeowners who know the difference between a real wash and a quick rinse. The site Jonah built is pulling leads. The phone is ringing. Demand is there &mdash; the bottleneck is that exactly one pair of hands can deliver MM-grade work, and that pair of hands is currently spending half its time on $250 driveways and quoting small engine repairs and drone shoots that compete with the wash calendar.</p>
+
+  <div class="pq">
+    <p>Your throughput is one DJ-day per day. Until you change what gets booked into a DJ-day, more leads cannot help you.</p>
+    <cite>Single-sentence diagnosis</cite>
+  </div>
+
+  <div class="diagram as-is">
+    <div class="diagram-label">As-is — current business model</div>
+    <div class="mermaid">
+flowchart TD
+  A[""OFFER: 6 wash services + small engine + drone""] ==> B([""AVATAR: any homeowner with a check""])
+  B --> C[/""CHANNEL: Angi Leads + Jonah's site + word of mouth""/]
+  C --> D((""CONV: free estimate, today-vs-later discount""))
+  D ==> E[[""DELIVERY: DJ does every job himself""]]
+  E --> F[(""REVENUE: under $100K, mixed ticket sizes"")]
+  G{""FRICTION: only one DJ, calendar capped""} -.->|""hard ceiling""| E
+  H{""FRICTION: 3 unrelated services compete for the same hours""} -.->|""dilution""| E
+  I{""FRICTION: priced at the floor of the Cherokee market""} -.->|""value leak""| F
+  J{{"SYSTEM: no documented process, quality lives in DJ's head"}} --> E
+  classDef friction fill:none
+  class G,H,I friction
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-row"><span class="insight-label">Revenue leak</span><span class="insight-value">$300 driveway-only jobs consuming the same calendar slot as a $1,500 whole-property day.</span></div>
+    <div class="insight-row"><span class="insight-label">Leverage point</span><span class="insight-value">The booking calendar &mdash; the single decision that determines what one DJ-day produces.</span></div>
+    <div class="insight-row"><span class="insight-label">Removed constraint</span><span class="insight-value">The belief that quality means DJ&rsquo;s hands on every wand. Quality is the SOP plus the brand on the truck.</span></div>
+  </div>
+
+  <p class="sub-head">Component breakdown</p>
+  <details><summary>Offer — what's actually being sold</summary><div class="details-body">Three businesses crammed into one truck. Pressure washing in seven flavors (house, roof, gutter, window, patio, driveway, deck), small engine repair, and drone photography. Only the wash work is visible on the website Jonah built &mdash; the other two live only in DJ&rsquo;s head and in conversation. The customer cannot tell what they are hiring.</div></details>
+  <details><summary>Customer — who pays and why</summary><div class="details-body">Stated dream customer is the older affluent homeowner who wants a craftsman, not a discounter. The current operation accepts everyone, which means the dream customer pays the same per-day rate as the someone-with-a-driveway customer.</div></details>
+  <details><summary>Channel — how customers find the offer</summary><div class="details-body">Three channels: Angi Leads (paid), Jonah&rsquo;s website (organic, performing), word of mouth (compounding). The website is the asset doing the most work right now and it is doing it well. The risk is that the channel mix funnels the same lead types into the same calendar.</div></details>
+  <details><summary>Delivery — how value reaches the customer</summary><div class="details-body">DJ shows up. DJ does the work. DJ leaves. There is no second pair of hands and no documented sequence anyone else could execute. Quality is a relationship between DJ&rsquo;s twenty years of experience and the surface in front of him.</div></details>
+  <details><summary>Revenue — how the money flows</summary><div class="details-body">Under $100K annually. Cash, check, card, Venmo on completion. No deposits. No financing. The &ldquo;you don&rsquo;t pay until satisfied&rdquo; guarantee protects the brand and is rarely invoked because the work is good. The pricing range published &mdash; $150 to $500 per job &mdash; sits at the bottom of the regional market for the same scope.</div></details>
+  <details><summary>Friction — where the leak is</summary><div class="details-body">Three frictions stacked. First, hard capacity ceiling at one DJ-day per day. Second, three competing service lines split DJ&rsquo;s calendar across unrelated work. Third, prices set against the lowest-trust competitors instead of against the proof DJ has actually accumulated. Each friction multiplies the others.</div></details>
+
+  <div class="callout" style="margin-top:28px">
+    <div class="label">The most expensive assumption</div>
+    <div class="headline">&ldquo;I cannot find a loyal partner who treats this like a career, so I cannot grow.&rdquo;</div>
+    <p>That assumption assumes growth requires a clone of DJ &mdash; same skills, same passion, same attention. It does not. Growth requires either (a) a documented process anyone competent can run with supervision, or (b) a subcontractor relationship for the work DJ should not be doing. Both routes are open. Neither requires finding a second DJ.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 4 — OPTIMIZATION ANALYSIS            -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="sec4">
+  <div class="badge badge-accent" style="margin-bottom:20px"><span class="status-dot"></span><span>// 04 · Optimization Analysis</span></div>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">The lenses applied. What each surfaced.</h2>
+
+  <p class="sub-head">4.1 — Diagnose findings</p>
+  <div class="grid-auto cols-2">
+    <div class="cell">
+      <div class="cell-glyph">Root cause <span class="cell-idx">ROOT</span></div>
+      <div class="cell-head">Root cause</div>
+      <div class="cell-body">There is no documented MM Wash Day process. The quality standard exists only inside DJ&rsquo;s twenty years of experience. So every hire fails the same way: the new person is being measured against an invisible bar they cannot see.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Binding constraint <span class="cell-idx">BIND</span></div>
+      <div class="cell-head">Binding constraint</div>
+      <div class="cell-body">Throughput is capped at one DJ-day per day. Marketing more, raising more leads, or reading more business books does not relieve this. The only relievers are: replace DJ-hours with cheaper labor against a written process, or raise the dollar value of one DJ-day.</div>
+    </div>
+  </div>
+  <details><summary>Elimination candidates — top items to strip</summary><div class="details-body">Small engine repair &mdash; competes with mechanic shops on their turf, dilutes positioning, eats calendar slots. Drone photography as a standalone service &mdash; competes against hobbyist freelancers at $50/hr, dilutes positioning. Driveway-only and small-ticket jobs on DJ&rsquo;s calendar &mdash; same time cost as a full-property day, fraction of the revenue. The &ldquo;today-vs-later discount&rdquo; close &mdash; appropriate for low-tier work, harmful at premium pricing.</div></details>
+  <details><summary>Stripped assumptions — conventions we removed</summary><div class="details-body">First convention removed: &ldquo;more services equals more revenue.&rdquo; Each unrelated service competes for the same finite hours, so adding services without adding capacity is mathematically a price cut on the highest-value service. Second convention removed: &ldquo;I am the brand, so I must do the work.&rdquo; The brand is the SOP and the truck. The hands can change if the process does not. Third convention removed: &ldquo;premium clients want a discount when you ask for the job today.&rdquo; Premium clients want exclusivity and certainty. Discount tactics signal commodity work.</div></details>
+
+  <p class="sub-head">4.2 — Operator Edge</p>
+  <p class="body-md" style="margin-bottom:16px">DJ has three rare adjacent expertises that no Cherokee County competitor visibly combines: master-mechanic-trained equipment intuition (his father&rsquo;s garage, twenty years self-taught), chemistry depth across both soft wash and high-pressure technique with a documented plant-protection process, and aerial photography skill from the drone side business. None of his seven named local competitors lead with even one of these. He leads with all three accidentally and prices like none of them exist.</p>
+  <div class="callout">
+    <div class="label">The flagged intersection</div>
+    <div class="headline">The Master Restoration Day for older Cherokee County homes.</div>
+    <p>One whole-property restoration per day. House, driveway, patio, gutters, plant protection. Drone before-and-after included. Booked by appointment, one slot per day, $1,200 to $1,800 fixed. Targets the customer DJ already attracts and converts, at the price the work is actually worth, in a format that turns one DJ-day into the highest-margin product in the Cherokee County market. Only an operator with all three of DJ&rsquo;s adjacent expertises can credibly offer it.</p>
+  </div>
+  <details><summary>Other positions considered</summary><div class="details-body">Heritage Home Specialist &mdash; older homes, period-appropriate technique. Defensible but smaller TAM. Held in reserve as a future positioning sharpen, not the lead play. Equipment Maintenance for other contractors &mdash; leverages the mechanic background but pulls DJ off the wash calendar. Apprenticeship Track &mdash; turns &ldquo;teach boys to become men&rdquo; into a brand asset and a recruiting funnel for the second crew. Kept as a Move 3 compounding play, not a Week 1 launch.</div></details>
+
+  <p class="sub-head">4.3 — Design candidates</p>
+  <div class="body-md" style="margin-bottom:12px">Three design moves came out of the chain. The Master Restoration Day productizes one DJ-day at a price that matches the proof. A subcontractor channel handles small-ticket overflow on referral fee, removing low-margin work from the personal calendar without losing the revenue or the customer relationship. Pricing repositions from &ldquo;below the floor&rdquo; to &ldquo;above the median&rdquo; using the existing Angi awards and review base as justification. Together, the three moves take the same operator and lift annual revenue ceiling from under $100K to a defensible $200K to $250K solo.</div>
+  <details><summary>Redesigned offer — from the Value Equation pass</summary><div class="details-body">Dream outcome &mdash; &ldquo;My home looks the way it did the day I bought it. My neighbors stop me on the walk.&rdquo; Likelihood &mdash; already maximized by 100+ five-star reviews, four Angi awards, plant-safe guarantee, and the pay-when-satisfied policy. Time delay &mdash; same-day delivery, before-and-after drone footage by sundown. Effort &mdash; zero customer effort, including patio furniture moved and porch swept on completion. Packaged as the Master Restoration Day, fixed price, calendar scarcity, one home per day.</div></details>
+  <details><summary>Highest-leverage intervention</summary><div class="details-body">The booking calendar. It is the single point in the business where every hour of DJ-time is allocated. Changing what is allowed onto the calendar &mdash; full-property restoration days only, with overflow referred out &mdash; changes everything downstream without requiring more hands, more marketing, or more hours.</div></details>
+  <details><summary>Pricing recalibration</summary><div class="details-body">Current published range $150 to $500 sits at the floor of the Cherokee County market. Regional premium operator math: $130 to $160 per hour average, $200 per hour at the top, eight-hour day equals $1,000 to $1,600. The Master Restoration Day at $1,200 to $1,800 fixed captures the upper end without inventing new economic logic. Small-ticket work continues to exist in the market &mdash; it just runs through the subcontractor channel at standard rates with a 15% referral fee back to MM.</div></details>
+
+  <p class="sub-head">4.4 — Stress-test results</p>
+  <div class="grid-auto cols-3">
+    <div class="cell">
+      <div class="cell-glyph">Failure <span class="cell-idx">F1</span></div>
+      <div class="cell-head">Subcontractor poaches the brand</div>
+      <div class="cell-body">The referral partner takes the customer relationship and starts quoting them direct under their own name. Mitigation: written referral agreement, MM-branded invoice on the overflow work, customer pays MM and MM pays subcontractor net of fee.</div>
+      <span class="tag hi">HIGH</span>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Failure <span class="cell-idx">F2</span></div>
+      <div class="cell-head">Pricing change loses muscle memory</div>
+      <div class="cell-body">DJ feels guilty, slips back into discount-on-the-spot habits, the calendar refills with $300 jobs by month two. Mitigation: take the discount tools out of the script, publish the fixed package on the website, route every inquiry through the productized intake form Jonah builds.</div>
+      <span class="tag hi">HIGH</span>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Failure <span class="cell-idx">F3</span></div>
+      <div class="cell-head">Side businesses creep back in slow months</div>
+      <div class="cell-body">A January with thin bookings tempts DJ to take a small engine job to fill the day. The dilution starts again. Mitigation: thin months are the apprenticeship months. Use them to document the SOP and train the second crew, not to take side work.</div>
+      <span class="tag med">MEDIUM</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 5 — THE PROPOSED MODEL               -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="sec5">
+  <div class="badge badge-accent" style="margin-bottom:20px"><span class="status-dot"></span><span>// 05 · The Proposed Model</span></div>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:32px">Rebuilt from what survives.</h2>
+
+  <div class="contrast">
+    <div class="contrast-col as-is">
+      <span class="label">As-is</span>
+      <div class="as-is-title">Three businesses, one truck, one DJ.</div>
+      <div class="hard-headline">Sub-$100K solo with a maxed calendar.</div>
+      <ul><li>Seven wash services plus engine repair plus drone</li>
+        <li>Anyone with a check, $150 to $500 per job</li>
+        <li>DJ does every job, no second pair of hands</li>
+        <li>Quality lives in twenty years of intuition</li>
+        <li>Hiring filter: clone of DJ, looking for &ldquo;career&rdquo;</li></ul>
+      <div class="closing">A craftsman business priced like a commodity service.</div>
+    </div>
+    <div class="contrast-col proposed">
+      <span class="label">Proposed</span>
+      <div class="proposed-title">One product, one calendar, one referral channel.</div>
+      <div class="hard-headline">$200K&ndash;$250K solo, defensible, with room to scale.</div>
+      <ul><li>One offer: Master Restoration Day, $1,200&ndash;$1,800 fixed</li>
+        <li>One avatar: older Cherokee County homeowner, whole property</li>
+        <li>Subcontractor handles overflow, MM keeps 15% referral</li>
+        <li>SOP documented so the wand can change hands without quality loss</li>
+        <li>Hire a closer who runs sales and ops, not a clone of DJ</li></ul>
+      <div class="closing">A craftsman business priced for the proof you have already accumulated.</div>
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">Proposed — the optimized model</div>
+    <div class="mermaid">
+flowchart TD
+  A[""OFFER: Master Restoration Day [~]""] ==> B([""AVATAR: older Cherokee County homeowner [~]""])
+  B --> C[/""CHANNEL: Jonah's site + referral flywheel [~]""/]
+  C --> D((""CONV: calendar scarcity + drone before/after [+]""))
+  D ==> E[[""DELIVERY: DJ runs one premium home per day [~]""]]
+  E --> F[(""REVENUE: $1,200-1,800 per slot, one slot per day [~]"")]
+  K[/""CHANNEL: subcontractor takes small jobs [+]""/] --> L[(""REVENUE: 15% referral fee on overflow [+]"")]
+  M{{"SYSTEM: documented MM Wash Day SOP [+]"}} --> E
+  N[""OFFER: Apprenticeship Track [+]""] -.->|""long-term moat""| M
+  classDef added fill:none
+  classDef changed fill:none
+  class K,L,M,N added
+  class A,B,C,D,E,F changed
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">Revenue rewiring — as-is &rarr; proposed</div>
+    <div class="mermaid">
+---
+config:
+  sankey:
+    showValues: true
+    suffix: "%"
+    nodeAlignment: justify
+---
+sankey-beta
+Driveway-only jobs,AS-IS Revenue,28
+Mixed house wash,AS-IS Revenue,38
+Roof and gutter,AS-IS Revenue,14
+Small engine repair,AS-IS Revenue,12
+Drone photography,AS-IS Revenue,8
+AS-IS Revenue,Master Restoration Day,55
+AS-IS Revenue,Subscription book,18
+AS-IS Revenue,Subcontractor referral fees,12
+AS-IS Revenue,Cut from offer (Via Negativa),15
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-8px;margin-bottom:24px;text-align:center">Width of each stream is proportional to revenue share. AS-IS streams (left) flow through the current revenue total (center) and rewire into PROPOSED streams (right). The "Eliminated" outflow shows what Via Negativa removes.</p>
+
+  <div class="insight">
+    <div class="insight-row"><span class="insight-label">What got removed</span><span class="insight-value">Small engine repair, standalone drone photography, $150&ndash;$500 jobs on DJ&rsquo;s personal calendar, the today-vs-later discount close at premium tier.</span></div>
+    <div class="insight-row"><span class="insight-label">What got sharpened</span><span class="insight-value">One product, one customer, one calendar, one price. The website Jonah built becomes a single funnel toward one bookable thing.</span></div>
+    <div class="insight-row"><span class="insight-label">How it resists failure</span><span class="insight-value">The bottleneck moves from DJ-hours to calendar discipline. Calendar discipline is a system, not a person, so it survives bad weeks and bad hires.</span></div>
+  </div>
+
+  <p class="sub-head">Stripped elements — in plain language</p>
+  <div class="body-md">Small engine repair comes off the truck and the conversation. The wash brand cannot be a mechanic brand at the same time. Drone photography stops being sold as a standalone service and becomes the included before-and-after asset on the Master Restoration Day. The published &ldquo;$150 to $500&rdquo; range disappears from the website. Driveway-only inquiries get routed to the subcontractor. The &ldquo;if you start today $$ versus $$$&rdquo; close gets retired at the premium tier; calendar scarcity replaces it.</div>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 6 — IMPLEMENTATION PLAN              -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="sec6">
+  <div class="badge badge-accent" style="margin-bottom:20px"><span class="status-dot"></span><span>// 06 · Implementation Plan</span></div>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:16px">Three moves. In order.</h2>
+  <p class="body-lg" style="margin-bottom:28px">What to do on Monday.</p>
+
+  <div class="moves">
+    <div class="move m1">
+      <div class="timing">Move 1 · This week</div>
+      <div class="headline">Pull the side businesses. Productize the day.</div>
+      <p>Ask Jonah to remove every reference to small engine repair and standalone drone photography from the website, the Angi profile, and any printed materials. In their place, publish a single new landing page: the Master Restoration Day. Whole property, one home per day, fixed price between $1,200 and $1,800 depending on square footage and surface count, plant protection guaranteed, drone before-and-after included.</p>
+    </div>
+    <div class="move m2">
+      <div class="timing">Move 2 · This month</div>
+      <div class="headline">Sign one subcontractor for the small jobs.</div>
+      <p>Find one bonded and insured pressure washer in Cherokee County who does basic driveway and small-ticket work competently. Sign a written referral agreement: MM keeps the customer relationship and the brand, MM invoices, MM pays the subcontractor net of a 15% fee. Inquiries that don&rsquo;t fit the Master Restoration Day get routed to them through your site form.</p>
+    </div>
+    <div class="move m3">
+      <div class="timing">Move 3 · This quarter</div>
+      <div class="headline">Hire a closer, not a clone.</div>
+      <p>Document the MM Wash Day in writing &mdash; chemistry sequence, plant protection steps, customer touchpoints, drone shot list, post-job walkthrough. Then hire one person, but not the kid you have been looking for. Hire a project manager who can quote, schedule, and run a second crew while you deliver. Pay them on a percentage of revenue booked so loyalty follows results.</p>
+    </div>
+  </div>
+
+  <div class="diagram proposed">
+    <div class="diagram-label">Implementation timeline</div>
+    <div class="mermaid">
+gantt
+  title Mechanical Magic -- 90-Day Rebuild
+  dateFormat YYYY-MM-DD
+  axisFormat %b %d
+  tickInterval 2week
+  section Move 1
+  Pull side businesses from site  :m1a, 2026-05-11, 3d
+  Launch Restoration Day page     :m1b, after m1a, 4d
+  section Move 2
+  Source subcontractor candidates :m2a, after m1b, 10d
+  Sign agreement, first referrals :m2b, after m2a, 14d
+  section Move 3
+  Document MM Wash Day SOP        :m3a, 2026-06-15, 30d
+  Hire closer on commission       :m3b, after m3a, 30d
+  Plan apprentice partner program :m3c, after m3b, 30d
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-8px;margin-bottom:24px;text-align:center">Each bar is one sub-task inside one move. Tasks linked with "after" cannot start until the prior task finishes.</p>
+
+  <p class="sub-head">What to watch</p>
+  <p class="body-md">One number tells you the moves are working: average revenue per day DJ is on a job. Today it is somewhere around $300 to $500 because the calendar is mixed. Within sixty days of Move 1 it should sit at $1,200 or higher because only Restoration Days land on DJ&rsquo;s calendar. If it does not, the calendar discipline broke and the side businesses or small jobs crept back in. That is the only metric to track during the transition. Everything else is downstream of it.</p>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 7 — AMPLIFIED MOVES                  -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="sec7">
+  <div class="badge badge-accent" style="margin-bottom:20px"><span class="status-dot"></span><span>// 07 · Amplified Moves</span></div>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:16px">What makes the plan compound.</h2>
+  <p class="body-lg" style="margin-bottom:24px">The base plan in Section 6 puts a ceiling around $200K to $250K solo. Three additions take that ceiling higher without requiring a different operator. Each one bolts onto the base plan rather than replacing it. Each is sequenced by execution load, not by ambition. Run them in order. Do not run them in parallel.</p>
+
+  <div class="callout">
+    <div class="label">Read before acting</div>
+    <div class="headline">Define the goal before chasing the revenue.</div>
+    <p>Pressure-testing surfaced one structural risk none of these additions fixes on their own. The plan succeeds at &ldquo;money-making machine&rdquo; and may fail at &ldquo;be present for Elijah.&rdquo; Before launching anything in this section, write down the number of hours per week with your son the plan needs to produce. Every projection below is sized against the revenue ceiling, not against that number. If the two conflict, the hours win.</p>
+  </div>
+
+  
+
+  
+
+  
+
+  <p class="sub-head">7.1 — Restoration Day Subscription</p>
+  <div class="grid-auto cols-2">
+    <div class="cell">
+      <div class="cell-glyph">Move <span class="cell-idx">A1</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">At the close of every Master Restoration Day, offer one checkbox: MM Membership at $1,800 annual. Priority booking next year, locked-in price, mid-year gutter and quick-rinse touch-up included. Frame as benefits and priority access, not pre-pay.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Projection <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">Conservative at 25% conversion: 40 members &times; $1,800 = $72K recurring by end of Year 1. Optimistic at 40%: 65 members &times; $1,800 = $117K recurring. Year 2 compounds because re-booking removes acquisition cost on every renewed member.</div>
+    </div>
+  </div>
+  <p class="body-md" style="margin-bottom:36px"><strong style="color:var(--accent)">Anchor:</strong> 7.0c Subscription tier. This addition is what activates the Subscription tier &mdash; without the close-out checkbox, the tier exists on paper but never converts. Why this goes first: zero new operational load. One landing page change Jonah can ship in a weekend, one line in the post-job email, one renewal workflow inside the booking system.</p>
+
+  <p class="sub-head">7.2 — Mechanical Magic Apprenticeship</p>
+  <div class="grid-auto cols-2">
+    <div class="cell">
+      <div class="cell-glyph">Move <span class="cell-idx">A2</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">Productize the &ldquo;teach boys to be men&rdquo; mission into a structured 90-day cohort. Two slots per year. Partner with a Cherokee County trade school or church youth program for screening and legal cover. Graduates feed the second crew or run franchise-style territory in an adjacent county under royalty.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Projection <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">Year 1: zero direct revenue. Year 2: first graduate running a second MM crew adds roughly $150K of new capacity. Year 3: two graduates operating territory under 20% royalty contributes $60K to $80K of royalty stream and lifts the one-DJ-day ceiling permanently.</div>
+    </div>
+  </div>
+  <p class="body-md" style="margin-bottom:36px"><strong style="color:var(--accent)">Anchor:</strong> 7.0c Core tier &mdash; specifically, Master Restoration Day delivery capacity. The apprentice cohort is the only path that lifts the one-DJ-day ceiling without diluting the Core tier&rsquo;s quality bar. Turns DJ&rsquo;s stated mission into a recruiting funnel competitors cannot copy without 20 years of credibility.</p>
+
+  <p class="sub-head">7.3 — Insurance Carrier Partnership</p>
+  <div class="grid-auto cols-2">
+    <div class="cell">
+      <div class="cell-glyph">Move <span class="cell-idx">A3</span></div>
+      <div class="cell-head">The move</div>
+      <div class="cell-body">Partner with one regional home insurance carrier or independent agent network so maintained homes receive a 3 to 5 percent premium discount. MM becomes the certified provider for Cherokee County. The &ldquo;$20K problem&rdquo; hook from the existing website copy becomes the structural argument the carrier already wants to make.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Projection <span class="cell-idx">$$</span></div>
+      <div class="cell-head">Revenue projection</div>
+      <div class="cell-body">Year 1: zero. Outreach and courting take 6 to 12 months. Year 2: 25 to 35 net new customers from carrier referrals &times; $1,500 average = $37K to $52K incremental. Year 3: 50 to 70 customers plus repeat through the Subscription = $90K to $130K.</div>
+    </div>
+  </div>
+  <p class="body-md" style="margin-bottom:36px"><strong style="color:var(--accent)">Anchor:</strong> 7.0c Premium tier (Master Restoration Day + Carrier Pack). The insurance partnership only makes sense once the Premium tier&rsquo;s documentation bundle exists &mdash; it&rsquo;s the structural argument the carrier already wants to make. Gated on the closer being in place. Treat as opportunistic.</p>
+
+  <p class="sub-head">Combined revenue projection</p>
+  <p class="body-md" style="margin-bottom:16px">Conservative figures assume 25 percent Subscription conversion, one apprentice graduate by Year 2, and a single agent-level carrier pilot landing in Year 2. Optimistic figures assume 40 percent Subscription conversion, two apprentice graduates running territory by Year 3, and a regional carrier deal landing in Year 2. Base plan execution is assumed in both scenarios.</p>
+  <div class="grid-auto cols-3">
+    <div class="cell">
+      <div class="cell-glyph">Year 1 <span class="cell-idx">Y1</span></div>
+      <div class="cell-head" style="font-size:20px">$<span data-countup="220" data-countup-suffix="K">220</span> &ndash; $<span data-countup="290" data-countup-suffix="K">290</span></div>
+      <div class="cell-body">Base plan in motion. Master Restoration Day at premium pricing. Subscription begins converting on the back of the first 50 jobs. Apprenticeship and Insurance are pre-revenue. Most of the lift is repricing existing work.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Year 2 <span class="cell-idx">Y2</span></div>
+      <div class="cell-head" style="font-size:20px">$<span data-countup="360" data-countup-suffix="K">360</span> &ndash; $<span data-countup="480" data-countup-suffix="K">480</span></div>
+      <div class="cell-body">Subscription book compounds with renewals plus new conversions. First apprentice graduate adds second-crew capacity. Carrier pilot lands or does not &mdash; both scenarios shown. Closer is fully integrated and running quoting and scheduling.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Year 3 <span class="cell-idx">Y3</span></div>
+      <div class="cell-head" style="font-size:20px">$<span data-countup="520" data-countup-suffix="K">520</span> &ndash; $<span data-countup="720" data-countup-suffix="K">720</span></div>
+      <div class="cell-body">All three additions live. Royalty stream from apprentice-led territory begins. Insurance referrals at steady state. This is also the death-zone window the Forge report flagged in Section 2 &mdash; payroll discipline matters more here than top-line growth.</div>
+    </div>
+  </div>
+
+  <div class="diagram proposed" style="margin-top:24px">
+    <div class="diagram-label">Revenue trajectory — three scenarios</div>
+    <div class="mermaid">
+%%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#8A949A, #10B981, #0FB8D6", "backgroundColor": "transparent"}}}}%%
+xychart-beta
+  title "Revenue trajectory -- three scenarios"
+  x-axis [Today, "Year 1", "Year 2", "Year 3"]
+  y-axis "Revenue (USD thousands)" 0 --> 800
+  line "No changes" [85, 92, 98, 102]
+  line "Base plan only" [85, 150, 210, 240]
+  line "Base + amplifications" [85, 255, 420, 620]
+    </div>
+  </div>
+
+  
+
+  <p class="sub-head">Sequence reminder</p>
+  <p class="body-md">Subscription ships with Move 1. Apprentice cohort begins planning during Move 3 and launches the quarter after the closer is hired and producing. Insurance partnership is opportunistic &mdash; pursue only if a relationship surfaces through the existing customer base after the closer is in place. Three additions, never running concurrently with the base plan move that immediately precedes them.</p>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 8 — PRESSURE TEST                    -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="sec8">
+  <div class="badge badge-accent" style="margin-bottom:20px">
+    <span class="status-dot" style="background:var(--danger);box-shadow:0 0 8px var(--danger);animation-delay:1.2s"></span>
+    <span>// 08 · Pressure Test</span>
+  </div>
+  <h2 class="display-lg" style="max-width:22ch;margin-bottom:16px">Three attacks. What survives.</h2>
+  <p class="body-lg" style="margin-bottom:28px">Before any move ships, the base plan plus the amplifications gets attacked from three angles. The strongest defense, the weakest load-bearing point, the failure modes 18 months out, and the consequences if it works exactly as designed. Only what holds across all three angles is worth acting on.</p>
+
+  <p class="sub-head">8.1 — Dialectical test</p>
+  <div class="grid-auto cols-2">
+    <div class="cell">
+      <div class="cell-glyph">Steelman <span class="cell-idx">FOR</span></div>
+      <div class="cell-head">Steelman</div>
+      <div class="cell-body">The plan changes the math without requiring DJ to become a different person on the parts that matter most. Move 1 only changes what goes on the calendar. Move 2 outsources what DJ should not be doing anyway. Move 3 is gated last so the productized day has six months of proof first. The 7.0c tier ladder gives the plan a defensible structural shape: Core (Restoration Day) is the load-bearing tier and the demonstrated proof point; Subscription compounds at job close-out without new acquisition cost; Premium and Front-door sit in reserve for the offensive expansion phase. One hundred-plus five-star reviews, four consecutive Angi awards, twenty years of practice in a market growing 5.7 percent annually. DJ is operating at a third of the demonstrated ceiling. The gap is real, the unit economics work, and the Cash Conversion Check passed at MM&rsquo;s referral-driven CAC &mdash; the offer mechanics fund their own scaling.</div>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Strawman <span class="cell-idx">AGAINST</span></div>
+      <div class="cell-head">Strawman</div>
+      <div class="cell-body">The plan is operationally correct and behaviorally incompatible with the operator. Every load-bearing element assumes DJ will change a behavior he has not changed once in twenty years on his own. The thinnest point: there is no external accountability on the calendar. A rule DJ enforces on himself is one sympathetic phone call from breaking. The whole plan inherits that single point of failure.</div>
+    </div>
+  </div>
+
+  <p class="sub-head">8.2 — Pre-mortem</p>
+  <p class="body-md" style="margin-bottom:16px">Eighteen months out, the plan failed. Five failure modes surfaced, ranked here by likelihood times impact. The top three carry the most weight; the last two are watchlist items.</p>
+  <div class="grid-auto cols-3">
+    <div class="cell">
+      <div class="cell-glyph">Failure <span class="cell-idx">F1</span></div>
+      <div class="cell-head">Calendar discipline collapsed within 90 days</div>
+      <div class="cell-body">DJ took a $275 driveway in Week 3 from a sweet older lady. He told himself it was just one. By Week 8 the calendar was mixed again. Wrong assumption: that founder-enforced rules survive founder sympathy.</div>
+      <span class="tag hi">HIGH</span>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Failure <span class="cell-idx">F2</span></div>
+      <div class="cell-head">Subcontractor damaged the brand</div>
+      <div class="cell-body">Sub did competent-but-not-MM-quality work on an MM-branded invoice. First 4-star review showed up. Then two more. The 100-plus 5-star base started accumulating drift. Wrong assumption: a 15 percent fee aligns the sub&rsquo;s brand discipline with DJ&rsquo;s.</div>
+      <span class="tag hi">HIGH</span>
+    </div>
+    <div class="cell">
+      <div class="cell-glyph">Failure <span class="cell-idx">F3</span></div>
+      <div class="cell-head">Subscription failed to convert</div>
+      <div class="cell-body">Older affluent customers said &ldquo;let&rsquo;s see how it goes.&rdquo; They have cash, they have control, no urgency about a once-a-year service. DJ stopped asking by Month 2 because each soft no felt like begging.</div>
+      <span class="tag med">MEDIUM</span>
+    </div>
+  </div>
+
+  <div class="diagram as-is">
+    <div class="diagram-label">Failure modes — likelihood &times; impact</div>
+    <div class="mermaid">
+quadrantChart
+  title Pre-Mortem Failure Modes
+  x-axis Low Likelihood --> High Likelihood
+  y-axis Low Impact --> High Impact
+  quadrant-1 Fix immediately
+  quadrant-2 Mitigate at design time
+  quadrant-3 Accept
+  quadrant-4 Monitor closely
+  Calendar discipline breaks: [0.72, 0.85]
+  Subcontractor brand drift: [0.38, 0.78]
+  Subscription does not convert: [0.48, 0.55]
+  Apprenticeship attracts romantics: [0.40, 0.45]
+  Founder motivation collapse: [0.22, 0.80]
+    </div>
+  </div>
+  <p class="body-sm" style="margin-top:-8px;margin-bottom:24px;text-align:center">Top-right quadrant ("Fix immediately") — failures where both likelihood and impact score high. These are the ones the plan must design against.</p>
+
+  <p class="sub-head">8.3 — Second-order consequences</p>
+  <p class="body-md" style="margin-bottom:12px">Assume the plan worked perfectly. DJ hits $250K solo by month 12. Restoration Day booked four weeks out. Subscription converting at 40 percent. The closer running 2-3 premium days per week.</p>
+  <p class="body-md" style="margin-bottom:24px">First-order: revenue per DJ-day climbs from $300-500 to $1,500-1,800. Second-order: subscribed customers fill 60-80 percent of the calendar a year in advance, the new-customer funnel that built the business shrinks, the closer&rsquo;s pipeline thins. Third-order, and this is the load-bearing one: the plan scales the business by adding people DJ must manage, management has its own time cost, and the number of hours DJ spends with his son Elijah does not grow. It shrinks. The thing the business was supposed to enable becomes the thing that prevents it.</p>
+
+  <div class="callout">
+    <div class="label">What survives</div>
+    <div class="headline">The plan holds, with one structural fix.</div>
+    <p><strong style="color:var(--accent)">Held across all attacks.</strong> The structural diagnosis (operating at a third of the proven solo ceiling, math not behavior). The Master Restoration Day product &mdash; the Core tier of the 7.0c ladder. The subcontractor channel concept. The Subscription tier, in modified form as a benefits-and-priority membership rather than pre-pay. The Cash Conversion Check passed at referral-driven CAC, so the offer mechanics fund their own scaling without external capital.</p>
+    <p style="margin-top:10px"><strong style="color:var(--warn)">Crumbled — fixable.</strong> Calendar discipline as a founder-enforced rule. Fix: Jonah owns inbound qualification from Day 1; the closer hire moves earlier in the sequence and exists primarily to enforce calendar rules DJ cannot enforce on himself. Apprenticeship as a Move 3 launch. Fix: partner with a Cherokee County trade school or church program for screening and legal cover. Insurance Partnership as strategic priority. Fix: treat opportunistically, cap at 20 percent of lead flow.</p>
+    <p style="margin-top:10px"><strong style="color:var(--danger)">Crumbled — fatal as designed.</strong> The operator&rsquo;s goal framing. The BCD said &ldquo;money-making machine while teaching boys to become men&rdquo; but DJ&rsquo;s actual motivation is Elijah. Before any move ships, DJ has to answer one question in writing with a number attached: &ldquo;How many hours per week with Elijah does this plan need to produce to be worth doing?&rdquo; Every subsequent move is sized against that number. Without it, success is indistinguishable from failure.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- APPENDIX                                      -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nexus-section" id="appendix">
+  <div class="badge" style="margin-bottom:20px"><span>// Appendix · Methodology</span></div>
+
+  <details>
+    <summary>Lenses applied in this analysis</summary>
+    <div class="details-body">
+      <ul class="appendix-list"><li><span class="lens-name">JOBS TO BE DONE</span><span class="lens-def">&mdash; A demand-side lens identifying the underlying job a customer is hiring the offer to perform. Surfaced that older Cherokee County homeowners are hiring DJ to restore their property in one visit, not to wash surfaces by the hour.</span></li>
+        <li><span class="lens-name">5 WHYS</span><span class="lens-def">&mdash; Root-cause lens that drills past surface symptoms by asking why five times. Drilled DJ&rsquo;s &ldquo;I cannot find an employee&rdquo; claim to its root: no documented process makes the work non-transferable.</span></li>
+        <li><span class="lens-name">PARETO 80/20</span><span class="lens-def">&mdash; Identifies which 20% of inputs produce 80% of the output. Flagged whole-property restoration days as the slice producing most of MM&rsquo;s revenue and most of DJ&rsquo;s job satisfaction.</span></li>
+        <li><span class="lens-name">THEORY OF CONSTRAINTS</span><span class="lens-def">&mdash; Locates the single binding constraint that caps total system throughput. Identified one DJ-day per day as the structural ceiling regardless of how much demand exists.</span></li>
+        <li><span class="lens-name">FIRST PRINCIPLES</span><span class="lens-def">&mdash; Strips inherited conventions to expose what is actually true about the business. Stripped three conventions DJ had been operating under: more services &ne; more revenue, hiring &ne; cloning yourself, premium positioning &ne; discounting.</span></li>
+        <li><span class="lens-name">IKIGAI</span><span class="lens-def">&mdash; Maps operator fit across four intersections: love, skill, world&rsquo;s need, world&rsquo;s payment. Surfaced &ldquo;teach boys to become men&rdquo; as a brand asset and recruiting funnel, not a hiring criterion.</span></li>
+        <li><span class="lens-name">OPERATOR EDGE</span><span class="lens-def">&mdash; Identifies adjacent expertises the operator carries that no competitor combines. Surfaced mechanic background + soft/hard-wash chemistry depth + aerial drone skill as DJ&rsquo;s three-stack unique to MM in Cherokee County.</span></li>
+        <li><span class="lens-name">VALUE EQUATION</span><span class="lens-def">&mdash; Maximizes the ratio of dream outcome &times; perceived likelihood over time delay &times; effort. Drove the Master Restoration Day offer design: highest dream outcome, max likelihood, same-day delivery, zero customer effort.</span></li>
+        <li><span class="lens-name">LEVERAGE POINTS</span><span class="lens-def">&mdash; Identifies the single intervention point where a small change produces a large downstream effect. Located the booking calendar as the highest-leverage surface &mdash; what&rsquo;s allowed onto it determines everything else.</span></li>
+        <li><span class="lens-name">PRICING STRATEGY</span><span class="lens-def">&mdash; Positions price against the customer&rsquo;s perceived value rather than against the market floor. Repositioned MM from $150&ndash;$500 floor pricing to $1,200&ndash;$1,800 fixed-package premium tier using the existing review base as justification.</span></li>
+        <li><span class="lens-name">MONEY MODEL ARCHITECTURE</span><span class="lens-def">&mdash; Four-tier offer canvas (Front-door / Core / Premium / Subscription) after the framework popularized by Alex Hormozi. Produced the MM ladder: Quick Rinse Drop-By &rarr; Master Restoration Day &rarr; MRD + Carrier Pack &rarr; MM Membership.</span></li>
+        <li><span class="lens-name">COMPARATIVE ADVANTAGE</span><span class="lens-def">&mdash; Flags work that someone else can do better/cheaper than the operator&rsquo;s own time. Flagged small engine repair and standalone drone photography as outsource-or-eliminate candidates that dilute MM&rsquo;s premium positioning.</span></li>
+        <li><span class="lens-name">PRE-MORTEM</span><span class="lens-def">&mdash; Assumes the plan failed 18 months out and works backward to identify the most likely failure modes. Surfaced three high-severity failures: calendar discipline collapses, subcontractor brand drift, Subscription doesn&rsquo;t convert.</span></li>
+        <li><span class="lens-name">INVERSION (2ND PASS)</span><span class="lens-def">&mdash; Tests the plan against the conditions of its own failure modes. Verified the redesigned MM plan does not structurally resemble the failure conditions surfaced in the Pre-Mortem; mitigations are designed in, not bolted on.</span></li>
+        <li><span class="lens-name">CASH CONVERSION CHECK</span><span class="lens-def">&mdash; 30-day cash-recovery diagnostic estimating whether offer mechanics recoup customer-acquisition cost in the first month. Returned &ldquo;likely passing (med confidence)&rdquo; &mdash; first-30-day cash clears CAC at MM&rsquo;s referral-led acquisition channel.</span></li>
+        <li><span class="lens-name">VIA NEGATIVA</span><span class="lens-def">&mdash; Recursive subtraction lens that removes elements until further removal would break the system. Removed two side businesses (small engine, standalone drone), the discount close-out script, and small-ticket calendar slots from MM&rsquo;s PROPOSED model.</span></li>
+        <li><span class="lens-name">MUSK&rsquo;S 5-STEP</span><span class="lens-def">&mdash; Closing validation pass: question requirements, delete what&rsquo;s not needed, simplify what remains, accelerate, automate. Flagged the MM Wash Day SOP and Jobber-style scheduling automation as the two surfaces to formalize first.</span></li></ul>
+    </div>
+  </details>
+  <details>
+    <summary>Run metadata</summary>
+    <div class="details-body" style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2.2;color:var(--text-2)">
+      <p>Prepared for: DJ Moran &lt;email not provided in intake&gt;</p>
+      <p>Business: Mechanical Magic LLC</p>
+      <p>Generated: 2026-05-25</p>
+      <p>BCD file: <code>mechanical-magic.bcd.md</code></p>
+      <p>Plugin version: forge v1.13.0</p>
+    </div>
+  </details>
+</section>
+
+
+
+<!-- Brand Excavation CTA — primary footer offer -->
+<div class="callout" style="margin:64px 0 24px;border-color:var(--accent)">
+  <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxzdmcgaWQ9ImEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDgzMy43MiAyODYuMDYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuYywgLmQgew0KICAgICAgICBmaWxsOiAjZmZmOw0KICAgICAgfQ0KDQogICAgICAuZCB7DQogICAgICAgIGZpbGwtcnVsZTogZXZlbm9kZDsNCiAgICAgIH0NCiAgICA8L3N0eWxlPg0KICA8L2RlZnM+DQogIDxnPg0KICAgIDxwYXRoIGNsYXNzPSJkIiBkPSJNMTQxLjg2LDYwLjc3Yy00NS42OSwwLTgyLjczLDM3LjA0LTgyLjczLDgyLjczdi4zMWwyNy41LTQwLjI4LDguNDYtLjE2LDIuNjEtLjA0LDQyLjA4LS42MWgwbDE0LjUyLS4yMWgwbDEuMDMtLjAyaC41YzcuNzgsMCwxNC44MSwxLjM0LDIwLjksMy45OSw2LjcxLDIuOTIsMTEuNTUsNy4yNywxNC40LDEyLjk0bC4xNi4zMmMyLjM2LDQuNywzLjAzLDguNzEsMi4wNSwxMi4yNy0uMDMuMS0uMDYuMi0uMDkuMywyLjM5LjgsNC41OCwxLjc3LDYuNTUsMi44OCw0LjAzLDIuMjksNy4yOSw1LjQ3LDkuNzIsOS40N2gwYy40MS42OC44LDEuMzgsMS4xNiwyLjExbC4xNi4zMmMzLjMyLDYuNjIsMi4xNiwxMS4zNS41OSwxNC4xNi0uNTEuOTItMS4xNSwxLjc4LTEuOSwyLjU4di4wMnMtNTguMDgsNjEuODItNTguMDgsNjEuODJjNDEuMTctNC43Niw3My4xMy0zOS43NCw3My4xMy04Mi4xOCwwLTQ1LjY5LTM3LjA0LTgyLjczLTgyLjczLTgyLjczaDBaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik0xNDEuODYsMjM4LjFjLTEyLjgxLDAtMjUuMjMtMi41MS0zNi45My03LjQ2LTExLjMtNC43OC0yMS40NC0xMS42Mi0zMC4xNi0yMC4zMy04LjcxLTguNzEtMTUuNTUtMTguODYtMjAuMzMtMzAuMTYtNC45NS0xMS43LTcuNDYtMjQuMTItNy40Ni0zNi45M3MyLjUxLTI1LjIzLDcuNDYtMzYuOTNjNC43OC0xMS4zLDExLjYyLTIxLjQ0LDIwLjMzLTMwLjE2LDguNzEtOC43MSwxOC44Ni0xNS41NSwzMC4xNi0yMC4zMywxMS43LTQuOTUsMjQuMTItNy40NiwzNi45My03LjQ2czI1LjIzLDIuNTEsMzYuOTMsNy40NmMxMS4zLDQuNzgsMjEuNDQsMTEuNjIsMzAuMTYsMjAuMzMsOC43MSw4LjcxLDE1LjU1LDE4Ljg2LDIwLjMzLDMwLjE2LDQuOTUsMTEuNyw3LjQ2LDI0LjEyLDcuNDYsMzYuOTNzLTIuNTEsMjUuMjMtNy40NiwzNi45M2MtNC43OCwxMS4zLTExLjYyLDIxLjQ0LTIwLjMzLDMwLjE2LTguNzEsOC43MS0xOC44NiwxNS41NS0zMC4xNiwyMC4zMy0xMS43LDQuOTUtMjQuMTIsNy40Ni0zNi45Myw3LjQ2aDBaTTE0MS44Niw1My44NWMtNDkuMjgsMC04OS4zOCw0MC4wOS04OS4zOCw4OS4zOHM0MC4wOSw4OS4zOCw4OS4zOCw4OS4zOCw4OS4zOC00MC4wOSw4OS4zOC04OS4zOC00MC4wOS04OS4zOC04OS4zOC04OS4zOGgwWiIvPg0KICAgIDxwYXRoIGNsYXNzPSJkIiBkPSJNMjA1Ljk5LDE0OS41M2wtLjE2LS4zMmMtMi4wMy00LjA1LTQuOTMtNy4xNC04LjcxLTkuMjgtMy4xNC0xLjc4LTYuOTQtMy4xLTExLjQtMy45Ny0uOS0uMTgtMS44Mi0uMzMtMi43OC0uNDcuOTctLjM4LDEuODItLjgyLDIuNTMtMS4zMywxLjM2LS45NywyLjIzLTIuMTYsMi42My0zLjU5LjYtMi4xOC4wNC00Ljk4LTEuNjctOC4zOWwtLjE2LS4zMmMtMi4yNy00LjUyLTYuMTctNy45OC0xMS43MS0xMC4zOS0uOTktLjQzLTIuMDEtLjgyLTMuMDUtMS4xN2gwYy00LjgtMS42Mi0xMC4xOC0yLjQtMTYuMTQtMi4zNmwtNjUuOSwxLjc1LTI5Ljc3LDQzLjU4Yy4zOSwzLjMuOTcsNi41NCwxLjczLDkuN2wzMy4yOS00NS42NSwzLjMsNS42OS0zNC41MSw0Ny4xN2MuOSwyLjY1LDEuOTMsNS4yNCwzLjA5LDcuNzZsMzUuMjItNDguMzcsMy4zLDUuNjgtMzUuNTMsNDguNTljMS4yNCwyLjIyLDIuNTgsNC4zNyw0LjAyLDYuNDZsMzUuMzMtNDguNDgsMy4zLDUuNjgtMzQuOTYsNDcuNzRjMS43MSwyLjEzLDMuNTMsNC4xOCw1LjQ0LDYuMTNsMzMuODgtNDYuMzgsMy4zLDUuNjgtMzIuOSw0NC43OWMxLjY4LDEuNDksMy40MywyLjkyLDUuMjMsNC4yN2wxNi4wMy0yMS4zNCwxMS4wOC0xNS43MiwyLjcyLTMuNjgsMS4zNC0xLjgxLDIuNjYtLjA0LDQ5LjY0LS43MmgwbDEuNDQtLjAyLDIuOTktLjA0aC4xOGMxMC41My0uMTUsMTguMTQtMS42LDIyLjgyLTQuMzQsMS42My0uOTYsMi44MS0yLjA4LDMuNTMtMy4zOSwxLjM1LTIuNDMsMS4xMi01LjQ1LS43LTkuMDhoMFpNMTI1LjAzLDEyMS44bDIzLjY1LS4zNGguMDljMi43NC0uMDQsNC44OCwwLDYuNDMuMTQsMS41NC4xNCwyLjkyLjUxLDQuMTQsMS4xMywxLjIyLjYyLDIuMTksMS42NCwyLjksMy4wNS43OSwxLjU4Ljg3LDIuNy4yMywzLjM3LS42NC42Ny0xLjYxLDEuMDgtMi45MSwxLjIzLTEuMy4xNS0zLjM2LjI1LTYuMTYuMjlsLTQuNjcuMDctMTkuMTEuMi00LjU5LTkuMTVoMFpNMTc3LjU0LDE0OS45OGMtLjYxLjcyLTEuNywxLjE4LTMuMjcsMS4zNi0xLjU3LjE4LTMuOTguMy03LjIyLjM0bC0yLjk5LjA0Yy0xLjE4LjAyLTMuNDIuMDQtNi43LjA2LTMuMjkuMDItOS4wMS4wOS0xNy4xOC4yMWwtNC44Mi05LjYyLDI2Ljc0LS4zOWguMDljMy4yNC0uMDUsNS43MywwLDcuNDUuMTMsMS43My4xMywzLjI0LjUyLDQuNTQsMS4xNywxLjI5LjY0LDIuMzMsMS43MywzLjA5LDMuMjUuNzksMS41OC44OCwyLjczLjI3LDMuNDVoMFoiLz4NCiAgPC9nPg0KICA8ZyBpZD0iYiIgZGF0YS1uYW1lPSJmIj4NCiAgICA8cGF0aCBjbGFzcz0iYyIgZD0iTTQxMC42LDEzOC45M2gtLjE3Yy0zLjEuMDEtNi42Ny4yMy0xMC42OS42Ni0yLjQxLTMuODQtNi4wOC03LjU1LTExLjAyLTExLjE0LDEyLjA0LTMuNTEsMjIuMy04LjcsMzAuNzgtMTUuNTksOC40Ny02Ljg5LDEyLjg2LTE1LjAzLDEzLjE0LTI0LjQ0LjIxLTYuOTctMS45Mi0xMy4zNS02LjM5LTE5LjE0LTQuNDctNS43OS0xMC43Ni0xMC40MS0xOC44Ni0xMy44Ny04LjEtMy40Ni0xNy4yLTUuMzUtMjcuMjgtNS42NS04LjcyLS4yNy0xNy45My43OC0yNy42NCwzLjE0LTEwLjA2LDIuNDYtMTguNDYsNS45MS0yNS4xOSwxMC4zNi02Ljc0LDQuNDUtMTEuNzMsOS4zMy0xNSwxNC42Ni0zLjI2LDUuMzMtNC45NywxMC42LTUuMTMsMTUuNzktLjA5LDIuOTkuMzQsNS43NywxLjI5LDguMzUuOTUsMi41OCwyLjMyLDQuNzgsNC4xLDYuNjEsMi44OSwyLjk3LDYuNDYsNC41MiwxMC43LDQuNjUsNS4zOS4xNiwxMS42NC0xLjYxLDE4Ljc2LTUuMzMsNy4xMS0zLjcxLDE1LjA3LTguODIsMjMuODgtMTUuMy0yLjI3LDIuODEtNi4xMyw3LjI5LTExLjYsMTMuNDMtNy4xMyw4LjA5LTEyLjQ0LDE0LjU1LTE1LjkxLDE5LjM3LTMuNDgsNC44Mi01LjI3LDkuMTctNS4zOSwxMy4wNS0uMDksMy4xLDEuMDMsNS42OCwzLjM4LDcuNzUtMTMuNzMsMi4zNS0yNC43Miw1LjEyLTMyLjk2LDguMjktNi41LDIuMzUtMTEuMzcsNS4xMy0xNC42Myw4LjM2LTMuMjUsMy4yMi00Ljk0LDYuNjYtNS4wNSwxMC4zMi0uMTMsNC4yMSwxLjg0LDguMjgsNS45MSwxMi4yMyw0LjA3LDMuOTUsOS44Miw3LjIsMTcuMjYsOS43NSw3LjQ0LDIuNTUsMTUuOTEsMy45OCwyNS40Myw0LjI3LDEwLjY2LjMzLDIxLjUxLTEuNzgsMzIuNTYtNi4zMSwxMS4wNC00LjU0LDIwLjIxLTEwLjU0LDI3LjQ5LTE4LjAyczExLjA1LTE1LjA5LDExLjI5LTIyLjg0Yy4xLTMuMjEtLjQ5LTYuMzMtMS43OC05LjM2LDMuNDYtLjQ1LDYuMzQtLjkxLDguNjUtMS40LjY5LS4yLDEuMDUtLjYzLDEuMDctMS4zLjAzLS44OS0uMy0xLjM0LS45OS0xLjM2aDBaTTM1Ni42NCwxMzYuMTJjLjg0LTEuNDEsMS45Ny0yLjUxLDMuMzctMy4zczIuOS0xLjE2LDQuNTEtMS4xMWMuNTcuMDIsMS4wMy4wOSwxLjM3LjIxLDYuNzIsMS42NSwxMS4zOSw0LjY3LDE0LjAxLDkuMDctNC4yNi4zMi0xMC45OS45OS0yMC4yLDIuMDQtMS43My4yOC00LjMyLjU5LTcuNzguOTIuMzctLjc2LDEuOTQtMy4zNyw0LjcyLTcuODNoMFpNMzczLjg4LDE2My4zMmMtNS42OSw1Ljc1LTEzLjIzLDEwLjUxLTIyLjY0LDE0LjI2LTkuNDEsMy43NS0xOS4yOCw1LjQ3LTI5LjYsNS4xNi01LjUtLjE3LTkuNjUtLjc0LTEyLjQzLTEuNzEtMi43OC0uOTctNC4xNS0yLjI5LTQuMS0zLjk1LjA3LTIuNDMsMy4xMi01LjMsOS4xMy04LjYxLDYuMDEtMy4zMSwxNC44MS02LjgzLDI2LjQtMTAuNTcsMTEuNTktMy43NCwyNS4zNi03LjM2LDQxLjMxLTEwLjg2LjMsNS4xMS0yLjM5LDEwLjU0LTguMDcsMTYuMjloMFpNMzY4LjAzLDExOC4zNWMxLjY4LTIuMzgsMi45OS00LjE3LDMuOTUtNS4zNiwzLjM2LTQuNzcsNS45OS04LjI5LDcuOS0xMC41Niw1LjI0LTYuMTYsOS4wOS0xMS4yMSwxMS41Ny0xNS4xOCwyLjQ3LTMuOTcsMy43NS03LjI4LDMuODMtOS45NC4wNi0xLjk5LS41Ny0zLjgxLTEuOS01LjQ2LTEuMzMtMS42NS0zLjQtMy4xOC02LjIzLTQuNTktLjU3LS4yNC0xLjAzLS4yLTEuMzguMTItNS44Miw2LjI1LTEzLjEyLDEzLjE3LTIxLjksMjAuNzYtOC43OSw3LjYtMTcuNDcsMTIuOTgtMjYuMDYsMTYuMTUtMS45OC44My0zLjk0LDEuMjEtNS44OSwxLjE1LTEuODMtLjA2LTMuMi0uNi00LjA4LTEuNjItLjg5LTEuMDMtMS4zLTIuNDItMS4yNS00LjE5LjExLTMuNTQsMS45OS03Ljc1LDUuNjQtMTIuNjIsMy42NS00Ljg3LDguOTgtOS41MywxNi4wMS0xMy45Nyw3LjAyLTQuNDQsMTUuMzMtNy43OCwyNC45My0xMC4wNCw2LjgyLTEuNjcsMTIuOTktMi40MywxOC40OS0yLjI2LDcuNTcuMjMsMTMuMTMsMi4yMSwxNi42OSw1LjkxLDMuNTYsMy43MSw1LjI1LDguMzksNS4wOCwxNC4wMy0uMTEsMy42NS0uOTEsNy4zMS0yLjQsMTAuOTgtMS40OSwzLjY3LTMuNDksNy4wMS01Ljk5LDEwLjA0LTQuNTMsNS42Mi0xMC4yNiw5LjY4LTE3LjE2LDEyLjE4LTYuOSwyLjUtMTMuNTIsMy45OS0xOS44NSw0LjQ2aDBaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik01NDYuMTksOTAuNThjMS40Ny42LDIuODQuOTIsNC4xLjk2LDIuNDEuMDcsNC42OS0uNTIsNi44Ni0xLjc4LDIuMTYtMS4yNiwzLjg1LTMuMDQsNS4wNy01LjMzLjk3LTEuNjMsMS40OC0zLjU1LDEuNTUtNS43Ny4wOS0yLjg4LS43OC01LjM0LTIuNjItNy4zOS0xLjgzLTIuMDUtNC4yOS0zLjEyLTcuMzktMy4yMi0yLjQxLS4wNy00LjcuNTItNi44NiwxLjc4LTIuMTYsMS4yNi0zLjg2LDMuMDQtNS4wNyw1LjMzLS45NywxLjYzLTEuNDgsMy41LTEuNTUsNS42LS4wNywyLjIyLjQyLDQuMTksMS40NSw1Ljk0LDEuMDQsMS43NSwyLjUyLDMuMDQsNC40NCwzLjg4aDBaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik03ODYuMjMsMTI3LjUxYy0uMzMtLjM0LS43My0uNTItMS4xOS0uNTQtLjU3LS4wMi0xLjA0LjE5LTEuNC42Mi01LjUxLDcuNy0xMi4yOCwxNi42Ni0yMC4yOCwyNi44OC04LDEwLjIyLTE0Ljk1LDE3Ljk2LTIwLjg1LDIzLjIxLTMuMzEsMy01LjU5LDQuNDgtNi44NSw0LjQ0LTEuNjEtLjA1LTEuMDEtMi43NSwxLjgtOC4wOSwyLjgtNS4zNCw3LjA4LTExLjkxLDEyLjgzLTE5LjcxLDYuMzUtOC42NywxMC43Ni0xNS4wNywxMy4yNC0xOS4yLDIuNDgtNC4xMywzLjc3LTcuOTIsMy44OC0xMS4zNS4xMi0zLjc2LTEuNDQtNy4zLTQuNjctMTAuNjFsLTEwLjE5LTEwLjI4YzQuMjQtNy4yOSw2LjQxLTEyLjQ5LDYuNS0xNS41OS4wNS0xLjU1LS4zMi0yLjY3LTEuMS0zLjM2LTEuNTctMS4zOC0zLjIxLTIuMDktNC45My0yLjE1LTIuNjQtLjA4LTUuMTQsMS4wNi03LjUxLDMuNDItMi4zNywyLjM3LTQuMTgsNS40MS01LjQ0LDkuMTQtLjI1LjY2LS4zOSwxLjU0LS40MiwyLjY1LS4wNSwxLjY2LjM2LDMuMiwxLjI0LDQuNjEuODgsMS40MSwyLjE1LDIuOTcsMy44Miw0LjY5LDAsMC0yNy4xMywzNi4yMy0zNS4wNSw0NS42Mi03LjkyLDkuMzktMTUuMjgsMTYuNDgtMjIuMDgsMjEuMjYtNS41MSwzLjcxLTkuODEsNS41MS0xMi45MSw1LjQyLTMuNjctLjExLTUuNDMtMi40NC01LjI5LTYuOTcuMTgtNS44NiwzLjM1LTEzLjgsOS41MS0yMy44LDMuNDYsMy4xLDguMjQsNC41MiwxNC4zMyw0LjI2LDMuNjgtLjIyLDcuOTktMi40NywxMi45NC02Ljc1LDQuOTUtNC4yOCw5LjI0LTkuNDYsMTIuODctMTUuNTYsMy42My02LjA5LDUuNTItMTEuNjgsNS42OC0xNi43OHMtMS42Ny05LjE5LTUuNDktMTEuOTdjLTIuMTMtMS42MS00Ljg2LTIuNDgtOC4xOC0yLjU4LTQuNTktLjE0LTkuNzksMS4yMy0xNS42Miw0LjA5LTUuODMsMi44Ny0xMS45MSw3LjQ3LTE4LjI0LDEzLjgxLTUuOTMsNS45NC0xMS40OCwxMy4zMS0xNi42NSwyMi4wOS02LjQ1LDkuMDYtMTIuMTcsMTYuNDgtMTcuMTYsMjIuMjQtNy4zOCw4LjUzLTEyLjIxLDEyLjc1LTE0LjUxLDEyLjY4LS45Mi0uMDMtMS4zNi0uNzYtMS4zMS0yLjIuMTQtNC42NSw0LjgxLTE0LjcsMTQuMDEtMzAuMTUsMTAuNzctMTguMTcsMjAuNjItMzMuNDksMjkuNTYtNDUuOTUsOC45My0xMi40NywxNS42LTIxLjI5LDIwLjAxLTI2LjQ3LjM2LS40My40My0uOTMuMjItMS40OS0xLjgxLTQuNi00LjMyLTYuOTUtNy41My03LjA0LTQuMzYtLjEzLTkuNjksMy4zOS0xNS45OSwxMC41Ni02LjMsNy4xNy0xNC4yLDE3LjcxLTIzLjY5LDMxLjU5LTIuMTMtMS43My00LjgxLTMuMjItOC4wNC00LjQ5LTMuMjMtMS4yNi02Ljk3LTEuODUtMTEuMjItMS43Ni00LjAyLS4wMS04LjkxLDIuMjItMTQuNjcsNi42OS01Ljc2LDQuNDctMTEuNDIsMTAuMzQtMTYuOTgsMTcuNTktMy41OSw0LjY4LTYuNzIsOS41Mi05LjM4LDE0LjUxLTMuMzUsNC40OS02Ljk0LDkuMjItMTAuNzgsMTQuMTktNy43MSwxMC4wMS0xMy44MSwxNy4xNi0xOC4zLDIxLjQ2LTIuMjQsMi4wNC0zLjc3LDMuMDQtNC41NywzLjAyLS42OS0uMDItMS4wMi0uNTMtLjk5LTEuNTMuMDgtMi41NSwxLjk5LTcuNzUsNS43My0xNS42MSwzLjc0LTcuODYsOC44Mi0xNy4zNCwxNS4yNS0yOC40NSw1LjQ2LTkuNTgsMTEuMjktMTkuMDQsMTcuNDgtMjguMzgsNi4yLTkuMzMsMTEuNjYtMTcuMTEsMTYuMzgtMjMuMzQsNC43Mi02LjIzLDcuNzktOS43LDkuMTgtMTAuNDQuMzUtLjMyLjQyLS41NC4xOS0uNjYtMS44MS00LjYtNC41LTYuOTUtOC4wNS03LjA2LTYuMDgtLjE5LTEzLjk1LDUuNzItMjMuNjEsMTcuNzItOS42NiwxMi0xOS4wNywyNS45OC0yOC4yMyw0MS45Mi0uNDcuODEtLjkyLDEuNjEtMS4zNywyLjQtLjE5LjEyLS4zNi4yNi0uNTMuNDUtOS41NiwxMi4yMy0xOC43LDIzLjA4LTI3LjQyLDMyLjU2LTguNzMsOS40OC0xNC4xMiwxNC4xOS0xNi4xOCwxNC4xMy0uNTctLjAyLS44NS0uNDEtLjgyLTEuMTkuMDQtMS4xMS45MS0zLjUyLDIuNjMtNy4yMyw0LjUzLTkuMTcsMTAuMDItMTksMTYuNDgtMjkuNDksNi40Ni0xMC40OSwxMi4xLTE5LjMyLDE2LjkxLTI2LjQ4LjQ4LS43Ni4zOS0xLjU0LS4yNy0yLjM0LTIuMzUtMi4wNy01LjI0LTMuMTUtOC42OC0zLjI2LTEuMDMtLjAzLTEuODQsMC0yLjQxLjA5LTIuODguMzYtNS4zMiwxLjI4LTcuMzEsMi43Ny0yLDEuNDktNS4xMyw1LjM5LTkuMzksMTEuNjgtMy4wMiw0LjQ1LTcuMjcsMTEuMTEtMTIuNzUsMTkuOTgtMTEuOTIsMTUuMjItMjEuNDUsMjYuNTktMjguNTksMzQuMDktNS4xLDUuMjctOC41Niw3Ljg4LTEwLjQsNy44Mi0uOTItLjAzLTEuMzYtLjc2LTEuMzEtMi4yLjEzLTQuMjEsMy44OS0xMi45LDExLjMtMjYuMDgsNi4xOS0xMS4xMSwxMi4yMy0yMC43NiwxOC4xLTI4Ljk0LDUuODctOC4xOCwxMC40Ny0xNC4xMSwxMy44LTE3Ljc3LjI0LS40My4yLS43Ny0uMTQtMS0xLjExLTEuMTQtMi42Ni0yLjIxLTQuNjQtMy4yMi0xLjk4LTEtNC40LTEuNTUtNy4yNy0xLjY0LTIuOTgtLjA5LTUuOTYsMS40My04LjkyLDQuNTQtMi45NywzLjEyLTcuNDQsOC44Ni0xMy40NCwxNy4ybC0xMC40MSwxMy45Ny05Ljg3LDEyLjk5Yy01Ljc1LDcuNjktOS43OCwxMi45MS0xMi4xLDE1LjY3LTIuMzIsMi43NS00LjI0LDQuNDQtNS43NSw1LjA2LS44MS4zMS0xLjItLjItMS4xNi0xLjUzLjA4LTIuNzcsMS44Ny03LjcyLDUuMzYtMTQuODcsMy40OS03LjE1LDcuNzUtMTQuMjQsMTIuNzktMjEuMjksNC41Ni02LjQsOC4wNy0xMS42OSwxMC41Ni0xNS44OCwyLjQ4LTQuMTksMy43Ni03LjcyLDMuODYtMTAuNi4xMy00LjIxLTIuODUtNi40LTguOTItNi41OS0yLjE4LS4wNy00LjQ4LjA5LTYuOS40NS0uMTIsMC0uMjMuMDUtLjM1LjE1LS4xMi4xMS0uMTIuMjItLjAxLjMzLjA4LDEuMTEtLjcsMy4wOC0yLjMzLDUuOTEtMS42NCwyLjgzLTQuMzIsNy4xMy04LjA2LDEyLjg4LTQuNjksNi45NS04LjcsMTMuMTktMTIuMDIsMTguNzQtMy4zMyw1LjU1LTUuOTgsMTAuNzgtNy45NywxNS43MS0zLjYxLDkuMTktNS40OCwxNi4wNi01LjYyLDIwLjYtLjEzLDQuMS45NSw3LjUxLDMuMjEsMTAuMjMsMi4yNywyLjczLDYuMDIsNSwxMS4yNCw2LjgyLjc5LjM2LDEuNDguMTUsMi4wOC0uNmwxOC43Mi0yNi41MWMtMi4xNyw3LjAyLTMuMzIsMTIuOTItMy40NywxNy42OC0uMjUsNy45NywyLjEyLDEzLjA4LDcuMSwxNS4zNC42OC4zNSwxLjQyLjU0LDIuMjIuNTcsNS4xNi4xNiwxMi4wMS00LjMxLDIwLjU1LTEzLjQxLDQuMzgtNC42Nyw4LjYzLTkuNTMsMTIuNzMtMTQuNTctMS4xOSwzLjcyLTEuODQsNy4xNy0xLjkzLDEwLjMzLS4xNSw0Ljc2Ljg5LDguMzYsMy4xMSwxMC44MXM1LjExLDMuNzMsOC42NiwzLjg0YzMuNTUuMTEsNy4wOS0xLDEwLjYtMy4zMyw1LjA1LTMuNjEsMTIuNDItMTEuOTIsMjIuMTEtMjQuOTEsMy40LTQuNTYsNi42Ny04Ljk5LDkuOC0xMy4yOS0xLjk5LDQuMTEtMy43LDcuODctNS4wOSwxMS4yOC0yLjczLDYuNzktNC4xNywxMi42MS00LjMyLDE3LjQ4LS4xNCw0LjY1LjY3LDguMTEsMi40NCwxMC4zOCwxLjc2LDIuMjcsMy40MiwzLjY1LDQuOTUsNC4xNCwxLjUzLjQ5LDIuNDcuNzQsMi44Mi43NSwyLjE4LjA3LDUuNDMtMS4zLDkuNzctNC4xczEwLjQ5LTkuMDcsMTguNDgtMTguNzljMi4zNy0yLjg4LDQuODYtNi4xNiw3LjQ5LTkuODQtLjg4LDMuNDUtMS4zNiw2LjUxLTEuNDQsOS4xOS0uMzEsMTAuMTksNC41MiwxNy4xNSwxNC41MSwyMC44OC40NS4yMy45Ny4yOCwxLjU0LjEzLjU4LS4xNSwxLjA1LS40NCwxLjQtLjg3LDEuOTItMi43MSw4LjM4LTExLjQzLDE5LjM5LTI2LjE2LTEuMDUsNC4xOC0xLjYxLDcuNzYtMS43MSwxMC43NS0uMjQsNy43NSwxLjk5LDEzLjYzLDYuNjksMTcuNjUsMS4yMywxLjA0LDIuNTksMS41OCw0LjA4LDEuNjIsNS41LjE3LDEyLjI2LTQuNzgsMjAuMjUtMTQuODMsMy4xNS0zLjk2LDYuNTEtOC40MSwxMC4wNi0xMy4zNC0xLjA0LDMuNzYtMS42MSw3LjMtMS43MSwxMC42MS0uMjEsNi45NywxLjU0LDEyLjI2LDUuMjgsMTUuODcsMy43MywzLjYsOC40MSw1LjQ5LDE0LjAzLDUuNjcsNy42OC4yMywxNy4xMy01Ljc2LDI4LjM1LTE3Ljk5LDkuOTItMTAuODEsNDkuMzktNjIuMjcsNTIuMDMtNjUuOTUsMi4xLDIuMzksMy4xMyw0LjY0LDMuMDYsNi43NC0uMDcsMi4yMi0xLjEsNC45OC0zLjEsOC4zLTIsMy4zMi01LjI3LDguMTgtOS44MywxNC41Ny0uNzIsMS4wOS0yLjk0LDQuMjYtNi42Niw5LjUyLTMuNzIsNS4yNi03LjEsMTAuNjEtMTAuMTMsMTYuMDYtNC43Myw4LjM5LTcuMTgsMTUuMTMtNy4zMywyMC4yMS0uMjEsNi45NywzLjY3LDExLjQxLDExLjY0LDEzLjMyLDMuNTMuNzcsOC45NC0yLjQxLDE2LjIyLTkuNTYsNy4yOC03LjE0LDE0Ljk5LTE2LjI0LDIzLjEzLTI3LjI5LDguMTQtMTEuMDUsMTUuMy0yMS44LDIxLjQ3LTMyLjI0LjM2LS42NS4yNy0xLjI2LS4yOS0xLjg0aDBaTTY4NC44NSwxMzguNTNjNi4wMS04Ljc5LDExLjQ5LTE1LjQ2LDE2LjQ1LTIwLjAyLDQuOTYtNC41Niw4LjUzLTYuOCwxMC43MS02LjczLDEuMTQuMDQsMS43LjcyLDEuNjYsMi4wNC0uMDQsMS4zMy0uNzMsMy4yMi0yLjA3LDUuNjctMS4zNCwyLjQ1LTMuMzIsNS4yNS01Ljk0LDguMzgtOC44MiwxMC41OS0xNS44NywxNS44LTIxLjE0LDE1LjY0LS44LS4wMi0xLjY2LS4yMi0yLjU2LS41OCwxLjItMS45NiwyLjE3LTMuNDIsMi44OS00LjRoMFpNNjA5LjUyLDE1MC4yN2MtOS4xMiwxMS4xOS0xNC42LDE2LjU5LTE2LjQyLDE2LjItMS4yNi0uMjYtLjUtMy4zOSwyLjI3LTkuNCwyLjc3LTYsNi43LTEyLjc4LDExLjgxLTIwLjMzLDUuMTEtNy41NCwxMC4zOC0xMy44MywxNS44MS0xOC44Nyw3LjU2LTcuMTksMTMuNTktMTAuODMsMTguMDctMTAuOTFsLTYuNjcsOS43N2MtNy40NiwxMS4xOC0xNS43NSwyMi4zNy0yNC44NywzMy41NWgwWiIvPg0KICA8L2c+DQogIDxnPg0KICAgIDxwYXRoIGNsYXNzPSJjIiBkPSJNNDA1Ljk2LDIzMC4xOWMwLDQuMTUtMy4yOSw2LjU1LTkuNiw2LjU1aC0xMi40MXYtMjMuOTloMTEuNzJjNiwwLDkuMDgsMi41LDkuMDgsNi4yNCwwLDIuNC0xLjIzLDQuMjUtMy4xOSw1LjI4LDIuNjcuODYsNC4zOSwyLjkxLDQuMzksNS45M1pNMzg5LjQ4LDIxNi45M3Y1LjY1aDUuNTJjMi43MSwwLDQuMTgtLjk2LDQuMTgtMi44NHMtMS40Ny0yLjgxLTQuMTgtMi44MWgtNS41MlpNNDAwLjM3LDIyOS42MWMwLTIuMDItMS41NC0yLjk4LTQuNDItMi45OGgtNi40OHY1LjkzaDYuNDhjMi44OCwwLDQuNDItLjg5LDQuNDItMi45NVoiLz4NCiAgICA8cGF0aCBjbGFzcz0iYyIgZD0iTTQyOC44OSwyMzYuNzRsLTQuNjMtNi42OGgtNS4xMXY2LjY4aC01LjU1di0yMy45OWgxMC4zOGM2LjQxLDAsMTAuNDIsMy4zMiwxMC40Miw4LjcsMCwzLjYtMS44Miw2LjI0LTQuOTMsNy41N2w1LjM4LDcuNzFoLTUuOTZaTTQyMy42OCwyMTcuMjdoLTQuNTJ2OC4zNmg0LjUyYzMuMzksMCw1LjExLTEuNTgsNS4xMS00LjE4cy0xLjcxLTQuMTgtNS4xMS00LjE4WiIvPg0KICAgIDxwYXRoIGNsYXNzPSJjIiBkPSJNNDU4LjAyLDIzMS42aC0xMS4xNGwtMi4xMiw1LjE0aC01LjY5bDEwLjY5LTIzLjk5aDUuNDhsMTAuNzMsMjMuOTloLTUuODNsLTIuMTItNS4xNFpNNDU2LjI3LDIyNy4zOGwtMy44LTkuMTgtMy44LDkuMThoNy42MVoiLz4NCiAgICA8cGF0aCBjbGFzcz0iYyIgZD0iTTQ5My45LDIxMi43NXYyMy45OWgtNC41NmwtMTEuOTYtMTQuNTZ2MTQuNTZoLTUuNDh2LTIzLjk5aDQuNTlsMTEuOTMsMTQuNTZ2LTE0LjU2aDUuNDhaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik01MDMuMDEsMjEyLjc1aDEwLjljNy44NSwwLDEzLjIzLDQuNzMsMTMuMjMsMTEuOTlzLTUuMzgsMTEuOTktMTMuMjMsMTEuOTloLTEwLjl2LTIzLjk5Wk01MTMuNjQsMjMyLjE4YzQuNzYsMCw3Ljg4LTIuODQsNy44OC03LjQ0cy0zLjEyLTcuNDQtNy44OC03LjQ0aC01LjA3djE0Ljg3aDUuMDdaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik01MzQuNzUsMjEyLjc1aDUuNTV2MjMuOTloLTUuNTV2LTIzLjk5WiIvPg0KICAgIDxwYXRoIGNsYXNzPSJjIiBkPSJNNTcxLjQyLDIxMi43NXYyMy45OWgtNC41NmwtMTEuOTYtMTQuNTZ2MTQuNTZoLTUuNDh2LTIzLjk5aDQuNTlsMTEuOTMsMTQuNTZ2LTE0LjU2aDUuNDhaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik01OTYuNzQsMjI0LjM2aDUuMDd2OS43M2MtMi42NCwxLjk5LTYuMjcsMy4wNS05LjcsMy4wNS03LjU0LDAtMTMuMDktNS4xNy0xMy4wOS0xMi40MXM1LjU1LTEyLjQxLDEzLjE5LTEyLjQxYzQuMjIsMCw3LjcxLDEuNDQsMTAuMDQsNC4xNWwtMy41NiwzLjI5Yy0xLjc1LTEuODUtMy43Ny0yLjcxLTYuMi0yLjcxLTQuNjYsMC03Ljg1LDMuMTItNy44NSw3LjY4czMuMTksNy42OCw3Ljc4LDcuNjhjMS41MSwwLDIuOTEtLjI3LDQuMzItMS4wM3YtNy4wM1oiLz4NCiAgICA8cGF0aCBjbGFzcz0iYyIgZD0iTTYyMiwyMjQuNzRjMC03LjIzLDUuNTUtMTIuNDEsMTMuMDItMTIuNDEsNC4xNSwwLDcuNjEsMS41MSw5Ljg3LDQuMjVsLTMuNTYsMy4yOWMtMS42MS0xLjg1LTMuNjMtMi44MS02LjAzLTIuODEtNC40OSwwLTcuNjgsMy4xNS03LjY4LDcuNjhzMy4xOSw3LjY4LDcuNjgsNy42OGMyLjQsMCw0LjQyLS45Niw2LjAzLTIuODRsMy41NiwzLjI5Yy0yLjI2LDIuNzgtNS43Miw0LjI4LTkuOSw0LjI4LTcuNDQsMC0xMi45OS01LjE3LTEyLjk5LTEyLjQxWiIvPg0KICAgIDxwYXRoIGNsYXNzPSJjIiBkPSJNNjUwLjAzLDIyNC43NGMwLTcuMTMsNS41NS0xMi40MSwxMy4xMy0xMi40MXMxMy4xMyw1LjI0LDEzLjEzLDEyLjQxLTUuNTksMTIuNDEtMTMuMTMsMTIuNDEtMTMuMTMtNS4yOC0xMy4xMy0xMi40MVpNNjcwLjY2LDIyNC43NGMwLTQuNTYtMy4yMi03LjY4LTcuNS03LjY4cy03LjUsMy4xMi03LjUsNy42OCwzLjIyLDcuNjgsNy41LDcuNjgsNy41LTMuMTIsNy41LTcuNjhaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik02ODEuNTMsMjMzLjY1YzAtMS45OSwxLjQ3LTMuMjksMy4zMi0zLjI5czMuMzIsMS4zLDMuMzIsMy4yOS0xLjQ3LDMuMzYtMy4zMiwzLjM2LTMuMzItMS40MS0zLjMyLTMuMzZaIi8+DQogIDwvZz4NCjwvc3ZnPg==" alt="Builder Branding Co." class="be-logo be-logo-dark">
+  <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxzdmcgaWQ9ImEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDgzMy43MiAyODYuMDYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuYywgLmQgew0KICAgICAgICBmaWxsOiBibHVlOw0KICAgICAgfQ0KDQogICAgICAuZCB7DQogICAgICAgIGZpbGwtcnVsZTogZXZlbm9kZDsNCiAgICAgIH0NCiAgICA8L3N0eWxlPg0KICA8L2RlZnM+DQogIDxnPg0KICAgIDxwYXRoIGNsYXNzPSJkIiBkPSJNMTQxLjg2LDYwLjc3Yy00NS42OSwwLTgyLjczLDM3LjA0LTgyLjczLDgyLjczdi4zMWwyNy41LTQwLjI4LDguNDYtLjE2LDIuNjEtLjA0LDQyLjA4LS42MWgwbDE0LjUyLS4yMWgwbDEuMDMtLjAyaC41YzcuNzgsMCwxNC44MSwxLjM0LDIwLjksMy45OSw2LjcxLDIuOTIsMTEuNTUsNy4yNywxNC40LDEyLjk0bC4xNi4zMmMyLjM2LDQuNywzLjAzLDguNzEsMi4wNSwxMi4yNy0uMDMuMS0uMDYuMi0uMDkuMywyLjM5LjgsNC41OCwxLjc3LDYuNTUsMi44OCw0LjAzLDIuMjksNy4yOSw1LjQ3LDkuNzIsOS40N2gwYy40MS42OC44LDEuMzgsMS4xNiwyLjExbC4xNi4zMmMzLjMyLDYuNjIsMi4xNiwxMS4zNS41OSwxNC4xNi0uNTEuOTItMS4xNSwxLjc4LTEuOSwyLjU4di4wMnMtNTguMDgsNjEuODItNTguMDgsNjEuODJjNDEuMTctNC43Niw3My4xMy0zOS43NCw3My4xMy04Mi4xOCwwLTQ1LjY5LTM3LjA0LTgyLjczLTgyLjczLTgyLjczaDBaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik0xNDEuODYsMjM4LjFjLTEyLjgxLDAtMjUuMjMtMi41MS0zNi45My03LjQ2LTExLjMtNC43OC0yMS40NC0xMS42Mi0zMC4xNi0yMC4zMy04LjcxLTguNzEtMTUuNTUtMTguODYtMjAuMzMtMzAuMTYtNC45NS0xMS43LTcuNDYtMjQuMTItNy40Ni0zNi45M3MyLjUxLTI1LjIzLDcuNDYtMzYuOTNjNC43OC0xMS4zLDExLjYyLTIxLjQ0LDIwLjMzLTMwLjE2LDguNzEtOC43MSwxOC44Ni0xNS41NSwzMC4xNi0yMC4zMywxMS43LTQuOTUsMjQuMTItNy40NiwzNi45My03LjQ2czI1LjIzLDIuNTEsMzYuOTMsNy40NmMxMS4zLDQuNzgsMjEuNDQsMTEuNjIsMzAuMTYsMjAuMzMsOC43MSw4LjcxLDE1LjU1LDE4Ljg2LDIwLjMzLDMwLjE2LDQuOTUsMTEuNyw3LjQ2LDI0LjEyLDcuNDYsMzYuOTNzLTIuNTEsMjUuMjMtNy40NiwzNi45M2MtNC43OCwxMS4zLTExLjYyLDIxLjQ0LTIwLjMzLDMwLjE2LTguNzEsOC43MS0xOC44NiwxNS41NS0zMC4xNiwyMC4zMy0xMS43LDQuOTUtMjQuMTIsNy40Ni0zNi45Myw3LjQ2aDBaTTE0MS44Niw1My44NWMtNDkuMjgsMC04OS4zOCw0MC4wOS04OS4zOCw4OS4zOHM0MC4wOSw4OS4zOCw4OS4zOCw4OS4zOCw4OS4zOC00MC4wOSw4OS4zOC04OS4zOC00MC4wOS04OS4zOC04OS4zOC04OS4zOGgwWiIvPg0KICAgIDxwYXRoIGNsYXNzPSJkIiBkPSJNMjA1Ljk5LDE0OS41M2wtLjE2LS4zMmMtMi4wMy00LjA1LTQuOTMtNy4xNC04LjcxLTkuMjgtMy4xNC0xLjc4LTYuOTQtMy4xLTExLjQtMy45Ny0uOS0uMTgtMS44Mi0uMzMtMi43OC0uNDcuOTctLjM4LDEuODItLjgyLDIuNTMtMS4zMywxLjM2LS45NywyLjIzLTIuMTYsMi42My0zLjU5LjYtMi4xOC4wNC00Ljk4LTEuNjctOC4zOWwtLjE2LS4zMmMtMi4yNy00LjUyLTYuMTctNy45OC0xMS43MS0xMC4zOS0uOTktLjQzLTIuMDEtLjgyLTMuMDUtMS4xN2gwYy00LjgtMS42Mi0xMC4xOC0yLjQtMTYuMTQtMi4zNmwtNjUuOSwxLjc1LTI5Ljc3LDQzLjU4Yy4zOSwzLjMuOTcsNi41NCwxLjczLDkuN2wzMy4yOS00NS42NSwzLjMsNS42OS0zNC41MSw0Ny4xN2MuOSwyLjY1LDEuOTMsNS4yNCwzLjA5LDcuNzZsMzUuMjItNDguMzcsMy4zLDUuNjgtMzUuNTMsNDguNTljMS4yNCwyLjIyLDIuNTgsNC4zNyw0LjAyLDYuNDZsMzUuMzMtNDguNDgsMy4zLDUuNjgtMzQuOTYsNDcuNzRjMS43MSwyLjEzLDMuNTMsNC4xOCw1LjQ0LDYuMTNsMzMuODgtNDYuMzgsMy4zLDUuNjgtMzIuOSw0NC43OWMxLjY4LDEuNDksMy40MywyLjkyLDUuMjMsNC4yN2wxNi4wMy0yMS4zNCwxMS4wOC0xNS43MiwyLjcyLTMuNjgsMS4zNC0xLjgxLDIuNjYtLjA0LDQ5LjY0LS43MmgwbDEuNDQtLjAyLDIuOTktLjA0aC4xOGMxMC41My0uMTUsMTguMTQtMS42LDIyLjgyLTQuMzQsMS42My0uOTYsMi44MS0yLjA4LDMuNTMtMy4zOSwxLjM1LTIuNDMsMS4xMi01LjQ1LS43LTkuMDhoMFpNMTI1LjAzLDEyMS44bDIzLjY1LS4zNGguMDljMi43NC0uMDQsNC44OCwwLDYuNDMuMTQsMS41NC4xNCwyLjkyLjUxLDQuMTQsMS4xMywxLjIyLjYyLDIuMTksMS42NCwyLjksMy4wNS43OSwxLjU4Ljg3LDIuNy4yMywzLjM3LS42NC42Ny0xLjYxLDEuMDgtMi45MSwxLjIzLTEuMy4xNS0zLjM2LjI1LTYuMTYuMjlsLTQuNjcuMDctMTkuMTEuMi00LjU5LTkuMTVoMFpNMTc3LjU0LDE0OS45OGMtLjYxLjcyLTEuNywxLjE4LTMuMjcsMS4zNi0xLjU3LjE4LTMuOTguMy03LjIyLjM0bC0yLjk5LjA0Yy0xLjE4LjAyLTMuNDIuMDQtNi43LjA2LTMuMjkuMDItOS4wMS4wOS0xNy4xOC4yMWwtNC44Mi05LjYyLDI2Ljc0LS4zOWguMDljMy4yNC0uMDUsNS43MywwLDcuNDUuMTMsMS43My4xMywzLjI0LjUyLDQuNTQsMS4xNywxLjI5LjY0LDIuMzMsMS43MywzLjA5LDMuMjUuNzksMS41OC44OCwyLjczLjI3LDMuNDVoMFoiLz4NCiAgPC9nPg0KICA8ZyBpZD0iYiIgZGF0YS1uYW1lPSJmIj4NCiAgICA8cGF0aCBjbGFzcz0iYyIgZD0iTTQxMC42LDEzOC45M2gtLjE3Yy0zLjEuMDEtNi42Ny4yMy0xMC42OS42Ni0yLjQxLTMuODQtNi4wOC03LjU1LTExLjAyLTExLjE0LDEyLjA0LTMuNTEsMjIuMy04LjcsMzAuNzgtMTUuNTksOC40Ny02Ljg5LDEyLjg2LTE1LjAzLDEzLjE0LTI0LjQ0LjIxLTYuOTctMS45Mi0xMy4zNS02LjM5LTE5LjE0LTQuNDctNS43OS0xMC43Ni0xMC40MS0xOC44Ni0xMy44Ny04LjEtMy40Ni0xNy4yLTUuMzUtMjcuMjgtNS42NS04LjcyLS4yNy0xNy45My43OC0yNy42NCwzLjE0LTEwLjA2LDIuNDYtMTguNDYsNS45MS0yNS4xOSwxMC4zNi02Ljc0LDQuNDUtMTEuNzMsOS4zMy0xNSwxNC42Ni0zLjI2LDUuMzMtNC45NywxMC42LTUuMTMsMTUuNzktLjA5LDIuOTkuMzQsNS43NywxLjI5LDguMzUuOTUsMi41OCwyLjMyLDQuNzgsNC4xLDYuNjEsMi44OSwyLjk3LDYuNDYsNC41MiwxMC43LDQuNjUsNS4zOS4xNiwxMS42NC0xLjYxLDE4Ljc2LTUuMzMsNy4xMS0zLjcxLDE1LjA3LTguODIsMjMuODgtMTUuMy0yLjI3LDIuODEtNi4xMyw3LjI5LTExLjYsMTMuNDMtNy4xMyw4LjA5LTEyLjQ0LDE0LjU1LTE1LjkxLDE5LjM3LTMuNDgsNC44Mi01LjI3LDkuMTctNS4zOSwxMy4wNS0uMDksMy4xLDEuMDMsNS42OCwzLjM4LDcuNzUtMTMuNzMsMi4zNS0yNC43Miw1LjEyLTMyLjk2LDguMjktNi41LDIuMzUtMTEuMzcsNS4xMy0xNC42Myw4LjM2LTMuMjUsMy4yMi00Ljk0LDYuNjYtNS4wNSwxMC4zMi0uMTMsNC4yMSwxLjg0LDguMjgsNS45MSwxMi4yMyw0LjA3LDMuOTUsOS44Miw3LjIsMTcuMjYsOS43NSw3LjQ0LDIuNTUsMTUuOTEsMy45OCwyNS40Myw0LjI3LDEwLjY2LjMzLDIxLjUxLTEuNzgsMzIuNTYtNi4zMSwxMS4wNC00LjU0LDIwLjIxLTEwLjU0LDI3LjQ5LTE4LjAyczExLjA1LTE1LjA5LDExLjI5LTIyLjg0Yy4xLTMuMjEtLjQ5LTYuMzMtMS43OC05LjM2LDMuNDYtLjQ1LDYuMzQtLjkxLDguNjUtMS40LjY5LS4yLDEuMDUtLjYzLDEuMDctMS4zLjAzLS44OS0uMy0xLjM0LS45OS0xLjM2aDBaTTM1Ni42NCwxMzYuMTJjLjg0LTEuNDEsMS45Ny0yLjUxLDMuMzctMy4zczIuOS0xLjE2LDQuNTEtMS4xMWMuNTcuMDIsMS4wMy4wOSwxLjM3LjIxLDYuNzIsMS42NSwxMS4zOSw0LjY3LDE0LjAxLDkuMDctNC4yNi4zMi0xMC45OS45OS0yMC4yLDIuMDQtMS43My4yOC00LjMyLjU5LTcuNzguOTIuMzctLjc2LDEuOTQtMy4zNyw0LjcyLTcuODNoMFpNMzczLjg4LDE2My4zMmMtNS42OSw1Ljc1LTEzLjIzLDEwLjUxLTIyLjY0LDE0LjI2LTkuNDEsMy43NS0xOS4yOCw1LjQ3LTI5LjYsNS4xNi01LjUtLjE3LTkuNjUtLjc0LTEyLjQzLTEuNzEtMi43OC0uOTctNC4xNS0yLjI5LTQuMS0zLjk1LjA3LTIuNDMsMy4xMi01LjMsOS4xMy04LjYxLDYuMDEtMy4zMSwxNC44MS02LjgzLDI2LjQtMTAuNTcsMTEuNTktMy43NCwyNS4zNi03LjM2LDQxLjMxLTEwLjg2LjMsNS4xMS0yLjM5LDEwLjU0LTguMDcsMTYuMjloMFpNMzY4LjAzLDExOC4zNWMxLjY4LTIuMzgsMi45OS00LjE3LDMuOTUtNS4zNiwzLjM2LTQuNzcsNS45OS04LjI5LDcuOS0xMC41Niw1LjI0LTYuMTYsOS4wOS0xMS4yMSwxMS41Ny0xNS4xOCwyLjQ3LTMuOTcsMy43NS03LjI4LDMuODMtOS45NC4wNi0xLjk5LS41Ny0zLjgxLTEuOS01LjQ2LTEuMzMtMS42NS0zLjQtMy4xOC02LjIzLTQuNTktLjU3LS4yNC0xLjAzLS4yLTEuMzguMTItNS44Miw2LjI1LTEzLjEyLDEzLjE3LTIxLjksMjAuNzYtOC43OSw3LjYtMTcuNDcsMTIuOTgtMjYuMDYsMTYuMTUtMS45OC44My0zLjk0LDEuMjEtNS44OSwxLjE1LTEuODMtLjA2LTMuMi0uNi00LjA4LTEuNjItLjg5LTEuMDMtMS4zLTIuNDItMS4yNS00LjE5LjExLTMuNTQsMS45OS03Ljc1LDUuNjQtMTIuNjIsMy42NS00Ljg3LDguOTgtOS41MywxNi4wMS0xMy45Nyw3LjAyLTQuNDQsMTUuMzMtNy43OCwyNC45My0xMC4wNCw2LjgyLTEuNjcsMTIuOTktMi40MywxOC40OS0yLjI2LDcuNTcuMjMsMTMuMTMsMi4yMSwxNi42OSw1LjkxLDMuNTYsMy43MSw1LjI1LDguMzksNS4wOCwxNC4wMy0uMTEsMy42NS0uOTEsNy4zMS0yLjQsMTAuOTgtMS40OSwzLjY3LTMuNDksNy4wMS01Ljk5LDEwLjA0LTQuNTMsNS42Mi0xMC4yNiw5LjY4LTE3LjE2LDEyLjE4LTYuOSwyLjUtMTMuNTIsMy45OS0xOS44NSw0LjQ2aDBaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik01NDYuMTksOTAuNThjMS40Ny42LDIuODQuOTIsNC4xLjk2LDIuNDEuMDcsNC42OS0uNTIsNi44Ni0xLjc4LDIuMTYtMS4yNiwzLjg1LTMuMDQsNS4wNy01LjMzLjk3LTEuNjMsMS40OC0zLjU1LDEuNTUtNS43Ny4wOS0yLjg4LS43OC01LjM0LTIuNjItNy4zOS0xLjgzLTIuMDUtNC4yOS0zLjEyLTcuMzktMy4yMi0yLjQxLS4wNy00LjcuNTItNi44NiwxLjc4LTIuMTYsMS4yNi0zLjg2LDMuMDQtNS4wNyw1LjMzLS45NywxLjYzLTEuNDgsMy41LTEuNTUsNS42LS4wNywyLjIyLjQyLDQuMTksMS40NSw1Ljk0LDEuMDQsMS43NSwyLjUyLDMuMDQsNC40NCwzLjg4aDBaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik03ODYuMjMsMTI3LjUxYy0uMzMtLjM0LS43My0uNTItMS4xOS0uNTQtLjU3LS4wMi0xLjA0LjE5LTEuNC42Mi01LjUxLDcuNy0xMi4yOCwxNi42Ni0yMC4yOCwyNi44OC04LDEwLjIyLTE0Ljk1LDE3Ljk2LTIwLjg1LDIzLjIxLTMuMzEsMy01LjU5LDQuNDgtNi44NSw0LjQ0LTEuNjEtLjA1LTEuMDEtMi43NSwxLjgtOC4wOSwyLjgtNS4zNCw3LjA4LTExLjkxLDEyLjgzLTE5LjcxLDYuMzUtOC42NywxMC43Ni0xNS4wNywxMy4yNC0xOS4yLDIuNDgtNC4xMywzLjc3LTcuOTIsMy44OC0xMS4zNS4xMi0zLjc2LTEuNDQtNy4zLTQuNjctMTAuNjFsLTEwLjE5LTEwLjI4YzQuMjQtNy4yOSw2LjQxLTEyLjQ5LDYuNS0xNS41OS4wNS0xLjU1LS4zMi0yLjY3LTEuMS0zLjM2LTEuNTctMS4zOC0zLjIxLTIuMDktNC45My0yLjE1LTIuNjQtLjA4LTUuMTQsMS4wNi03LjUxLDMuNDItMi4zNywyLjM3LTQuMTgsNS40MS01LjQ0LDkuMTQtLjI1LjY2LS4zOSwxLjU0LS40MiwyLjY1LS4wNSwxLjY2LjM2LDMuMiwxLjI0LDQuNjEuODgsMS40MSwyLjE1LDIuOTcsMy44Miw0LjY5LDAsMC0yNy4xMywzNi4yMy0zNS4wNSw0NS42Mi03LjkyLDkuMzktMTUuMjgsMTYuNDgtMjIuMDgsMjEuMjYtNS41MSwzLjcxLTkuODEsNS41MS0xMi45MSw1LjQyLTMuNjctLjExLTUuNDMtMi40NC01LjI5LTYuOTcuMTgtNS44NiwzLjM1LTEzLjgsOS41MS0yMy44LDMuNDYsMy4xLDguMjQsNC41MiwxNC4zMyw0LjI2LDMuNjgtLjIyLDcuOTktMi40NywxMi45NC02Ljc1LDQuOTUtNC4yOCw5LjI0LTkuNDYsMTIuODctMTUuNTYsMy42My02LjA5LDUuNTItMTEuNjgsNS42OC0xNi43OHMtMS42Ny05LjE5LTUuNDktMTEuOTdjLTIuMTMtMS42MS00Ljg2LTIuNDgtOC4xOC0yLjU4LTQuNTktLjE0LTkuNzksMS4yMy0xNS42Miw0LjA5LTUuODMsMi44Ny0xMS45MSw3LjQ3LTE4LjI0LDEzLjgxLTUuOTMsNS45NC0xMS40OCwxMy4zMS0xNi42NSwyMi4wOS02LjQ1LDkuMDYtMTIuMTcsMTYuNDgtMTcuMTYsMjIuMjQtNy4zOCw4LjUzLTEyLjIxLDEyLjc1LTE0LjUxLDEyLjY4LS45Mi0uMDMtMS4zNi0uNzYtMS4zMS0yLjIuMTQtNC42NSw0LjgxLTE0LjcsMTQuMDEtMzAuMTUsMTAuNzctMTguMTcsMjAuNjItMzMuNDksMjkuNTYtNDUuOTUsOC45My0xMi40NywxNS42LTIxLjI5LDIwLjAxLTI2LjQ3LjM2LS40My40My0uOTMuMjItMS40OS0xLjgxLTQuNi00LjMyLTYuOTUtNy41My03LjA0LTQuMzYtLjEzLTkuNjksMy4zOS0xNS45OSwxMC41Ni02LjMsNy4xNy0xNC4yLDE3LjcxLTIzLjY5LDMxLjU5LTIuMTMtMS43My00LjgxLTMuMjItOC4wNC00LjQ5LTMuMjMtMS4yNi02Ljk3LTEuODUtMTEuMjItMS43Ni00LjAyLS4wMS04LjkxLDIuMjItMTQuNjcsNi42OS01Ljc2LDQuNDctMTEuNDIsMTAuMzQtMTYuOTgsMTcuNTktMy41OSw0LjY4LTYuNzIsOS41Mi05LjM4LDE0LjUxLTMuMzUsNC40OS02Ljk0LDkuMjItMTAuNzgsMTQuMTktNy43MSwxMC4wMS0xMy44MSwxNy4xNi0xOC4zLDIxLjQ2LTIuMjQsMi4wNC0zLjc3LDMuMDQtNC41NywzLjAyLS42OS0uMDItMS4wMi0uNTMtLjk5LTEuNTMuMDgtMi41NSwxLjk5LTcuNzUsNS43My0xNS42MSwzLjc0LTcuODYsOC44Mi0xNy4zNCwxNS4yNS0yOC40NSw1LjQ2LTkuNTgsMTEuMjktMTkuMDQsMTcuNDgtMjguMzgsNi4yLTkuMzMsMTEuNjYtMTcuMTEsMTYuMzgtMjMuMzQsNC43Mi02LjIzLDcuNzktOS43LDkuMTgtMTAuNDQuMzUtLjMyLjQyLS41NC4xOS0uNjYtMS44MS00LjYtNC41LTYuOTUtOC4wNS03LjA2LTYuMDgtLjE5LTEzLjk1LDUuNzItMjMuNjEsMTcuNzItOS42NiwxMi0xOS4wNywyNS45OC0yOC4yMyw0MS45Mi0uNDcuODEtLjkyLDEuNjEtMS4zNywyLjQtLjE5LjEyLS4zNi4yNi0uNTMuNDUtOS41NiwxMi4yMy0xOC43LDIzLjA4LTI3LjQyLDMyLjU2LTguNzMsOS40OC0xNC4xMiwxNC4xOS0xNi4xOCwxNC4xMy0uNTctLjAyLS44NS0uNDEtLjgyLTEuMTkuMDQtMS4xMS45MS0zLjUyLDIuNjMtNy4yMyw0LjUzLTkuMTcsMTAuMDItMTksMTYuNDgtMjkuNDksNi40Ni0xMC40OSwxMi4xLTE5LjMyLDE2LjkxLTI2LjQ4LjQ4LS43Ni4zOS0xLjU0LS4yNy0yLjM0LTIuMzUtMi4wNy01LjI0LTMuMTUtOC42OC0zLjI2LTEuMDMtLjAzLTEuODQsMC0yLjQxLjA5LTIuODguMzYtNS4zMiwxLjI4LTcuMzEsMi43Ny0yLDEuNDktNS4xMyw1LjM5LTkuMzksMTEuNjgtMy4wMiw0LjQ1LTcuMjcsMTEuMTEtMTIuNzUsMTkuOTgtMTEuOTIsMTUuMjItMjEuNDUsMjYuNTktMjguNTksMzQuMDktNS4xLDUuMjctOC41Niw3Ljg4LTEwLjQsNy44Mi0uOTItLjAzLTEuMzYtLjc2LTEuMzEtMi4yLjEzLTQuMjEsMy44OS0xMi45LDExLjMtMjYuMDgsNi4xOS0xMS4xMSwxMi4yMy0yMC43NiwxOC4xLTI4Ljk0LDUuODctOC4xOCwxMC40Ny0xNC4xMSwxMy44LTE3Ljc3LjI0LS40My4yLS43Ny0uMTQtMS0xLjExLTEuMTQtMi42Ni0yLjIxLTQuNjQtMy4yMi0xLjk4LTEtNC40LTEuNTUtNy4yNy0xLjY0LTIuOTgtLjA5LTUuOTYsMS40My04LjkyLDQuNTQtMi45NywzLjEyLTcuNDQsOC44Ni0xMy40NCwxNy4ybC0xMC40MSwxMy45Ny05Ljg3LDEyLjk5Yy01Ljc1LDcuNjktOS43OCwxMi45MS0xMi4xLDE1LjY3LTIuMzIsMi43NS00LjI0LDQuNDQtNS43NSw1LjA2LS44MS4zMS0xLjItLjItMS4xNi0xLjUzLjA4LTIuNzcsMS44Ny03LjcyLDUuMzYtMTQuODcsMy40OS03LjE1LDcuNzUtMTQuMjQsMTIuNzktMjEuMjksNC41Ni02LjQsOC4wNy0xMS42OSwxMC41Ni0xNS44OCwyLjQ4LTQuMTksMy43Ni03LjcyLDMuODYtMTAuNi4xMy00LjIxLTIuODUtNi40LTguOTItNi41OS0yLjE4LS4wNy00LjQ4LjA5LTYuOS40NS0uMTIsMC0uMjMuMDUtLjM1LjE1LS4xMi4xMS0uMTIuMjItLjAxLjMzLjA4LDEuMTEtLjcsMy4wOC0yLjMzLDUuOTEtMS42NCwyLjgzLTQuMzIsNy4xMy04LjA2LDEyLjg4LTQuNjksNi45NS04LjcsMTMuMTktMTIuMDIsMTguNzQtMy4zMyw1LjU1LTUuOTgsMTAuNzgtNy45NywxNS43MS0zLjYxLDkuMTktNS40OCwxNi4wNi01LjYyLDIwLjYtLjEzLDQuMS45NSw3LjUxLDMuMjEsMTAuMjMsMi4yNywyLjczLDYuMDIsNSwxMS4yNCw2LjgyLjc5LjM2LDEuNDguMTUsMi4wOC0uNmwxOC43Mi0yNi41MWMtMi4xNyw3LjAyLTMuMzIsMTIuOTItMy40NywxNy42OC0uMjUsNy45NywyLjEyLDEzLjA4LDcuMSwxNS4zNC42OC4zNSwxLjQyLjU0LDIuMjIuNTcsNS4xNi4xNiwxMi4wMS00LjMxLDIwLjU1LTEzLjQxLDQuMzgtNC42Nyw4LjYzLTkuNTMsMTIuNzMtMTQuNTctMS4xOSwzLjcyLTEuODQsNy4xNy0xLjkzLDEwLjMzLS4xNSw0Ljc2Ljg5LDguMzYsMy4xMSwxMC44MXM1LjExLDMuNzMsOC42NiwzLjg0YzMuNTUuMTEsNy4wOS0xLDEwLjYtMy4zMyw1LjA1LTMuNjEsMTIuNDItMTEuOTIsMjIuMTEtMjQuOTEsMy40LTQuNTYsNi42Ny04Ljk5LDkuOC0xMy4yOS0xLjk5LDQuMTEtMy43LDcuODctNS4wOSwxMS4yOC0yLjczLDYuNzktNC4xNywxMi42MS00LjMyLDE3LjQ4LS4xNCw0LjY1LjY3LDguMTEsMi40NCwxMC4zOCwxLjc2LDIuMjcsMy40MiwzLjY1LDQuOTUsNC4xNCwxLjUzLjQ5LDIuNDcuNzQsMi44Mi43NSwyLjE4LjA3LDUuNDMtMS4zLDkuNzctNC4xczEwLjQ5LTkuMDcsMTguNDgtMTguNzljMi4zNy0yLjg4LDQuODYtNi4xNiw3LjQ5LTkuODQtLjg4LDMuNDUtMS4zNiw2LjUxLTEuNDQsOS4xOS0uMzEsMTAuMTksNC41MiwxNy4xNSwxNC41MSwyMC44OC40NS4yMy45Ny4yOCwxLjU0LjEzLjU4LS4xNSwxLjA1LS40NCwxLjQtLjg3LDEuOTItMi43MSw4LjM4LTExLjQzLDE5LjM5LTI2LjE2LTEuMDUsNC4xOC0xLjYxLDcuNzYtMS43MSwxMC43NS0uMjQsNy43NSwxLjk5LDEzLjYzLDYuNjksMTcuNjUsMS4yMywxLjA0LDIuNTksMS41OCw0LjA4LDEuNjIsNS41LjE3LDEyLjI2LTQuNzgsMjAuMjUtMTQuODMsMy4xNS0zLjk2LDYuNTEtOC40MSwxMC4wNi0xMy4zNC0xLjA0LDMuNzYtMS42MSw3LjMtMS43MSwxMC42MS0uMjEsNi45NywxLjU0LDEyLjI2LDUuMjgsMTUuODcsMy43MywzLjYsOC40MSw1LjQ5LDE0LjAzLDUuNjcsNy42OC4yMywxNy4xMy01Ljc2LDI4LjM1LTE3Ljk5LDkuOTItMTAuODEsNDkuMzktNjIuMjcsNTIuMDMtNjUuOTUsMi4xLDIuMzksMy4xMyw0LjY0LDMuMDYsNi43NC0uMDcsMi4yMi0xLjEsNC45OC0zLjEsOC4zLTIsMy4zMi01LjI3LDguMTgtOS44MywxNC41Ny0uNzIsMS4wOS0yLjk0LDQuMjYtNi42Niw5LjUyLTMuNzIsNS4yNi03LjEsMTAuNjEtMTAuMTMsMTYuMDYtNC43Myw4LjM5LTcuMTgsMTUuMTMtNy4zMywyMC4yMS0uMjEsNi45NywzLjY3LDExLjQxLDExLjY0LDEzLjMyLDMuNTMuNzcsOC45NC0yLjQxLDE2LjIyLTkuNTYsNy4yOC03LjE0LDE0Ljk5LTE2LjI0LDIzLjEzLTI3LjI5LDguMTQtMTEuMDUsMTUuMy0yMS44LDIxLjQ3LTMyLjI0LjM2LS42NS4yNy0xLjI2LS4yOS0xLjg0aDBaTTY4NC44NSwxMzguNTNjNi4wMS04Ljc5LDExLjQ5LTE1LjQ2LDE2LjQ1LTIwLjAyLDQuOTYtNC41Niw4LjUzLTYuOCwxMC43MS02LjczLDEuMTQuMDQsMS43LjcyLDEuNjYsMi4wNC0uMDQsMS4zMy0uNzMsMy4yMi0yLjA3LDUuNjctMS4zNCwyLjQ1LTMuMzIsNS4yNS01Ljk0LDguMzgtOC44MiwxMC41OS0xNS44NywxNS44LTIxLjE0LDE1LjY0LS44LS4wMi0xLjY2LS4yMi0yLjU2LS41OCwxLjItMS45NiwyLjE3LTMuNDIsMi44OS00LjRoMFpNNjA5LjUyLDE1MC4yN2MtOS4xMiwxMS4xOS0xNC42LDE2LjU5LTE2LjQyLDE2LjItMS4yNi0uMjYtLjUtMy4zOSwyLjI3LTkuNCwyLjc3LTYsNi43LTEyLjc4LDExLjgxLTIwLjMzLDUuMTEtNy41NCwxMC4zOC0xMy44MywxNS44MS0xOC44Nyw3LjU2LTcuMTksMTMuNTktMTAuODMsMTguMDctMTAuOTFsLTYuNjcsOS43N2MtNy40NiwxMS4xOC0xNS43NSwyMi4zNy0yNC44NywzMy41NWgwWiIvPg0KICA8L2c+DQogIDxnPg0KICAgIDxwYXRoIGNsYXNzPSJjIiBkPSJNNDA1Ljk2LDIzMC4xOWMwLDQuMTUtMy4yOSw2LjU1LTkuNiw2LjU1aC0xMi40MXYtMjMuOTloMTEuNzJjNiwwLDkuMDgsMi41LDkuMDgsNi4yNCwwLDIuNC0xLjIzLDQuMjUtMy4xOSw1LjI4LDIuNjcuODYsNC4zOSwyLjkxLDQuMzksNS45M1pNMzg5LjQ4LDIxNi45M3Y1LjY1aDUuNTJjMi43MSwwLDQuMTgtLjk2LDQuMTgtMi44NHMtMS40Ny0yLjgxLTQuMTgtMi44MWgtNS41MlpNNDAwLjM3LDIyOS42MWMwLTIuMDItMS41NC0yLjk4LTQuNDItMi45OGgtNi40OHY1LjkzaDYuNDhjMi44OCwwLDQuNDItLjg5LDQuNDItMi45NVoiLz4NCiAgICA8cGF0aCBjbGFzcz0iYyIgZD0iTTQyOC44OSwyMzYuNzRsLTQuNjMtNi42OGgtNS4xMXY2LjY4aC01LjU1di0yMy45OWgxMC4zOGM2LjQxLDAsMTAuNDIsMy4zMiwxMC40Miw4LjcsMCwzLjYtMS44Miw2LjI0LTQuOTMsNy41N2w1LjM4LDcuNzFoLTUuOTZaTTQyMy42OCwyMTcuMjdoLTQuNTJ2OC4zNmg0LjUyYzMuMzksMCw1LjExLTEuNTgsNS4xMS00LjE4cy0xLjcxLTQuMTgtNS4xMS00LjE4WiIvPg0KICAgIDxwYXRoIGNsYXNzPSJjIiBkPSJNNDU4LjAyLDIzMS42aC0xMS4xNGwtMi4xMiw1LjE0aC01LjY5bDEwLjY5LTIzLjk5aDUuNDhsMTAuNzMsMjMuOTloLTUuODNsLTIuMTItNS4xNFpNNDU2LjI3LDIyNy4zOGwtMy44LTkuMTgtMy44LDkuMThoNy42MVoiLz4NCiAgICA8cGF0aCBjbGFzcz0iYyIgZD0iTTQ5My45LDIxMi43NXYyMy45OWgtNC41NmwtMTEuOTYtMTQuNTZ2MTQuNTZoLTUuNDh2LTIzLjk5aDQuNTlsMTEuOTMsMTQuNTZ2LTE0LjU2aDUuNDhaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik01MDMuMDEsMjEyLjc1aDEwLjljNy44NSwwLDEzLjIzLDQuNzMsMTMuMjMsMTEuOTlzLTUuMzgsMTEuOTktMTMuMjMsMTEuOTloLTEwLjl2LTIzLjk5Wk01MTMuNjQsMjMyLjE4YzQuNzYsMCw3Ljg4LTIuODQsNy44OC03LjQ0cy0zLjEyLTcuNDQtNy44OC03LjQ0aC01LjA3djE0Ljg3aDUuMDdaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik01MzQuNzUsMjEyLjc1aDUuNTV2MjMuOTloLTUuNTV2LTIzLjk5WiIvPg0KICAgIDxwYXRoIGNsYXNzPSJjIiBkPSJNNTcxLjQyLDIxMi43NXYyMy45OWgtNC41NmwtMTEuOTYtMTQuNTZ2MTQuNTZoLTUuNDh2LTIzLjk5aDQuNTlsMTEuOTMsMTQuNTZ2LTE0LjU2aDUuNDhaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik01OTYuNzQsMjI0LjM2aDUuMDd2OS43M2MtMi42NCwxLjk5LTYuMjcsMy4wNS05LjcsMy4wNS03LjU0LDAtMTMuMDktNS4xNy0xMy4wOS0xMi40MXM1LjU1LTEyLjQxLDEzLjE5LTEyLjQxYzQuMjIsMCw3LjcxLDEuNDQsMTAuMDQsNC4xNWwtMy41NiwzLjI5Yy0xLjc1LTEuODUtMy43Ny0yLjcxLTYuMi0yLjcxLTQuNjYsMC03Ljg1LDMuMTItNy44NSw3LjY4czMuMTksNy42OCw3Ljc4LDcuNjhjMS41MSwwLDIuOTEtLjI3LDQuMzItMS4wM3YtNy4wM1oiLz4NCiAgICA8cGF0aCBjbGFzcz0iYyIgZD0iTTYyMiwyMjQuNzRjMC03LjIzLDUuNTUtMTIuNDEsMTMuMDItMTIuNDEsNC4xNSwwLDcuNjEsMS41MSw5Ljg3LDQuMjVsLTMuNTYsMy4yOWMtMS42MS0xLjg1LTMuNjMtMi44MS02LjAzLTIuODEtNC40OSwwLTcuNjgsMy4xNS03LjY4LDcuNjhzMy4xOSw3LjY4LDcuNjgsNy42OGMyLjQsMCw0LjQyLS45Niw2LjAzLTIuODRsMy41NiwzLjI5Yy0yLjI2LDIuNzgtNS43Miw0LjI4LTkuOSw0LjI4LTcuNDQsMC0xMi45OS01LjE3LTEyLjk5LTEyLjQxWiIvPg0KICAgIDxwYXRoIGNsYXNzPSJjIiBkPSJNNjUwLjAzLDIyNC43NGMwLTcuMTMsNS41NS0xMi40MSwxMy4xMy0xMi40MXMxMy4xMyw1LjI0LDEzLjEzLDEyLjQxLTUuNTksMTIuNDEtMTMuMTMsMTIuNDEtMTMuMTMtNS4yOC0xMy4xMy0xMi40MVpNNjcwLjY2LDIyNC43NGMwLTQuNTYtMy4yMi03LjY4LTcuNS03LjY4cy03LjUsMy4xMi03LjUsNy42OCwzLjIyLDcuNjgsNy41LDcuNjgsNy41LTMuMTIsNy41LTcuNjhaIi8+DQogICAgPHBhdGggY2xhc3M9ImMiIGQ9Ik02ODEuNTMsMjMzLjY1YzAtMS45OSwxLjQ3LTMuMjksMy4zMi0zLjI5czMuMzIsMS4zLDMuMzIsMy4yOS0xLjQ3LDMuMzYtMy4zMiwzLjM2LTMuMzItMS40MS0zLjMyLTMuMzZaIi8+DQogIDwvZz4NCjwvc3ZnPg==" alt="Builder Branding Co." class="be-logo be-logo-light">
+  <div class="label">[ $ ] $1,500 &mdash; BRAND EXCAVATION &mdash; BUILDER BRANDING CO.</div>
+  <div class="headline">Know exactly what you're selling and who you're selling it to.</div>
+  <p style="margin-bottom:8px">Your brand positioning is unclear &mdash; your business name, offer description, and pricing don&rsquo;t tell a coherent story yet. The Brand Excavation session fixes that in a single working session.</p>
+  <p style="margin-bottom:20px;color:var(--text-2);font-size:14px">One session. Clear positioning. Done.</p>
+  <a href="https://clients.builderbranding.co/brandexcavation" target="_blank" rel="noopener" style="display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:10px 20px;border:1px solid var(--accent);color:var(--accent);background:transparent;transition:all 0.15s">[ &rarr; ] Book the session</a>
+</div>
+
+<div class="callout" style="margin:0 0 48px;border-color:var(--border)">
+  <div class="label">[ &#9655; ] LIVE WORKSHOP &mdash; THURSDAYS 7PM</div>
+  <div class="headline">Apply for the next Business Model Strip Down</div>
+  <p style="margin-bottom:16px">Live every Thursday at 7pm. Bring one business, leave with a redesign drafted in real time. Limited seats per session.</p>
+  <a href="https://tally.so/r/aQj7dy" target="_blank" rel="noopener" style="display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;padding:10px 20px;border:1px solid var(--border);color:var(--text-3);background:transparent;transition:all 0.15s">[ &rarr; ] Apply now</a>
+</div>
+<footer class="site-footer">
+  <div style="display:flex;align-items:center;gap:8px">
+    <iconify-icon icon="solar:cpu-linear" style="font-size:.9rem;color:var(--accent)" stroke-width="1.5"></iconify-icon>
+    <span>Forge</span>
+  </div>
+  <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-2)">A clear plan for your business, backed by market data.</span>
+  <span>v1.13</span>
+</footer>
+
+</div><!-- /frame -->
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SCRIPTS                                       -->
+<!-- ════════════════════════════════════════════ -->
+
+<!-- Three.js hero WebGL animation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var container = document.getElementById('hero-webgl');
+  if (!container || typeof THREE === 'undefined') return;
+
+  var scene = new THREE.Scene();
+  var d = 15;
+  var camera = new THREE.OrthographicCamera(-d, d, d, -d, 1, 1000);
+  camera.position.set(20, 20, 20);
+  camera.lookAt(scene.position);
+
+  var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  var dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(10, 20, 10);
+  scene.add(dir);
+  var coreLight = new THREE.PointLight(0x00e5ff, 2, 20);
+  coreLight.position.set(0, 2, 0);
+  scene.add(coreLight);
+
+  var darkMat   = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8, metalness: 0.2 });
+  var accentMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 0.5, roughness: 0.2, metalness: 0.8 });
+  var wireMat   = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.3 });
+
+  var group = new THREE.Group();
+  scene.add(group);
+
+  var grid = new THREE.GridHelper(30, 15, 0x333333, 0x1a1a1a);
+  grid.position.y = -2;
+  group.add(grid);
+
+  var platGeo = new THREE.BoxGeometry(14, 1.5, 14);
+  var platform = new THREE.Mesh(platGeo, darkMat);
+  platform.position.y = -1;
+  platform.add(new THREE.LineSegments(new THREE.EdgesGeometry(platGeo), new THREE.LineBasicMaterial({ color: 0x333333 })));
+  group.add(platform);
+
+  var midGeo = new THREE.BoxGeometry(8, 1, 8);
+  var mid = new THREE.Mesh(midGeo, darkMat);
+  mid.position.y = 0.25;
+  mid.add(new THREE.LineSegments(new THREE.EdgesGeometry(midGeo), new THREE.LineBasicMaterial({ color: 0x444444 })));
+  group.add(mid);
+
+  var coreGeo = new THREE.BoxGeometry(3, 1, 3);
+  var core = new THREE.Mesh(coreGeo, accentMat);
+  core.position.y = 1.25;
+  group.add(core);
+
+  var ringGeo = new THREE.CylinderGeometry(4.5, 4.5, 1.5, 32, 1, true);
+  var ring1 = new THREE.LineSegments(new THREE.EdgesGeometry(ringGeo), wireMat);
+  var ring2 = new THREE.LineSegments(new THREE.EdgesGeometry(ringGeo), wireMat);
+  ring1.position.y = 4; ring2.position.y = 7;
+  group.add(ring1, ring2);
+
+  var nodes = [];
+  var nodeGeo = new THREE.BoxGeometry(0.6, 0.6, 0.6);
+  for (var i = 0; i < 6; i++) {
+    var node = new THREE.Mesh(nodeGeo, accentMat);
+    var angle = (i / 6) * Math.PI * 2;
+    var radius = 8 + Math.random() * 2;
+    node.position.set(Math.cos(angle) * radius, Math.random() * 4 + 1, Math.sin(angle) * radius);
+    var nw = new THREE.LineSegments(new THREE.EdgesGeometry(nodeGeo), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 }));
+    nw.scale.set(1.5, 1.5, 1.5);
+    node.add(nw);
+    node.userData.startY  = node.position.y;
+    node.userData.offset  = Math.random() * Math.PI * 2;
+    group.add(node);
+    nodes.push(node);
+  }
+
+  function resize() {
+    var w = container.clientWidth, h = container.clientHeight;
+    var aspect = w / h || 1;
+    camera.left = -d * aspect; camera.right = d * aspect;
+    camera.top = d; camera.bottom = -d;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+  }
+
+  var clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    var t = clock.getElapsedTime();
+    var pulse = (Math.sin(t * 3) + 1) * 0.5;
+    group.rotation.y = Math.sin(t * 0.1) * 0.1;
+    ring1.rotation.y = t * 0.5;
+    ring2.rotation.y = -t * 0.3;
+    accentMat.emissiveIntensity = 0.3 + pulse * 0.7;
+    coreLight.intensity = 1 + pulse;
+    nodes.forEach(function(n) {
+      n.position.y = n.userData.startY + Math.sin(t * 2 + n.userData.offset) * 0.5;
+      n.rotation.x += 0.01; n.rotation.y += 0.01;
+    });
+    renderer.render(scene, camera);
+  }
+
+  resize(); animate();
+  window.addEventListener('resize', resize);
+});
+</script>
+
+<!-- Theme toggle -->
+<script>
+function toggleTheme() {
+  var html = document.documentElement;
+  var toLightMode = html.dataset.theme === 'dark';
+  html.dataset.theme = toLightMode ? 'light' : 'dark';
+  document.getElementById('theme-icon').setAttribute('icon', toLightMode ? 'solar:moon-linear' : 'solar:sun-linear');
+  document.getElementById('theme-label').textContent = toLightMode ? 'Dark' : 'Light';
+  if (window.reRenderMermaid) window.reRenderMermaid();
+}
+</script>
+
+<!-- Mermaid (CDN ESM + offline fallback) -->
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+window.mermaid = mermaid;
+
+function getMermaidVars() {
+  var light = document.documentElement.dataset.theme === 'light';
+  return light ? {
+    primaryColor:       '#f0f0f4',
+    primaryTextColor:   '#09090b',
+    primaryBorderColor: '#0099AA',
+    lineColor:          '#0099AA',
+    secondaryColor:     'rgba(0,153,170,0.1)',
+    tertiaryColor:      '#ffffff',
+    background:         '#f4f4f5',
+    fontFamily:         '"JetBrains Mono", monospace',
+    fontSize:           '13px'
+  } : {
+    primaryColor:       '#0a0a0a',
+    primaryTextColor:   '#FFFFFF',
+    primaryBorderColor: '#00E5FF',
+    lineColor:          '#00E5FF',
+    secondaryColor:     'rgba(0,229,255,0.1)',
+    tertiaryColor:      '#050505',
+    background:         '#050505',
+    fontFamily:         '"JetBrains Mono", monospace',
+    fontSize:           '13px'
+  };
+}
+
+function initMermaid() {
+  mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: getMermaidVars(), look: 'classic', layout: 'elk' });
+}
+
+document.querySelectorAll('.mermaid').forEach(function(el) {
+  el.dataset.original = el.textContent.trim();
+});
+
+window.reRenderMermaid = function() {
+  document.querySelectorAll('.mermaid').forEach(function(el) {
+    if (el.dataset.original) { el.textContent = el.dataset.original; el.removeAttribute('data-processed'); }
+  });
+  initMermaid();
+  mermaid.run();
+};
+
+initMermaid();
+</script>
+
+<!-- Offline Mermaid fallback -->
+<script>
+setTimeout(function() {
+  if (!window.mermaid) {
+    document.querySelectorAll('.mermaid').forEach(function(el) {
+      var fb = document.createElement('div');
+      fb.style.cssText = 'padding:20px;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--text-2);text-align:center;text-transform:uppercase;letter-spacing:.08em';
+      fb.textContent = 'Diagrams require an internet connection to render. Reconnect and refresh.';
+      el.replaceWith(fb);
+    });
+  }
+}, 3000);
+</script>
+
+<!-- Reading progress + section fade-in + count-up -->
+<script>
+(function() {
+  /* Reading progress bar */
+  var bar = document.getElementById('reading-progress');
+  if (bar) {
+    var updateBar = function() {
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', updateBar, { passive: true });
+    window.addEventListener('resize', updateBar);
+    updateBar();
+  }
+
+  /* Section fade-in */
+  document.documentElement.classList.add('fade-init');
+  if ('IntersectionObserver' in window) {
+    var secObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) { e.target.classList.add('in-view'); secObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('.nexus-section').forEach(function(s) { secObs.observe(s); });
+  } else {
+    document.querySelectorAll('.nexus-section').forEach(function(s) { s.classList.add('in-view'); });
+  }
+
+  /* Count-up animation */
+  if ('IntersectionObserver' in window) {
+    var fmt = function(n) { return Math.round(n).toLocaleString('en-US'); };
+    var animateCountup = function(el) {
+      var target = parseFloat(el.dataset.countup);
+      if (isNaN(target)) return;
+      var prefix = el.dataset.countupPrefix || '';
+      var suffix = el.dataset.countupSuffix || '';
+      var dur    = parseInt(el.dataset.countupDuration || '900', 10);
+      var t0 = performance.now();
+      var tick = function(now) {
+        var p = Math.min((now - t0) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = prefix + fmt(target * eased) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = prefix + fmt(target) + suffix;
+      };
+      requestAnimationFrame(tick);
+    };
+    var cntObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) { animateCountup(e.target); cntObs.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-countup]').forEach(function(el) { cntObs.observe(el); });
+  }
+
+  /* Appendix list keyboard accessibility */
+  document.querySelectorAll('.appendix-list li').forEach(function(li) {
+    if (!li.hasAttribute('tabindex')) li.setAttribute('tabindex', '0');
+  });
+
+  /* Show biz name in header on scroll */
+  var bizSpan = document.getElementById('biz-short');
+  if (bizSpan && 'IntersectionObserver' in window) {
+    var hero = document.getElementById('sec1');
+    if (hero) {
+      var heroObs = new IntersectionObserver(function(entries) {
+        bizSpan.style.display = entries[0].isIntersecting ? 'none' : 'block';
+      }, { threshold: 0.05 });
+      heroObs.observe(hero);
+    }
+  }
+})();
+</script>
+
+<!-- INDEX nav drawer -->
+<script>
+(function () {
+  var toggle  = document.getElementById('nav-toggle');
+  var drawer  = document.getElementById('nav-drawer');
+  var overlay = document.getElementById('nav-overlay');
+  var closeBtn = document.getElementById('nav-drawer-close');
+  if (!toggle || !drawer) return;
+  function openNav() {
+    drawer.classList.add('open'); overlay.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false'); overlay.setAttribute('aria-hidden', 'false');
+    toggle.setAttribute('aria-expanded', 'true'); toggle.classList.add('active');
+  }
+  function closeNav() {
+    drawer.classList.remove('open'); overlay.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true'); overlay.setAttribute('aria-hidden', 'true');
+    toggle.setAttribute('aria-expanded', 'false'); toggle.classList.remove('active');
+  }
+  toggle.addEventListener('click', function() { drawer.classList.contains('open') ? closeNav() : openNav(); });
+  if (closeBtn) closeBtn.addEventListener('click', closeNav);
+  if (overlay) overlay.addEventListener('click', closeNav);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeNav(); });
+  drawer.querySelectorAll('.nav-link').forEach(function(l) { l.addEventListener('click', function() { setTimeout(closeNav, 120); }); });
+  if ('IntersectionObserver' in window) {
+    var links = drawer.querySelectorAll('.nav-link');
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) links.forEach(function(l) { l.classList.toggle('active', l.dataset.sec === e.target.id); });
+      });
+    }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+    document.querySelectorAll('.nexus-section[id], section[id="appendix"]').forEach(function(s) { obs.observe(s); });
+  }
+}());
+</script>
+
+<!-- Diagram expand modal -->
+<script>
+(function(){
+  document.querySelectorAll('.diagram').forEach(function(d) {
+    if (d.querySelector('.diagram-expand')) return;
+    var btn = document.createElement('button');
+    btn.className = 'diagram-expand';
+    btn.setAttribute('aria-label', 'Expand diagram to full size');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false" style="display:block"><circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.5"/><line x1="8.5" y1="8.5" x2="13" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="5.5" y1="3.5" x2="5.5" y2="7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="5.5" x2="7.5" y2="5.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var svg = d.querySelector('.mermaid svg');
+      var modal = document.getElementById('diagram-modal');
+      var target = document.getElementById('diagram-modal-svg');
+      if (!svg || !modal || !target) return;
+      target.innerHTML = '';
+      var clone = svg.cloneNode(true);
+      clone.removeAttribute('width'); clone.removeAttribute('height');
+      clone.style.maxWidth = 'none'; clone.style.width = '100%'; clone.style.height = 'auto';
+      target.appendChild(clone);
+      modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      var cb = document.getElementById('diagram-modal-close');
+      if (cb) cb.focus();
+    });
+    d.appendChild(btn);
+  });
+  var modal = document.getElementById('diagram-modal');
+  var closeBtn = document.getElementById('diagram-modal-close');
+  var closeModal = function() {
+    if (!modal) return;
+    modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && modal && modal.classList.contains('open')) closeModal(); });
+})();
+</script>
+
+</body>
+</html>
