@@ -350,21 +350,68 @@ a:hover{text-decoration:underline}
 /* Tabular numerals on countup spans so width doesn't jump while animating */
 [data-countup]{font-variant-numeric:tabular-nums}
 
-/* Cinematic header (v1.6) — WebGL shader text "BUSINESS MODEL OPTIMIZATION REPORT".
-   Single bounded element above Section 1 (not layered behind it), so the bg-num "01" stays in its own lane.
-   Falls back to a styled static <h1> if WebGL is unavailable or reduced-motion is active. */
-/* Cinematic header v1.7 — UnicornStudio shader background + overlayed title.
-   The title is always visible. If the shader doesn't load (CDN blocked, reduced-motion),
-   the title sits cleanly on the bg-elevated panel — no separate fallback needed. */
-.cine-header{position:relative;width:100%;height:clamp(220px,38vh,460px);margin:24px 0 48px;overflow:hidden;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--bg-elevated)}
-.cine-header-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
-.cine-header-bg canvas{width:100% !important;height:100% !important;display:block}
-.cine-header-title{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding:0 24px;line-height:1.0}
-.cine-header-title h1{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,5.2vw,64px);letter-spacing:-0.01em;line-height:1.05;margin:0;color:rgba(232,236,238,0.92);text-shadow:0 0 24px rgba(34,224,255,0.35),0 0 56px rgba(34,224,255,0.18)}
-.cine-header-title h1 .line1{display:block;margin-bottom:0.08em}
-.cine-header-title h1 .line2{display:block;color:var(--accent);opacity:0.95}
-[data-theme="light"] .cine-header-title h1{color:rgba(10,14,17,0.88);text-shadow:0 0 24px rgba(15,184,214,0.25),0 0 56px rgba(15,184,214,0.12)}
-@media (prefers-reduced-motion: reduce){.cine-header-bg{display:none}}
+/* Cinematic header (v1.13+) — GSAP "Scrolled Into Being" + Flip-to-sticky.
+   Replaces v1.7 UnicornStudio shader.
+
+   Behavior: As the user scrolls into the page, the cinematic header pins for ~1.2x
+   viewport. During the pin the title draws character-by-character as cyan outlines
+   (text-stroke), then a fill layer sweeps up from below via clip-path to "ink in" the
+   filled text. A small mono subtitle reading "FORGE INTELLIGENCE REPORT" fades in
+   below — identical to the existing sticky-bar label. When pin releases, that mono
+   subtitle Flip-docks into the sticky bar's .sec slot (replacing it), the big title
+   fades + scales out, and the cinematic band collapses smoothly so the page reflows.
+
+   HTML renders the title statically by default so no-JS, reduced-motion, and print
+   users see the title cleanly without flicker. JS adds .cine-prep right before
+   animation begins to hide initial states; reduced-motion CSS override forces the
+   prep state back to visible. After the Flip completes, JS adds .cine-collapsed
+   which zero-heights the band.
+
+   Powered by core GSAP + ScrollTrigger + Flip plugins only. Character splitting and
+   the outline reveal use a hand-rolled char-span split (no SplitText/DrawSVG plugin
+   needed). */
+
+/* Band — smaller than v1 to feel hero-like but not overwhelming */
+.cine-header{position:relative;width:100%;min-height:clamp(360px,56vh,580px);margin:48px 0 32px;overflow:hidden;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;padding:48px 24px}
+
+.cine-stack{display:flex;flex-direction:column;align-items:center;gap:clamp(20px,3vh,40px);text-align:center;width:100%;max-width:1100px}
+
+/* Two-layer title: outline (text-stroke, transparent fill) underneath, fill (solid color, clip-path) on top.
+   Sizing carefully chosen so "BUSINESS MODEL OPTIMIZATION" (27 chars × Inter Tight 800 × ~0.55 char ratio)
+   always fits in the band without horizontal overflow. At 1280vw → 60px font → ~890px title ≤ ~1230px container. */
+.cine-title-wrap{position:relative;display:inline-block;line-height:1.0;max-width:100%}
+.cine-title{font-family:var(--font-display);font-weight:800;font-size:clamp(24px,5.2vw,60px);letter-spacing:-0.015em;line-height:1.0;margin:0;white-space:nowrap}
+.cine-outline{color:transparent;-webkit-text-stroke:1.4px var(--accent);text-stroke:1.4px var(--accent)}
+.cine-fill{position:absolute;inset:0;color:rgba(232,236,238,0.92);text-shadow:0 0 28px rgba(34,224,255,0.36),0 0 64px rgba(34,224,255,0.16);clip-path:inset(0)}
+[data-theme="light"] .cine-fill{color:rgba(10,14,17,0.92);text-shadow:0 0 28px rgba(15,184,214,0.22),0 0 64px rgba(15,184,214,0.10)}
+.cine-outline .cine-char{display:inline-block;will-change:transform,opacity}
+
+/* Mono subtitle — plain text only (no pseudo-element decorations) so the rendered width matches
+   the post-Flip docked state exactly. This means Flip's getState width = final docked width → clean shrink. */
+.cine-mono{font-family:var(--font-mono);font-size:clamp(11px,1.2vw,13px);letter-spacing:0.32em;color:var(--accent);text-transform:uppercase;opacity:0.85;font-weight:500}
+
+/* Mobile: title is too long for single line at ≤560px viewport even at min font-size. Let it wrap. */
+@media (max-width:560px){
+  .cine-title{font-size:clamp(22px,7vw,36px);white-space:normal;letter-spacing:-0.01em}
+  .cine-title-wrap{display:block;max-width:90%}
+  .cine-header{min-height:clamp(300px,50vh,420px);padding:36px 16px}
+}
+
+/* JS-only prep state — hides initial chars/fill/subtitle so the scrub can reveal them.
+   Without JS, the prep class is never added → title shows statically. */
+.cine-header.cine-prep .cine-outline .cine-char{opacity:0;transform:translateY(28px) scaleY(0.55);transform-origin:bottom center}
+.cine-header.cine-prep .cine-fill{clip-path:inset(100% 0 0 0)}
+.cine-header.cine-prep .cine-mono{opacity:0;transform:translateY(10px)}
+
+/* Post-Flip collapsed state — band reflows to zero height after subtitle docks into sticky bar */
+.cine-header.cine-collapsed{min-height:0;height:0;margin:0;padding:0;border-top-width:0;border-bottom-width:0;overflow:hidden}
+
+/* Reduced-motion: never honor prep state → static title remains visible */
+@media (prefers-reduced-motion: reduce){
+  .cine-header.cine-prep .cine-outline .cine-char{opacity:1 !important;transform:none !important}
+  .cine-header.cine-prep .cine-fill{clip-path:inset(0) !important}
+  .cine-header.cine-prep .cine-mono{opacity:0.85 !important;transform:none !important}
+}
 @media print{.cine-header{display:none}}
 
 /* Anchor-styled move teasers in Section 1 — inherit color, no underline */
@@ -484,7 +531,7 @@ a.move:hover .headline{color:var(--accent)}
 <div class="frame">
 
 <div class="header-mark">
-  <div class="left">─ <span class="sec">FORGE INTELLIGENCE REPORT</span></div>
+  <div class="left">─ <span class="sec" id="sticky-sec">FORGE INTELLIGENCE REPORT</span></div>
   <div class="middle">{{business_name_short}}</div>
   <div class="right">
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle section index" aria-expanded="false" aria-controls="nav-drawer">[ &#8801; ] INDEX</button>
@@ -495,14 +542,27 @@ a.move:hover .headline{color:var(--accent)}
 <!-- ════════════════════════════════════════ -->
 <!-- SECTION 1 — EXECUTIVE SUMMARY            -->
 <!-- ════════════════════════════════════════ -->
-<!-- Cinematic header (v1.7) — UnicornStudio shader background + overlayed title. -->
-<div class="cine-header" id="cine-header" aria-hidden="false">
-  <div data-us-project="bmaMERjX2VZDtPrh4Zwx" class="cine-header-bg"></div>
-  <div class="cine-header-title">
-    <h1>
-      <span class="line1">Business Model</span>
-      <span class="line2">Optimization Report</span>
-    </h1>
+<!-- Cinematic header (v1.13+) — GSAP "Scrolled Into Being" + Flip-to-sticky.
+     Two-layer overlaid title: .cine-outline (text-stroke, transparent fill) underneath +
+     .cine-fill (solid, clip-path masked) on top. Both read the same text so the visible
+     result is a single readable "BUSINESS MODEL OPTIMIZATION".
+
+     The .cine-mono subtitle below intentionally matches the sticky-bar .sec label text —
+     it's the Flip-dock target. When scroll-pin completes, JS captures .cine-mono's
+     current cinematic-band position, moves it into the sticky bar's #sticky-sec slot,
+     and lets Flip animate the shrink+reposition. The big title fades out and the band
+     collapses.
+
+     HTML renders the title statically visible by default. JS adds .cine-prep right
+     before animating to hide initial states; reduced-motion CSS overrides that back to
+     visible. See CSS comment for the full design. -->
+<div class="cine-header" id="cine-header">
+  <div class="cine-stack">
+    <div class="cine-title-wrap">
+      <h1 class="cine-title cine-outline" aria-hidden="true">BUSINESS MODEL OPTIMIZATION</h1>
+      <h1 class="cine-title cine-fill">BUSINESS MODEL OPTIMIZATION</h1>
+    </div>
+    <span class="cine-mono" id="cine-mono">FORGE INTELLIGENCE REPORT</span>
   </div>
 </div>
 
@@ -1393,28 +1453,146 @@ setTimeout(() => {
 })();
 </script>
 
-<!-- Cinematic header background (v1.7) — UnicornStudio shader.
-     Replaces the v1.6 raw WebGL shader. Loader script auto-initializes any
-     element with a `data-us-project` attribute. Respects prefers-reduced-motion
-     and falls back to the bare title on the elevated-bg panel if the CDN
-     is unreachable or the shader fails to render. -->
+<!-- Cinematic header animator (v1.13+) — replaces v1.7 UnicornStudio shader.
+     Drives the "Scrolled Into Being" + Flip-to-sticky-header sequence:
+       1. Pin .cine-header for ~120% viewport.
+       2. Scrub-reveal: each character of the outline title staggers up from below,
+          then a fill layer sweeps up via clip-path to "ink in" the filled text,
+          then the mono subtitle fades in.
+       3. On pin release: Flip the mono subtitle into the sticky bar's #sticky-sec
+          slot (text already matches → clean shrink+reposition), fade out the big
+          title, collapse the cinematic band so the page reflows.
+
+     Uses core GSAP + ScrollTrigger + Flip — all 3 from the same gsap@3.12.7 npm
+     package on jsdelivr. SplitText effect is hand-rolled (char-span wrap, ~10 lines).
+     Respects prefers-reduced-motion: no-ops cleanly, leaving the static HTML default
+     title and the original "FORGE INTELLIGENCE REPORT" sticky label visible. -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/Flip.min.js"></script>
 <script>
 (function(){
+  if (!window.gsap || !window.ScrollTrigger || !window.Flip) {
+    console.warn('[forge cinematic] GSAP/ScrollTrigger/Flip not loaded - keeping static title');
+    return;
+  }
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.UnicornStudio) return;
-  window.UnicornStudio = { isInitialized: false };
-  var s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.34/dist/unicornStudio.umd.js';
-  s.onload = function(){
-    if (!window.UnicornStudio.isInitialized && typeof window.UnicornStudio.init === 'function') {
-      window.UnicornStudio.init();
-      window.UnicornStudio.isInitialized = true;
+
+  const header    = document.getElementById('cine-header');
+  const outline   = header && header.querySelector('.cine-outline');
+  const fill      = header && header.querySelector('.cine-fill');
+  const mono      = document.getElementById('cine-mono');
+  const stickySec = document.getElementById('sticky-sec');
+  if (!header || !outline || !fill || !mono || !stickySec) return;
+
+  gsap.registerPlugin(ScrollTrigger, Flip);
+
+  // Hand-rolled char split: wrap each char of the outline title in a span so the
+  // scrub-reveal can stagger them. The fill layer remains a single element whose
+  // clip-path sweeps from bottom to top to "ink in" the filled text.
+  (function splitOutlineChars(){
+    const text = outline.textContent;
+    outline.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    for (const c of text){
+      const s = document.createElement('span');
+      s.className = 'cine-char';
+      s.textContent = (c === ' ') ? ' ' : c;
+      frag.appendChild(s);
     }
-  };
-  s.onerror = function(){
-    console.warn('[forge cinematic] UnicornStudio CDN unreachable — showing bare title on elevated panel');
-  };
-  (document.head || document.body).appendChild(s);
+    outline.appendChild(frag);
+  })();
+  const outlineChars = outline.querySelectorAll('.cine-char');
+
+  // Enter prep state - CSS hides chars/fill/subtitle so the scrub-reveal can play.
+  // (Reduced-motion CSS override forces these back to visible.)
+  header.classList.add('cine-prep');
+
+  let flipFired = false;
+
+  // Build the pin+scrub master timeline. Its full duration maps linearly to the
+  // configured scroll range (start -> end); each .to() position is interpreted as
+  // a fraction of total duration.
+  const masterTl = gsap.timeline({
+    scrollTrigger: {
+      trigger: header,
+      start: 'top top',
+      end: '+=80%',
+      pin: true,
+      scrub: 0.6,
+      anticipatePin: 1,
+      onLeave: () => flipToSticky(),
+      // If page loads scrolled past the cinematic, dock immediately
+      onRefresh: (self) => { if (!flipFired && self.progress === 1) flipToSticky(); }
+    }
+  });
+
+  // Scroll 0 -> ~30%: outline chars stagger up from below
+  masterTl.to(outlineChars, {
+    opacity: 1, y: 0, scaleY: 1,
+    duration: 1, stagger: 0.035, ease: 'power3.out'
+  }, 0);
+
+  // Scroll ~35 -> ~70%: fill layer sweeps up from bottom via clip-path inset
+  masterTl.to(fill, {
+    clipPath: 'inset(0% 0 0 0)',
+    duration: 1.2, ease: 'power2.inOut'
+  }, 1.4);
+
+  // Scroll ~75 -> ~95%: mono subtitle ("FORGE INTELLIGENCE REPORT") fades + slides in
+  masterTl.to(mono, {
+    opacity: 0.85, y: 0,
+    duration: 0.5, ease: 'power2.out'
+  }, 2.8);
+
+  // Flip-to-sticky: dock the mono subtitle into the sticky bar's .sec slot.
+  // Text already matches "FORGE INTELLIGENCE REPORT" so this is purely a shrink+
+  // reposition tween. The big title fades out concurrently; the cinematic band
+  // then collapses to zero height so the page reflows up.
+  function flipToSticky(){
+    if (flipFired) return;
+    flipFired = true;
+    if (!mono.parentNode || !stickySec.parentNode) return;
+
+    // Capture mono at its current cinematic-band position + style
+    const state = Flip.getState(mono, { props: 'color,fontSize,letterSpacing,opacity,fontWeight' });
+
+    // Restyle to match sticky-bar .sec, preserve the id so a future Flip could
+    // theoretically target it again, then physically replace the .sec node.
+    mono.className = 'sec';
+    mono.removeAttribute('id');
+    mono.id = 'sticky-sec';
+    stickySec.replaceWith(mono);
+
+    // Concurrent: fade + scale the big title out
+    gsap.to([outline, fill], {
+      opacity: 0, scale: 0.55, y: -20,
+      duration: 0.55, ease: 'power3.in'
+    });
+
+    // Animate the displacement (big cinematic subtitle -> small sticky-bar slot)
+    Flip.from(state, {
+      duration: 0.85,
+      ease: 'power2.inOut',
+      absolute: true,
+      onComplete: () => {
+        // Clear inline styles Flip set so the docked element matches .sec exactly.
+        // Belt-and-suspenders: gsap.set clearProps + removeAttribute to ensure no lingering
+        // font-size/letter-spacing from the cinematic state leaks into the sticky-bar render.
+        gsap.set(mono, { clearProps: 'all' });
+        if (mono.getAttribute('style') === '') mono.removeAttribute('style');
+        // Collapse the cinematic band; the page reflows once it's gone
+        gsap.to(header, {
+          minHeight: 0, height: 0, marginTop: 0, marginBottom: 0, opacity: 0,
+          duration: 0.5, ease: 'power2.in',
+          onComplete: () => {
+            header.classList.add('cine-collapsed');
+            ScrollTrigger.refresh();
+          }
+        });
+      }
+    });
+  }
 })();
 </script>
 
