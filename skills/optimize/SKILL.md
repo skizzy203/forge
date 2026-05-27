@@ -412,7 +412,7 @@ Phase variants for `{{brand_excavation_hook}}`:
 - **EXIT_READY:** `Acquirers pay premiums for businesses with clear positioning. Brand Excavation sharpens your story before diligence.`
 - **Default (no phase):** `You have a business. Brand Excavation gives it a message.`
 
-**Secondary — Brand Excavation CTA.** Fixed block — `{{brand_excavation_hook}}` token substituted with phase-aware copy (see Phase 4 token table). URL `https://clients.builderbranding.co/brandexcavation` is stable across runs. The Builder Branding Co. logo renders from an inlined base64 data URI (dark/light mode paired). No URL substitution required.
+**Secondary — Brand Excavation CTA.** Fixed block — `{{brand_excavation_hook}}` token substituted with phase-aware copy (see Phase 4 token table). URL `https://clients.builderbranding.co/brandexcavation` is stable across runs. The Builder Branding Co. logo renders from two `<img>` tags pointing at the jsdelivr CDN — `https://cdn.jsdelivr.net/gh/skizzy203/forge@main/assets/bldr-logo-dark.svg` (class `be-logo be-logo-dark`) and the matching `bldr-logo-light.svg` (class `be-logo be-logo-light`). The existing `[data-theme="light"]` CSS toggle handles which one renders. Hosted from the forge repo's `assets/` directory — pinning to `@main` always serves the latest; switch to a release tag (e.g. `@v1.14.0`) for immutable builds. No URL substitution required at render time. (v1.14+ — earlier versions inlined base64 data URIs, which bloated each report by ~33KB; do NOT regress to base64.)
 
 ### Automation Surface (Section 7.0) render
 
