@@ -426,13 +426,14 @@ a.move:hover .headline{color:var(--accent)}
   /* v1.6.1: PI highlight card stacks vertically on narrow viewports so the logo + text don't crush */
   .pi-card{flex-direction:column !important;align-items:center !important;text-align:center;gap:16px !important}
   .pi-card img{max-width:140px !important}
-  /* v1.11: diagrams fit viewport width on mobile; expand button opens full-size in modal.
-     Previous behavior (min-width:560px + overflow-x:auto) forced horizontal scroll — replaced
-     with scale-to-fit so the diagram is always fully visible. Full resolution available via
-     the [⤢] expand button on each diagram. */
-  .diagram{padding:16px 12px;overflow:hidden}
+  /* v1.14.4: diagrams fit viewport width on mobile via scale-to-fit, EXCEPT Gantt charts —
+     their left-axis task labels overflow when scaled, so we keep them at natural width
+     and let .diagram scroll horizontally. Full resolution always available via the
+     [⤢] expand button on each diagram. */
+  .diagram{padding:16px 12px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
   .diagram .mermaid{min-width:0}
   .diagram .mermaid svg{max-width:100% !important;height:auto !important;width:auto}
+  .diagram .mermaid svg[aria-roledescription="gantt"]{max-width:none !important;min-width:720px !important;width:720px !important}
   .frame{padding:20px 16px 48px}
   .moves{gap:14px}
   .grid{gap:12px}

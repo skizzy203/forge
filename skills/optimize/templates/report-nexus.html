@@ -275,7 +275,16 @@ body {
 /* v1.14.3: Block-level SVG with margin auto. Narrow diagrams center; wide diagrams (e.g. Gantt) overflow into .diagram's overflow-x:auto instead of clipping. */
 .diagram .mermaid { text-align: center; }
 .diagram .mermaid svg { display: block; margin: 0 auto; }
-@media (max-width: 640px) { .diagram { padding: 16px 12px; overflow: hidden; } .diagram .mermaid { min-width: 0; } .diagram .mermaid svg { max-width: 100% !important; height: auto !important; width: auto; } }
+/* v1.14.4: mobile — diagrams scale to fit width, except Gantt (labels overflow when scaled, so scroll horizontally instead). PI card + site footer stack vertically. */
+@media (max-width: 640px) {
+  .diagram { padding: 16px 12px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .diagram .mermaid { min-width: 0; }
+  .diagram .mermaid svg { max-width: 100% !important; height: auto !important; width: auto; }
+  .diagram .mermaid svg[aria-roledescription="gantt"] { max-width: none !important; min-width: 720px !important; width: 720px !important; }
+  .pi-card { flex-direction: column !important; align-items: center !important; text-align: center; gap: 16px !important; }
+  .pi-card img { max-width: 140px !important; }
+  .site-footer { flex-direction: column; gap: 10px; text-align: center; align-items: center; }
+}
 
 /* ─── MOVE CARDS ─────────────────────────────── */
 .moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0; }
@@ -552,7 +561,7 @@ details .details-body { padding: 0 18px 18px; font-family: 'Inter', sans-serif; 
     </div>
     <div class="metric-cell">
       <div class="metric-value" style="font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.05em">FORGE</div>
-      <div class="metric-label">v1.2.2</div>
+      <div class="metric-label">{{plugin_version_short}}</div>
     </div>
   </div>
 
