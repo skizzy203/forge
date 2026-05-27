@@ -272,8 +272,8 @@ body {
 .diagram-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-3); margin-bottom: 16px; }
 .diagram.as-is .diagram-label   { color: var(--danger); }
 .diagram.proposed .diagram-label { color: var(--accent); }
-/* v1.14.2: Flex-based centering — narrow diagrams center inside container, wider ones still scroll via .diagram's overflow-x:auto. */
-.diagram .mermaid { display: flex; justify-content: center; align-items: center; text-align: center; width: 100%; }
+/* v1.14.3: Block-level SVG with margin auto. Narrow diagrams center; wide diagrams (e.g. Gantt) overflow into .diagram's overflow-x:auto instead of clipping. */
+.diagram .mermaid { text-align: center; }
 .diagram .mermaid svg { display: block; margin: 0 auto; }
 @media (max-width: 640px) { .diagram { padding: 16px 12px; overflow: hidden; } .diagram .mermaid { min-width: 0; } .diagram .mermaid svg { max-width: 100% !important; height: auto !important; width: auto; } }
 
