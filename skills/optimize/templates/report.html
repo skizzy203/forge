@@ -93,7 +93,7 @@ html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var
 .callout .label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;font-weight:600}
 .callout .headline{font-family:var(--font-display);font-weight:700;font-size:22px;line-height:1.2;color:var(--text-primary);margin-bottom:8px}
 .callout p{font-size:15px;line-height:1.55;color:var(--text-primary)}
-.be-logo{display:block;max-width:160px;height:auto;margin-bottom:16px}.be-logo-light{display:none}.be-logo-dark{display:block}[data-theme="light"] .be-logo-light{display:block}[data-theme="light"] .be-logo-dark{display:none}
+.be-logo{display:block;max-width:250px;height:auto;margin-bottom:16px}.be-logo-light{display:none}.be-logo-dark{display:block;max-width:250px}[data-theme="light"] .be-logo-light{display:block;max-width:250px}[data-theme="light"] .be-logo-dark{display:none}
 
 /* Component grid (signals etc.) */
 .grid{display:grid;gap:16px;margin:24px 0}
@@ -135,9 +135,9 @@ html,body{background:var(--bg-primary);color:var(--text-primary);font-family:var
 
 /* Diagrams */
 .diagram{background:var(--bg-elevated);border:1px solid var(--rule);padding:24px;margin:24px 0;overflow-x:auto}
-/* v1.6.1: center the rendered Mermaid SVG within its container row. Narrow diagrams center; wider ones still scroll horizontally on mobile via .diagram's overflow-x:auto. */
-.diagram .mermaid{text-align:center}
-.diagram .mermaid svg{display:inline-block;margin:0 auto}
+/* v1.14.2: Flex-based centering — robust across narrow and wide diagrams. The .mermaid wrapper is the flex container; the SVG block-centers via margin:auto. Wider diagrams still scroll horizontally via .diagram's overflow-x:auto. */
+.diagram .mermaid{display:flex;justify-content:center;align-items:center;text-align:center;width:100%}
+.diagram .mermaid svg{display:block;margin:0 auto}
 .diagram.as-is{border-color:rgba(239,68,68,0.3)}
 .diagram.proposed{border-color:rgba(16,185,129,0.3)}
 .diagram-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
