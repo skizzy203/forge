@@ -218,6 +218,98 @@ Runs after Phase 1C, before Phase 2. Same epistemic posture as Phase 1B/1C: cite
 
 **Failure handling.** If no cited data surfaces, render the `7.0b — First-hire roadmap` block with a "Industry hiring benchmarks not surfaced for this sector — see the assessment recommendation below" note in place of the when/who cells. **The Predictive Index highlight card still renders** because its recommendation is industry-agnostic. Mirrors the existing "cite or omit" rule but with a graceful partial render rather than full block omission, since the PI card carries value on its own.
 
+## Phase 1E — Regulatory & Legal Compliance Screen (added v1.14.0)
+
+Checks whether the BCD's industry, stated offer, Operator Edge background, and proposed amplifications touch regulated activity before the chain runs — so the chain never produces positioning or copy that would put the operator in legal jeopardy.
+
+Runs **after Phase 1D, before Phase 2**. Non-blocking: the pipeline continues regardless of what this phase finds. Legal flags do not abort the run; they constrain the chain's Operator Edge and Design outputs and are surfaced to the operator in Section 4.2 and the Appendix.
+
+### Regulated-vertical detection
+
+On Phase 1E startup, classify the BCD against the following regulated-vertical list. Trigger detection if **any** of the following conditions are true:
+
+| Vertical | Trigger signals in BCD |
+|---|---|
+| **Insurance** | Industry contains "roofing," "restoration," "exterior," "water damage," "remediation," "public adjuster"; OR offer language mentions "insurance claim," "adjuster," "supplement," "ACV," "RCV," "claim navigation" |
+| **Financial services** | Operator background mentions "financial advisor," "investment," "securities," "broker," "Series 7/65/66," "RIA," "CFP"; OR offer involves financial planning, lending, or investment products |
+| **Healthcare / medical** | Industry is healthcare, telehealth, wellness, mental health, supplements; OR offer involves diagnosis, treatment, or prescriptions |
+| **Legal services** | Offer involves legal advice, contract drafting, or representation; OR operator background is attorney/paralegal |
+| **Real estate brokerage** | Offer involves brokering real estate transactions; OR operator background mentions real estate license |
+| **Mortgage / lending** | Offer involves originating, brokering, or advising on mortgage or consumer loans |
+| **Contractor licensing** | Industry is construction, HVAC, electrical, plumbing, roofing — check state licensing requirements for the operator's stated state |
+
+If **no regulated vertical is detected**: skip Phase 1E entirely. Log "Phase 1E: no regulated vertical detected — skipped" to the Appendix and proceed to Phase 2.
+
+If **one or more regulated verticals detected**: run the research sub-phases below.
+
+### Research sub-phases (run only for detected verticals)
+
+For each detected vertical, run 2–3 targeted WebSearch queries against the operator's state (extract from BCD `Location:` or `Business address:` field; if absent, default to national/federal search):
+
+**Insurance vertical (example: Georgia roofing contractor)**
+1. `"[state] roofing contractor insurance claim public adjuster law"` — surfaces the controlling statute
+2. `"[state] public adjuster license roofing contractor advertising prohibition"` — surfaces enforcement bulletins
+3. `"[state] roofing contractor supplement negotiation legal"` — surfaces any case law or enforcement actions
+
+**Financial services vertical**
+1. `"financial advisor title use requirement SEC FINRA [state]"` — surfaces whether "financial advisor" is a regulated title in the operator's state
+2. `"[state] investment advisor registration requirements"` — surfaces RIA requirements
+
+**Healthcare vertical**
+1. `"[state] telehealth regulations 2024 2025"` — surfaces scope-of-practice and licensing requirements
+2. `"FTC health claims advertising rules [category]"` — surfaces FTC enforcement posture on health claims
+
+**General (all verticals)**
+- Always run: `"FTC [industry] advertising rules [year]"` — surfaces any federal advertising rules that apply nationally
+
+WebFetch the top 1–2 results per query. Extract: the controlling statute, the specific prohibited acts, the permitted acts, any safe-harbor language, enforcement history.
+
+**Bound the work.** Maximum 8 WebSearch + 12 WebFetch calls across all detected verticals for Phase 1E. Prioritize depth on the highest-risk detected vertical (the one with the most matches in the BCD) over breadth across multiple verticals.
+
+### Synthesis into `LEGAL_FLAGS` accumulated context
+
+Produce a `LEGAL_FLAGS` block. Each entry is a struct:
+
+```
+{
+  vertical: string,                        // "Insurance — Georgia public adjuster"
+  statute: string,                         // "O.C.G.A. § 10-1-393.12(e)"
+  prohibited_acts: string[],               // plain-language list of what the operator CANNOT do/advertise
+  permitted_acts: string[],                // plain-language list of what IS legal
+  flagged_bcd_language: string[],          // exact phrases from the BCD that match prohibited acts or advertising
+  risk_level: "HIGH" | "MED" | "LOW",      // HIGH = statute clearly applies and BCD language triggers it
+  path_a: string,                          // 2-3 sentences: stay in current license, change language
+  path_b: string | null,                   // 2-3 sentences: add a license/credential to unlock full positioning; null if no clear path
+  source_url: string                       // primary citation URL
+}
+```
+
+If WebSearch finds no controlling statute for a detected vertical (rare but possible for newer industries or states with no specific law), set `risk_level: "LOW"` and note "No controlling statute found — monitor for regulatory development."
+
+### How `LEGAL_FLAGS` constrains Phase 2 chain execution
+
+When Phase 2 runs and the Operator Edge model fires, it must:
+1. Read `LEGAL_FLAGS` before producing any positioning language
+2. For each `HIGH` or `MED` flag: ensure the proposed Operator Edge positioning, offer description, and avatar language do not use any phrase from `prohibited_acts` or `flagged_bcd_language`
+3. Produce positioning that stays within `permitted_acts` — the strategic insight can survive; only the execution language needs to change
+4. The chain output for Operator Edge **must include** a one-sentence legal boundary note: "This positioning stays within [brief description of permitted acts]."
+
+When the Design models fire (Value Equation, Money Model Architecture): apply the same constraint to offer language and advertising copy in the proposed model.
+
+### Report render additions for `LEGAL_FLAGS`
+
+**Section 4.2 — Operator Edge:** If `LEGAL_FLAGS` is non-empty with any `HIGH` or `MED` entry, render a `[ ⚖ ] LEGAL ADVISORY` callout immediately after the Operator Edge flagged-intersection callout. The callout uses `border-color:var(--warn)` styling. Structure:
+
+- **Label:** `[ ⚖ ] LEGAL ADVISORY — [statute citation]`
+- **Headline:** "Two paths. Meaningfully different businesses."
+- **Body:** 3 paragraphs: (1) the specific prohibition and its advertising trigger, (2) Path A text from `LEGAL_FLAGS.path_a`, (3) Path B text from `LEGAL_FLAGS.path_b` (if not null). If `path_b` is null, replace with: "No licensed upgrade path was identified for this vertical in the research phase — consult a [vertical] attorney before changing marketing language."
+
+**Appendix — Run Metadata:** Add a `LEGAL SCREEN` row listing each detected vertical, its statute, and its risk level. Format: `Legal screen: [vertical] — [statute] — [risk_level]`. If Phase 1E was skipped, log: `Legal screen: skipped (no regulated vertical detected)`.
+
+### Failure handling
+
+If WebSearch is unreachable or all queries return no usable results: log "Phase 1E: web search unavailable — legal screen not completed" to the Appendix. Do NOT silently skip. Render a warning callout in Section 4.2: "Legal screen was not completed for this run due to web search unavailability. The BCD contains language that may touch a regulated vertical ([list detected verticals]). Have a [state] attorney review positioning copy before making it client-facing." This is the only place in the Forge pipeline where an incomplete phase produces a visible in-report warning rather than a silent Appendix note — because the risk of proceeding without legal review is client-facing and potentially criminal.
+
 ## Phase 2 — Adaptive Chain Construction & Execution
 
 Load `references/catalog.md`. For each candidate model, compute:
