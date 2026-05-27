@@ -95,3 +95,67 @@ Per `PRD.md §10`, manual verification covers:
 3. HTML output (all 8 sections present, diagrams render, light/dark toggle works)
 4. Voice compliance (no contrastive reframes in generated copy)
 5. Design compliance (color tokens, typography, component patterns match `DESIGN.md`)
+
+## Git Workflow
+
+This plugin is maintained in a GitHub repository at `github.com/skizzy203/forge`. The Dropbox folder is the working copy. The Claude Code plugin install path (`~/.claude/plugins/marketplaces/local-desktop-app-uploads/forge/`) is a **separate copy** — it does NOT auto-sync with GitHub. After any plugin update, you must re-upload via the desktop app.
+
+### Every session — start
+
+```bash
+git pull origin main
+```
+
+Always pull before editing. The remote may have commits from a prior worktree session or a different machine.
+
+### Every session — end
+
+Stage only the files you intentionally changed, then commit and push:
+
+```bash
+git add skills/optimize/SKILL.md        # example — be explicit, never git add -A
+git commit -m "feat: describe the change"
+git push origin main
+```
+
+The `Stop` hook in `.claude/settings.local.json` auto-commits anything still staged at session end as a safety net. It does **not** auto-stage — you must `git add` deliberately.
+
+### Version bumping
+
+Edit `.claude-plugin/plugin.json` → `"version"` on the same commit as the behavioral change.
+
+| Change type | Version bump |
+|---|---|
+| New phase, new model, new report section | minor (`1.X.0`) |
+| Bug fix, copy fix, scoring tweak | patch (`1.14.X`) |
+| Breaking BCD schema change | major (`X.0.0`) |
+
+### Commit prefix conventions
+
+| Prefix | When to use |
+|---|---|
+| `feat:` | New capability added to SKILL.md or templates |
+| `fix:` | Corrects wrong behavior (legal error, broken diagram, bad token) |
+| `style:` | Design/CSS change only — no behavioral change |
+| `docs:` | CLAUDE.md, PRD.md, CHANGELOG.md, README.md updates |
+| `release:` | Version bump + CHANGELOG entry only |
+| `chore:` | Housekeeping (gitignore, tool permission updates, etc.) |
+
+### Never commit
+
+- `.bcd.md` / `.bcd 1.md` intake files (operator PII)
+- Generated `forge-report-*.html` output files
+- `.claude/worktrees/` contents
+- Any file matching `forge-runs/`
+
+These are all covered by `.gitignore`. Verify with `git status` before committing.
+
+### Updating the installed copy
+
+After pushing to GitHub, sync the install:
+
+1. Pull from GitHub: `git pull origin main` in this working copy
+2. Re-upload via Claude Code desktop app → **Plugins** → re-select the local folder
+3. Verify version number in the installed copy's `plugin.json` matches
+
+There is no auto-install on push — the two copies drift if you skip step 2.
