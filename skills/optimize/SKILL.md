@@ -398,21 +398,21 @@ If `plugin.json` is unreadable, fall back to `{{plugin_version_full}} = v?.?.?` 
 
 Two `.callout` blocks appear between the Appendix and the brand `footer-mark` line.
 
-**Primary — Brand Excavation (`$1,500`).** Uses one token:
+**Primary — The Excavation™ (`from $3,500`).** Uses one token:
 
 | Token | Source | Notes |
 |---|---|---|
-| `{{brand_excavation_hook}}` | Phase 4 — read from BCD `Phase:` metadata line | 1–2 sentences. Phase-specific hook tying the operator's current situation to the Brand Excavation offer. Use the phase variants below. If no phase is present in the BCD, use the default. |
+| `{{brand_excavation_hook}}` | Phase 4 — read from BCD `Phase:` metadata line | 1–2 sentences. Phase-specific hook tying the operator's current situation to The Excavation offer. Use the phase variants below. If no phase is present in the BCD, use the default. |
 
 Phase variants for `{{brand_excavation_hook}}`:
-- **STARTUP:** `You're building the offer. Brand Excavation maps your positioning before you spend a dollar on marketing.`
-- **GROWTH:** `You're past product-market fit but losing deals to competitors with cleaner positioning. Brand Excavation finds your message.`
-- **SCALING:** `Systemizing a business without a brand OS creates inconsistency at every hire. Brand Excavation builds the foundation that scales.`
-- **MATURITY:** `Your market knows you but doesn't know why they should pay more. Brand Excavation reframes the value.`
-- **EXIT_READY:** `Acquirers pay premiums for businesses with clear positioning. Brand Excavation sharpens your story before diligence.`
-- **Default (no phase):** `You have a business. Brand Excavation gives it a message.`
+- **STARTUP:** `You're building the offer. The Excavation maps your positioning before you spend a dollar on marketing.`
+- **GROWTH:** `You're past product-market fit but losing deals to competitors with cleaner positioning. The Excavation finds your message.`
+- **SCALING:** `Systemizing a business without a brand OS creates inconsistency at every hire. The Excavation builds the foundation that scales.`
+- **MATURITY:** `Your market knows you but doesn't know why they should pay more. The Excavation reframes the value.`
+- **EXIT_READY:** `Acquirers pay premiums for businesses with clear positioning. The Excavation shows you what a buyer will see before diligence.`
+- **Default (no phase):** `You have a business. The Excavation shows you what's holding it back and hands you the plan to fix it.`
 
-**Secondary — Brand Excavation CTA.** Fixed block — `{{brand_excavation_hook}}` token substituted with phase-aware copy (see Phase 4 token table). URL `https://clients.builderbranding.co/brandexcavation` is stable across runs. The Builder Branding Co. logo renders from two `<img>` tags pointing at the jsdelivr CDN — `https://cdn.jsdelivr.net/gh/skizzy203/forge@main/assets/bldr-logo-dark.svg` (class `be-logo be-logo-dark`) and the matching `bldr-logo-light.svg` (class `be-logo be-logo-light`). The existing `[data-theme="light"]` CSS toggle handles which one renders. Hosted from the forge repo's `assets/` directory — pinning to `@main` always serves the latest; switch to a release tag (e.g. `@v1.14.0`) for immutable builds. No URL substitution required at render time. (v1.14+ — earlier versions inlined base64 data URIs, which bloated each report by ~33KB; do NOT regress to base64.)
+**The Excavation™ CTA block.** Fixed block — `{{brand_excavation_hook}}` token substituted with phase-aware copy (see Phase 4 token table). URL `https://builderbranding.co/the-excavation` is stable across runs. The Builder Branding Co. logo renders from two `<img>` tags pointing at the jsdelivr CDN — `https://cdn.jsdelivr.net/gh/skizzy203/forge@main/assets/bldr-logo-dark.svg` (class `be-logo be-logo-dark`) and the matching `bldr-logo-light.svg` (class `be-logo be-logo-light`). The existing `[data-theme="light"]` CSS toggle handles which one renders. Hosted from the forge repo's `assets/` directory — pinning to `@main` always serves the latest; switch to a release tag (e.g. `@v1.14.0`) for immutable builds. No URL substitution required at render time. (v1.14+ — earlier versions inlined base64 data URIs, which bloated each report by ~33KB; do NOT regress to base64.)
 
 ### Automation Surface (Section 7.0) render
 

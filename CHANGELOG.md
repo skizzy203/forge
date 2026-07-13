@@ -2,6 +2,23 @@
 
 All notable changes to Forge are documented in this file.
 
+## [1.14.5] — 2026-07-13
+
+### Fixed — Footer CTA updated to the current offer
+
+The report footer CTA advertised the retired `$1,500 Brand Excavation` at a dead URL (`clients.builderbranding.co/brandexcavation`). Updated in `skills/optimize/templates/report.html`, `skills/optimize/SKILL.md` (heading, `{{brand_excavation_hook}}` phase variants, CTA block spec), and `examples/mechanical-magic.html`:
+
+- Offer line: `FROM $3,500 — THE EXCAVATION™`
+- Headline: the adopted Core promise ("Know the three moves that raise what your business is worth — with the numbers behind them.")
+- Support line: the keep-the-report guarantee + 100% fee credit
+- URL: `https://builderbranding.co/the-excavation`
+
+`examples/mechanical-magic-nexus.html` still carries the old CTA — it has unrelated uncommitted local changes and was deliberately left untouched.
+
+### Fixed — CLAUDE.md drift
+
+Version reference (`v1.2.2` → current), model count (38 → 40 in three places), and the scoring formula now includes `phase_multiplier`.
+
 ## [1.13.0] — 2026-05-22
 
 ### Codename: Signal
